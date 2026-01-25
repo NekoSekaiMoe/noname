@@ -2419,6 +2419,9 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					"mode_extension_boss",
 					"mode_versus",
 					"mode_boss",
+					"mode_chess",
+					"mode_tafang",
+					"mode_stone",
 					"mode_guozhan"
 				];
 				
@@ -2653,12 +2656,40 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					node.link = page;
 					var list = [];
 					for (var i = 0; i < info.length; i++) {
+						// 为菜单-卡牌添加属性杀显示
+						if (['leisha','huosha','icesha','cisha','kamisha'].includes(info[i])) list.push(['基本', '', info[i]]);
+						
 						if (!lib.card[info[i]] || (lib.card[info[i]].derivation && mode != 'mode_derivation')) continue;
 						// 不用修改√ or 修改×
 						list.push([get.translation(get.type(info[i], 'trick')), '', info[i]]);
 						// list.push(['',get.translation(get.type(info[i],'trick')),info[i]]);
 					}
+					
+					// 为菜单-卡牌添加属性杀显示
+					if(mode == "extra") {
+						list.push(['基本', '', 'leisha']);
+						list.push(['基本', '', 'huosha']);
+					}
+					if(mode == "yingbian") {
+						list.push(['基本', '', 'icesha']);
+					}
+					if(mode == "yongjian") {
+						list.push(['基本', '', 'cisha']);
+					}
+					// 神杀放挑战卡牌
+					if(mode == "mode_boss") {
+						list.push(['基本', '', 'kamisha']);
+					}
+					
 					var sortCard = function (card) {
+						// 为菜单-卡牌添加属性杀显示
+						if (card[2]=='sha') return -27;
+						if (card[2]=='leisha') return -26;
+						if (card[2]=='huosha') return -25;
+						if (card[2]=='icesha') return -24;
+						if (card[2]=='cisha') return -23;
+						if (card[2]=='kamisha') return -22;
+						
 						var type = lib.card[card[2]].type;
 						var subtype = lib.card[card[2]].subtype;
 						if (lib.cardType[subtype]) {
@@ -2667,23 +2698,25 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 						if (lib.cardType[type]) {
 							return lib.cardType[type];
 						}
+						// 调整卡牌显示顺序（by 棘手怀念摧毁）
 						switch (type) {
-							case 'basic': return 0;
-							case 'chess': return 1.5;
-							case 'trick': return 2;
-							case 'delay': return 3;
+							case 'basic': return -21;
+							case 'trick': return -20;
+							case 'delay': return -19;
 							case 'equip': {
 								switch (lib.card[card[2]].subtype) {
-									case 'equip1': return 4.1;
-									case 'equip2': return 4.2;
-									case 'equip3': return 4.3;
-									case 'equip4': return 4.4;
-									case 'equip5': return 4.5;
-									default: return 4;
+									case 'equip1': return -18;
+									case 'equip2': return -17;
+									case 'equip3': return -16;
+									case 'equip4': return -15;
+									case 'equip5': return -14;
+									case 'equip3_4': return -13;
+									case 'equip6': return -12;
+									default: return -11;
 								}
 							}
-							case 'zhenfa': return 5;
-							default: return 6;
+							case 'zhenfa': return -10;//阵法
+							default: return 10;
 						}
 					};
 					// 卡牌顺序按自定义列表排（本人扩展：怪物猎人），检测到大剑时不排序
@@ -2719,7 +2752,9 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 							return;
 						}
 						if (mode.startsWith('mode_') && !mode.startsWith('mode_extension_') && mode != 'mode_banned') {
-							return;
+							// 适配搬运自用扩展的卡牌资料卡修改
+							// 衍生卡牌打开卡牌资料卡（打开后，禁用按钮不可用）
+							if(!(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kpzlkxg'])) return;
 						}
 						ui.click.touchpop();
 						this._banning = connectMenu ? 'online' : 'offline';
@@ -2738,7 +2773,17 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 						else {
 							list = lib.config[get.mode() + '_bannedcards'];
 						}
-						if (list && list.includes(this.link[2])) {
+						
+						// 为菜单-卡牌添加属性杀显示
+						var map = {
+							"thunder": "leisha",
+							"fire": "huosha",
+							"ice": "icesha",
+							"stab": "cisha",
+							"kami": "kamisha",
+						};
+						if (list && ((this.link[3]==null&&list.includes(this.link[2]))||(this.link[3]!=null&&list.includes(map[this.link[3]])))) {
+						// if (list && list.includes(this.link[2])) {
 							this.classList.add('banned');
 						}
 						else {

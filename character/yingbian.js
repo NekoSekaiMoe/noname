@@ -2045,6 +2045,7 @@ game.import("character", function () {
 			},
 			xiongzhi: {
 				audio: 2,
+				audioname: ["new_simayi"],//彩蛋（声音克隆）
 				enable: "phaseUse",
 				limited: true,
 				skillAnimation: true,

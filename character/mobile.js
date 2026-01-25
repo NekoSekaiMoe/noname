@@ -7,6 +7,12 @@ game.import("character", function () {
 			// "miheng"
 		],
 		character: {
+			mb_cuilingyi: [
+				"female",
+				"wei",
+				3,
+				["mbcaiqiu", "mbxishang"],
+			],
 			mb_sp_zhenji: ["female", "qun", 3, ["mbbojian", "mbjiwei"]],
 			mb_zhangfen: ["male", "wu", 4, ["mbquchong", "mbxunjie"]],
 			mb_jiachong: ["male", "qun", 3, ["mbbeini", "mbdingfa"], ["die_audio:jiachong", "border:jin"]],
@@ -170,13 +176,14 @@ game.import("character", function () {
 			scs_duangui: ["male", "qun", "", ["scschihe"], ["unseen", "sex:male_castrated"]],
 			scs_guosheng: ["male", "qun", "", ["scsniqu"], ["unseen", "sex:male_castrated"]],
 			scs_gaowang: ["male", "qun", "", ["scsmiaoyu"], ["unseen", "sex:male_castrated"]],
+
 			new_yj_dongzhuo: ["male", "qun", "4/5", ["xiongjin", "xiawei", "baoxi"]],
 		},
 		characterSort: {
 			mobile: {
 				mobile_longxue: ["mb_simafu", "mb_wenqin", "mb_simazhou", "mb_sp_guanqiujian", "mb_caomao", "chengji", "lizhaojiaobo", "mb_wangjing", "mb_jiachong"],
 				mobile_yijiang: ["yj_zhanghe", "yj_zhangliao", "yj_xuhuang", "yj_ganning", "yj_huangzhong", "yj_weiyan", "yj_zhoubuyi", "new_yj_dongzhuo"],
-				mobile_xlqk: ["sunru", "liuzan", "pangdegong", "miheng", "majun", "zhengxuan", "simashi", "nanhualaoxian", "shichangshi", "sunhanhua", "mb_zhangfen"],
+				mobile_xlqk: ["mb_cuilingyi", "sunru", "liuzan", "pangdegong", "miheng", "majun", "zhengxuan", "simashi", "nanhualaoxian", "shichangshi", "sunhanhua", "mb_zhangfen"],
 				mobile_sp: ["xin_huojun", "muludawang", "mb_chengui", "mb_huban", "mb_xianglang", "yanxiang", "xin_wuban", "laimin", "baoxin", "jiangji", "liwei", "xin_guozhao", "taoqian", "lingcao", "lifeng", "zhuling", "liuye", "zhaotongzhaoguang", "simazhao", "wangyuanji", "shenpei", "hujinding", "zhangyì", "jiakui", "yangbiao", "chendeng", "dongcheng", "yangyi", "dengzhi", "sp_sufei", "furong", "dingyuan", "yanghuiyu", "hucheer", "gongsunkang", "zhouqun", "qiaozhou", "fuqian", "mayuanyi", "yanpu", "sp_maojie", "peixiu", "sp_jianggan", "ruanhui", "xin_mamidi", "sp_caosong", "yangfu", "wangjun", "sp_pengyang", "qianzhao", "yangfeng", "zhangbu", "re_wangyun", "re_baosanniang", "re_weiwenzhugezhi", "re_zhanggong", "re_xugong", "re_heqi", "xin_hansui", "mb_sunluyu", "mb_sp_zhenji"],
 				mobile_standard: ["xin_xiahoudun", "xin_zhangfei", "old_yuanshu"],
 				mobile_shenhua_feng: ["re_xiaoqiao", "xin_zhoutai"],
@@ -200,7 +207,30 @@ game.import("character", function () {
 				["mb_caomao_shadow", ["die_audio:mb_caomao"]],
 				["mb_caomao_dead", ["die_audio:mb_caomao"]],
 			],
-			shichangshi: [["shichangshi_dead", ["die_audio:shichangshi"]]],
+			shichangshi: [["shichangshi_dead", ["die:shichangshi"]]],
+			scs_zhangrang: [["scs_zhangrang_dead", ["die:shichangshi"]]],
+			scs_zhaozhong: [["scs_zhaozhong_dead", ["die:shichangshi"]]],
+			scs_sunzhang: [["scs_sunzhang_dead", ["die:shichangshi"]]],
+			scs_bilan: [["scs_bilan_dead", ["die:shichangshi"]]],
+			scs_xiayun: [["scs_xiayun_dead", ["die:shichangshi"]]],
+			scs_hankui: [["scs_hankui_dead", ["die:shichangshi"]]],
+			scs_lisong: [["scs_lisong_dead", ["die:shichangshi"]]],
+			scs_duangui: [["scs_duangui_dead", ["die:shichangshi"]]],
+			scs_guosheng: [["scs_guosheng_dead", ["die:shichangshi"]]],
+			scs_gaowang: [["scs_gaowang_dead", ["die:shichangshi"]]],
+			mb_cuilingyi: [
+				// 临时修改（by 棘手怀念摧毁）
+				// ["mb_cuilingyi_guidian1", ["character:mb_cuilingyi", "die:mb_cuilingyi"]],
+				["mb_cuilingyi_guidian1", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_guidian2", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_guidian3", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_dongjiao1", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_dongjiao2", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_dongjiao3", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_xiuge1", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_xiuge2", ["die:mb_cuilingyi"]],
+				["mb_cuilingyi_xiuge3", ["die:mb_cuilingyi"]],
+			],
 		},
 		characterIntro: {
 			lizhaojiaobo: "李昭（？—约公元260年），三国时期曹魏官吏，官拜冗从仆射，为魏帝曹髦的亲信。<br>焦伯，三国时期人物，魏帝曹髦护卫，官拜黄门从官。<br>曹髦见自己权力威势日渐削弱，感到不胜忿恨，于公元260年（甘露五年）五月初六夜里，令李昭和焦伯等在陵云台布署甲士，出讨司马昭，但最终失败，曹髦为成济所弑，李昭和焦伯等应该也战死。在《三国演义》里，焦伯挺枪出战成济，亦被成济所杀。",
@@ -464,6 +494,749 @@ game.import("character", function () {
 		},
 		/** @type { importCharacterConfig['skill'] } */
 		skill: {
+			//手杀崔令仪
+			mbcaiqiu: {
+				audio: 4,
+				logAudio(event, player) {
+					if (event.name == "useCard") {
+						return ["mbcaiqiu3.mp3", "mbcaiqiu4.mp3"];
+					}
+					return 2;
+				},
+				trigger: {
+					global: ["roundStart", "useCardAfter"],
+				},
+				filter(event, player) {
+					if (event.name == "useCard") {
+						return (
+							event.player != player &&
+							player.getRoundHistory("gain", evt => {
+								if (evt.getParent().name != "mbcaiqiu") {
+									return false;
+								}
+								return evt.cards?.length && evt.cards.some(card => card.name == event.card.name);
+							}).length > 0
+						);
+					}
+					return game.countPlayer2(() => true, true) > 0;
+				},
+				forced: true,
+				locked: false,
+				async content(event, trigger, player) {
+					if (trigger?.name == "useCard") {
+						await player.loseHp();
+						return;
+					}
+					const cards = get.cards(
+						game.countPlayer2(() => true, true),
+						true
+					);
+					const result = await player
+						// 临时修改（by 棘手怀念摧毁）
+						.chooseButton(["裁裘：是否获得其中任意张牌？", cards], [1, Infinity])
+						// .chooseButton(["裁裘：是否获得其中任意张牌？", cards], [1, Infinity], "allowChooseAll")
+						.set("ai", button => {
+							const player = get.player();
+							//只要贪不死就往死里贪
+							if (game.countPlayer(() => true) > player.hp && ["sha", "shan"].includes(button.link.name)) {
+								return 0;
+							}
+							return 1;
+						})
+						.forResult();
+					if (result?.bool && result.links?.length) {
+						await player.gain(result.links, "draw");
+					}
+				},
+			},
+			mbxishang: {
+				audio: 8,
+				logAudio(event, player) {
+					if (!get.nameList(player).includes("mb_cuilingyi")) {
+						return 6;
+					}
+					const skin = player.skin[player.name2 === "mb_cuilingyi" ? "name2" : "name"];
+					if (skin?.indexOf("guidian") !== -1) {
+						return 2;
+					}
+					if (skin?.indexOf("dongjiao") !== -1) {
+						return ["mbxishang3.mp3", "mbxishang4.mp3"];
+					}
+					if (skin?.indexOf("xiuge") !== -1) {
+						return ["mbxishang5.mp3", "mbxishang6.mp3"];
+					}
+					return 6;
+				},
+				derivation: ["mbweizhuang", "mbweizhuang_guidianx", "mbweizhuang_dongjiaox", "mbweizhuang_xiugex"],
+				trigger: {
+					player: "enterGame",
+					global: "phaseBefore",
+				},
+				filter(event, player) {
+					if (!get.nameList(player).includes("mb_cuilingyi")) {
+						return false;
+					}
+					return event.name != "phase" || game.phaseNumber == 0;
+				},
+				locked: true,
+				async cost(event, trigger, player) {
+					const list = lib.characterSubstitute["mb_cuilingyi"];
+					if (!list.length) {
+						return;
+					}
+					const createButton = (item, type, position, noclick, node) => {
+						const [name, info] = item,
+							skill = `mbweizhuang_${name.slice(13, -1)}x`;
+						let isTemp = false;
+						if (!lib.character[name]) {
+							isTemp = true;
+							lib.character[name] = get.convertedCharacter(["female", "", 0, [], info || []]);
+						}
+						// 临时修改（by 棘手怀念摧毁）
+						// lib.translate[name] ??= lib.translate[skill];
+						if (lib.translate[name] == null) lib.translate[name] = lib.translate[skill];
+						node = ui.create.buttonPresets.character(name, type, position, noclick);
+						if (isTemp) {
+							delete lib.character[name];
+						}
+						node._link = node.link = [null, null, name];
+						node.skinSkill = skill;
+						node._customintro = [node => `形象：${lib.translate[node.skinSkill]}`, node => get.skillInfoTranslation(node.skinSkill, null, false)];
+						return node;
+					};
+					// 临时修改（by 棘手怀念摧毁）
+					const result = await player.chooseButton(["袭裳：选择你本局的形象", [list.slice(0, 3), createButton], [list.slice(3, 6), createButton], [list.slice(6), createButton]], true).set("ai", button => Math.random()).forResult();
+					// const result = await player.chooseButton(["袭裳：选择你本局的形象", [list.slice(0, 3), createButton], [list.slice(3, 6), createButton], [list.slice(6), createButton]], true).forResult();
+					if (result?.bool && result.links?.length) {
+						player.changeSkin(event.skill, result.links[0][2]);
+						event.result = {
+							bool: true,
+						};
+					}
+				},
+				async content(event, trigger, player) {
+					player.addSkills("mbweizhuang");
+				},
+				mark: true,
+				marktext: "裳",
+				intro: {
+					markcount(storage, player) {
+						return player.countCards("h", card => card.hasGaintag("faceup_tag"));
+					},
+					mark(dialog, content, player) {
+						const cards = player.getCards("h", card => card.hasGaintag("faceup_tag"));
+						if (cards.length) {
+							dialog.addAuto(cards);
+						} else {
+							return "无明置牌";
+						}
+					},
+				},
+				group: "mbxishang_show",
+				subSkill: {
+					show: {
+						audio: "mbxishang",
+						logAudio() {
+							return ["mbxishang7.mp3", "mbxishang8.mp3"];
+						},
+						trigger: {
+							player: "gainAfter",
+							global: "loseAsyncAfter",
+						},
+						filter(event, player) {
+							if (event.getParent().name == "draw") {
+								return false;
+							}
+							const cards = event.getg(player);
+							return cards?.length && player.getCards("h").containsSome(...cards);
+						},
+						forced: true,
+						async content(event, trigger, player) {
+							const gains = trigger.getg(player);
+							const cards = player.getCards("h", card => gains.includes(card));
+							if (!cards.length) {
+								return;
+							}
+							const next = game.createEvent("faceUpCard");
+							next.player = player;
+							next.cards = cards;
+							next.skill = "mbxishang";
+							next.setContent(async (event, trigger, player) => {
+								const { cards } = event;
+								game.log(player, "明置了", cards);
+								game.addCardKnower(
+									cards,
+									game.filterPlayer(() => true)
+								);
+								game.broadcastAll(cards => {
+									cards.forEach(card => card.addGaintag("faceup_tag"));
+								}, cards);
+								// 临复（by 棘手怀念摧毁）
+								player.markSkill("mbxishang");
+							});
+						},
+					},
+				},
+			},
+			mbweizhuang: {
+				// 临时修改（by 棘手怀念摧毁）
+				// @ts-ignore audio的类型注释不够全
+				// audio: ["guidian", "dongjiao", "xiuge"].map(key => `mbweizhuang_${key}`),
+				getFaceupCards(player, judge = false) {
+					const cards = player.getCards("h", card => card.hasGaintag("faceup_tag"));
+					if (player.countCards("e")) {
+						cards.addArray(player.getCards("e"));
+					}
+					if (judge && player.countCards("j")) {
+						cards.addArray(player.getCards("j"));
+					}
+					return cards;
+				},
+				derivation: ["mbweizhuang_guidianx", "mbweizhuang_dongjiaox", "mbweizhuang_xiugex"],
+				group: ["mbweizhuang_guidian", "mbweizhuang_dongjiao", "mbweizhuang_xiuge"],
+				subSkill: {
+					guidianx: {
+						audio: "mbweizhuang_guidian",
+					},
+					dongjiaox: {
+						audio: "mbweizhuang_dongjiao",
+					},
+					xiugex: {
+						audio: "mbweizhuang_xiuge",
+					},
+					guidian: {
+						audio: 4,
+						logAudio(event, player) {
+							if (event.name == "faceUpCard") {
+								return ["mbweizhuang_guidian1.mp3", "mbweizhuang_guidian4.mp3"];
+							}
+							return ["mbweizhuang_guidian2.mp3", "mbweizhuang_guidian3.mp3"];
+						},
+						trigger: {
+							global: ["faceUpCardAfter", "phaseJieshuBegin"],
+							player: "phaseDrawBegin2",
+						},
+						filter(event, player) {
+							if (!get.nameList(player).includes("mb_cuilingyi")) {
+								return false;
+							}
+							const skin = player.skin[player.name2 === "mb_cuilingyi" ? "name2" : "name"];
+							if (!skin || skin.indexOf("guidian") === -1) {
+								return false;
+							}
+							if (event.name == "phaseDraw") {
+								return !event.numFixed && player.getStorage("mbweizhuang_guidian", [0, 0, 0])[0] !== 0;
+							}
+							if (event.name == "phaseJieshu") {
+								if (!get.info("mbweizhuang").getFaceupCards(event.player).length) {
+									return false;
+								}
+								return true;
+							}
+							if (player.countMark("mbweizhuang_used") > game.countPlayer2(() => true, true)) {
+								return false;
+							}
+							let num = 0,
+								evts = game.getAllGlobalHistory("everything", evt => evt.name == "faceUpCard");
+							for (let i = evts.indexOf(event); i >= 0; i--) {
+								const evt = evts[i];
+								if (evt?.mbweizhuang_count) {
+									break;
+								}
+								if (evt.cards?.length) {
+									num += evt.cards.length;
+								}
+							}
+							return num > game.countPlayer2(() => true, true);
+						},
+						intro: {
+							nocount: true,
+							content(storage, player, skill) {
+								const list = player.getStorage("mbweizhuang_guidian", [0, 0, 0]);
+								const getStr = num => {
+									if (num >= 0) {
+										return `+${num}`;
+									}
+									return num;
+								};
+								return `摸牌阶段摸牌数${getStr(list[0])}<br>出杀次数${getStr(list[1])}<br>手牌上限${getStr(list[2])}`;
+							},
+						},
+						onremove: true,
+						locked: false,
+						mod: {
+							cardUsable(card, player, num) {
+								if (card.name == "sha") {
+									const list = player.getStorage("mbweizhuang_guidian", [0, 0, 0]);
+									return num + list[1];
+								}
+							},
+							maxHandcard(player, num) {
+								const list = player.getStorage("mbweizhuang_guidian", [0, 0, 0]);
+								return num + list[2];
+							},
+						},
+						async cost(event, trigger, player) {
+							let record = player.getStorage(event.skill, [0, 0, 0]);
+							if (trigger.name == "phaseDraw") {
+								trigger.num = Math.max(0, trigger.num + record[0]);
+								return;
+							}
+							const list = [2 + record[0], player.getCardUsable("sha", true), player.getHandcardLimit(), player.getHp()];
+							// 临时修改（by 棘手怀念摧毁）
+							// const prompt = trigger.name == "phaseJieshu" ? `是否令一项数值-1并发动一次${get.poptip("mbcaiqiu")}？` : `令一项数值+1`;
+							const prompt = trigger.name == "phaseJieshu" ? `是否令一项数值-1并发动一次〖裁裘〗？` : `令一项数值+1`;
+							const choiceList = [
+								["draw", `摸牌阶段摸牌数(${list[0]})`],
+								["sha", `出杀次数(${list[1]})`],
+								["limit", `手牌上限(${list[2]})`],
+								["hp", `体力值(${list[3]})`],
+							];
+							const next = player
+								// 临时修改（by 棘手怀念摧毁）
+								.chooseButton([
+									`褽装：${prompt}`,
+									[choiceList, "textbutton"],
+								])
+								/*
+								.chooseButton([
+									`褽装：${prompt}`,
+									[choiceList.slice(0, 2), "tdnodes"],
+									[choiceList.slice(2), "tdnodes"],
+									[
+										dialog => {
+											dialog.buttons.forEach(i => {
+												i.style.setProperty("width", "200px", "important");
+												i.style.setProperty("text-align", "left", "important");
+											});
+										},
+										"handle",
+									],
+								])
+								*/
+								.set("numList", list);
+							if (trigger.name == "phaseJieshu") {
+								next.set("filterButton", button => {
+									const { player, numList } = get.event(),
+										index = ["draw", "sha", "limit", "hp"].indexOf(button.link);
+									return numList[index] > 0;
+								});
+								next.set("ai", button => {
+									const { player, numList } = get.event();
+									if (numList[1] > 1 && button.link == "sha") {
+										return 3;
+									}
+									if (numList[2] > 2 && button.link == "limit") {
+										return 2;
+									}
+									if (button.link == "draw") {
+										return 1;
+									}
+									return 0;
+								});
+							} else {
+								next.set("filterButton", button => {
+									const { player, numList } = get.event();
+									return button.link != "hp" || player.isDamaged();
+								});
+								next.set("ai", button => {
+									const { player, numList } = get.event();
+									if (button.link == "hp") {
+										return 3;
+									}
+									if (numList[1] < 3 && button.link == "sha") {
+										return 2;
+									}
+									return Math.random();
+								});
+								next.set("forced", true);
+							}
+							const result = await next.forResult();
+							if (result?.bool && result.links?.length) {
+								event.result = {
+									bool: true,
+									cost_data: result.links[0],
+								};
+							}
+						},
+						async content(event, trigger, player) {
+							const choice = event.cost_data,
+								index = ["draw", "sha", "limit", "hp"].indexOf(choice),
+								list = player.getStorage(event.name, [0, 0, 0]);
+							if (trigger.name != "phaseJieshu") {
+								trigger.set("mbweizhuang_count", true);
+								player.addSkill("mbweizhuang_used");
+								player.addMark("mbweizhuang_used", 1, false);
+							}
+							if (index > 2) {
+								if (trigger.name == "phaseJieshu") {
+									await player.loseHp();
+								} else {
+									await player.recover();
+								}
+							} else {
+								if (trigger.name == "phaseJieshu") {
+									list[index]--;
+								} else {
+									list[index]++;
+								}
+								player.setStorage(event.name, list, true);
+							}
+							if (trigger.name == "phaseJieshu") {
+								await player.useResult({ skill: "mbcaiqiu" }, event);
+							}
+						},
+					},
+					used: {
+						charlotte: true,
+						onremove: true,
+					},
+					dongjiao: {
+						audio: 6,
+						trigger: {
+							player: ["useCard", "useCardToPlayered", "useCardAfter"],
+						},
+						logAudio(event, player, name) {
+							if (name == "useCardAfter") {
+								return ["mbweizhuang_dongjiao3.mp3", "mbweizhuang_dongjiao6.mp3"];
+							}
+							if (name == "useCardToPlayered") {
+								return ["mbweizhuang_dongjiao4.mp3", "mbweizhuang_dongjiao5.mp3"];
+							}
+							return 2;
+						},
+						filter(event, player, name) {
+							if (!get.nameList(player).includes("mb_cuilingyi")) {
+								return false;
+							}
+							const skin = player.skin[player.name2 === "mb_cuilingyi" ? "name2" : "name"];
+							if (!skin || skin.indexOf("dongjiao") === -1) {
+								return false;
+							}
+							const num = get
+								.info("mbweizhuang")
+								.getFaceupCards(player)
+								?.map(card => get.type2(card))
+								?.toUniqued()?.length;
+							const type = get.type2(event.card),
+								list = player.getStorage("mbweizhuang_block");
+							if (list.includes(type)) {
+								return false;
+							}
+							if (name == "useCard") {
+								return num >= 1 && type == "basic";
+							}
+							if (name == "useCardAfter") {
+								return (
+									num >= 3 &&
+									type == "equip" &&
+									game.hasPlayer(current => {
+										return get.info("mbweizhuang").getFaceupCards(current).length;
+									})
+								);
+							}
+							return (
+								event.isFirstTarget &&
+								num >= 2 &&
+								type == "trick" &&
+								event.targets?.length &&
+								event.targets.some(target => {
+									const pos = target == player ? "e" : "he";
+									return target.countGainableCards(player, pos);
+								})
+							);
+						},
+						async cost(event, trigger, player) {
+							switch (event.triggername) {
+								case "useCard": {
+									event.result = {
+										bool: true,
+									};
+									return;
+								}
+								case "useCardAfter": {
+									const targets = game.filterPlayer(current => {
+										return get.info("mbweizhuang").getFaceupCards(current).length;
+									});
+									if (!targets?.length) {
+										return;
+									}
+									event.result = await player
+										.chooseTarget(`###是否发动【褽装】？###令一名有明置牌的角色摸两张牌`, (card, player, target) => {
+											return get.event("targetx").includes(target);
+										})
+										.set("targetx", targets)
+										.set("ai", target => {
+											const player = get.player();
+											return get.effect(target, { name: "draw" }, player, player);
+										})
+										.forResult();
+									return;
+								}
+								default: {
+									const targets = trigger.targets.filter(target => {
+										const pos = target == player ? "e" : "he";
+										return target.countGainableCards(player, pos);
+									});
+									if (!targets?.length) {
+										return;
+									}
+									event.result = await player
+										.chooseTarget(`###是否发动【褽装】？###获得一名目标角色一张牌`, (card, player, target) => {
+											return get.event("targetx").includes(target);
+										})
+										.set("targetx", targets)
+										.set("ai", target => {
+											const player = get.player();
+											return get.effect(target, { name: "shunshou_copy2" }, player, player);
+										})
+										.forResult();
+									return;
+								}
+							}
+						},
+						async content(event, trigger, player) {
+							const { targets, triggername: name } = event;
+							player.addTempSkill("mbweizhuang_block");
+							player.markAuto("mbweizhuang_block", get.type2(trigger.card));
+							switch (name) {
+								case "useCard": {
+									// 临时修改（by 棘手怀念摧毁）
+									// trigger.baseDamage ??= 1;
+									if (trigger.baseDamage == null) trigger.baseDamage = 1;
+									trigger.baseDamage++;
+									break;
+								}
+								case "useCardAfter": {
+									await game.doAsyncInOrder(targets, async target => await target.draw(2));
+									break;
+								}
+								default: {
+									await game.doAsyncInOrder(targets, async target => {
+										const pos = target == player ? "e" : "he";
+										if (target.countGainableCards(player, pos)) {
+											await player.gainPlayerCard(target, pos, true);
+										}
+									});
+								}
+							}
+						},
+					},
+					block: {
+						charlotte: true,
+						onremove: true,
+					},
+					xiuge: {
+						audio: 6,
+						logAudio(event) {
+							if (typeof event == "number") {
+								return `mbweizhuang_xiuge${event}.mp3`;
+							}
+							return 6;
+						},
+						enable: "chooseToUse",
+						hiddenCard(player, name) {
+							if (!get.nameList(player).includes("mb_cuilingyi")) {
+								return false;
+							}
+							const skin = player.skin[player.name2 === "mb_cuilingyi" ? "name2" : "name"];
+							if (!skin || skin.indexOf("xiuge") === -1) {
+								return false;
+							}
+							const list = ["sha", "shan", "tao", "jiu"];
+							if (!list.includes(name) || player.getStorage("mbweizhuang_blocker").includes(name)) {
+								return false;
+							}
+							const subtype = `equip${list.indexOf(name) + 1}`,
+								count = get
+									.info("mbweizhuang")
+									.getFaceupCards(player)
+									?.map(card => get.suit(card))
+									?.toUniqued()?.length;
+							return (
+								player.countCards("he", card => {
+									if (get.subtype(card) != subtype) {
+										return false;
+									}
+									return count >= 4 || lib.filter.cardDiscardable(card, player, "mbweizhuang");
+								}) > 0
+							);
+						},
+						filter(event, player) {
+							if (!get.nameList(player).includes("mb_cuilingyi")) {
+								return false;
+							}
+							const skin = player.skin[player.name2 === "mb_cuilingyi" ? "name2" : "name"];
+							if (!skin || skin.indexOf("xiuge") === -1) {
+								return false;
+							}
+							const list = ["sha", "shan", "tao", "jiu"],
+								count = get
+									.info("mbweizhuang")
+									.getFaceupCards(player)
+									?.map(card => get.suit(card))
+									?.toUniqued()?.length;
+							return list.some(name => {
+								if (player.getStorage("mbweizhuang_blocker").includes(name)) {
+									return false;
+								}
+								const vcard = new lib.element.VCard({ name: name, isCard: true, storage: { wzxiuge: true } });
+								if (!event.filterCard(vcard, player, event)) {
+									return false;
+								}
+								const subtype = `equip${list.indexOf(name) + 1}`;
+								return (
+									player.countCards("he", card => {
+										if (get.subtype(card) != subtype) {
+											return false;
+										}
+										return count >= 4 || lib.filter.cardDiscardable(card, player, "mbweizhuang");
+									}) > 0
+								);
+							});
+						},
+						viewAs(cards, player) {
+							if (cards.length) {
+								let name;
+								const subtype = get.subtype(cards[0], player);
+								if (typeof subtype == "string") {
+									name = ["sha", "shan", "tao", "jiu"][subtype.slice(5) - 1];
+								}
+								if (name) {
+									return {
+										name: name,
+										isCard: true,
+										suit: "none",
+										number: null,
+										storage: {
+											wzxiuge: true,
+										},
+									};
+								}
+							}
+							return null;
+						},
+						filterCard(card, player, event) {
+							// 临时修改（by 棘手怀念摧毁）
+							// event ??= _status.event;
+							if (event == null) event = _status.event;
+							const filter = event._backup.filterCard;
+							const list = ["sha", "shan", "tao", "jiu"],
+								count = get
+									.info("mbweizhuang")
+									.getFaceupCards(player)
+									?.map(card => get.suit(card))
+									?.toUniqued()?.length;
+							if (count < 4 && !lib.filter.cardDiscardable(card, player, "mbweizhuang")) {
+								return false;
+							}
+							for (const name of list) {
+								if (player.getStorage("mbweizhuang_blocker").includes(name)) {
+									continue;
+								}
+								const vcard = new lib.element.VCard({ name: name, isCard: true, storage: { wzxiuge: true } });
+								if (!filter(vcard, player, event)) {
+									continue;
+								}
+								const subtype = `equip${list.indexOf(name) + 1}`;
+								if (subtype == get.subtype(card, player)) {
+									return true;
+								}
+							}
+							return false;
+						},
+						popname: true,
+						ignoreMod: true,
+						position: "he",
+						log: false,
+						check(card) {
+							const player = get.player();
+							if (_status.event.type == "phase") {
+								const name = ["sha", "shan", "tao", "jiu"][get.subtype(card, player)?.slice(5) - 1];
+								if (name) {
+									const vcard = new lib.element.VCard({ name: name, isCard: true, storage: { wzxiuge: true } });
+									if (player.getUseValue(vcard) > 0) {
+										return 14 - get.value(card);
+									}
+								}
+								return 0;
+							}
+							return 1;
+						},
+						prompt(event, player) {
+							return get.skillInfoTranslation("mbweizhuang_xiugex", player);
+						},
+						async precontent(event, trigger, player) {
+							const name = event.result.card?.name,
+								cards = event.result.cards;
+							player.addTempSkill("mbweizhuang_blocker");
+							player.markAuto("mbweizhuang_blocker", name);
+							//delete event.result.skill;
+							event.getParent().addCount = false;
+							const count = get
+								.info("mbweizhuang")
+								.getFaceupCards(player)
+								?.map(card => get.suit(card))
+								?.toUniqued()?.length;
+							if (count >= 4) {
+								player.logSkill("mbweizhuang_xiuge", null, null, null, [get.rand(1, 2)]);
+								await player.showCards(cards, `${get.translation(player)}发动了【褽装】`);
+							} else {
+								const index = ["sha", "jiu", "tao", "shan"].indexOf(name) + 3;
+								player.logSkill("mbweizhuang_xiuge", null, null, null, [index]);
+								await player.modedDiscard(cards);
+							}
+							event.result.card = new lib.element.VCard({ name: name, isCard: true, storage: { wzxiuge: true } });
+							event.result.cards = [];
+							// 临时修改（by 棘手怀念摧毁）
+							player
+								.when("useCardAfter")
+								.filter(evt => evt.getParent() == event.getParent())
+								.vars({ cards: cards})
+								.then(() => {
+									const card = get.cardPile(card => get.suit(card) == get.suit(cards[0]));
+									if (card) {
+										player.gain(card, "gain2");
+									}
+								});
+							/*
+							player
+								.when("useCardAfter")
+								.filter(evt => evt.getParent() == event.getParent())
+								.step(async (event, trigger, player) => {
+									const card = get.cardPile(card => get.suit(card) == get.suit(cards[0]));
+									if (card) {
+										await player.gain(card, "gain2");
+									}
+								});
+							*/
+						},
+						locked: false,
+						mod: {
+							cardUsable(card, player) {
+								if (card?.storage?.wzxiuge) {
+									return Infinity;
+								}
+							},
+						},
+						ai: {
+							order: 3,
+							result: {
+								player(player) {
+									if (_status.event.dying) {
+										return get.attitude(player, _status.event.dying);
+									}
+									return 1;
+								},
+							},
+						},
+					},
+					blocker: {
+						charlotte: true,
+						onremove: true,
+					},
+				},
+			},
 			//SP甄宓
 			mbbojian: {
 				audio: 2,
@@ -19558,6 +20331,20 @@ game.import("character", function () {
 			},
 		},
 		dynamicTranslate: {
+			mbweizhuang(player, skill) {
+				if (!player) {
+					return lib.translate[`${skill}_info`];
+				}
+				if (get.nameList(player).includes("mb_cuilingyi")) {
+					const skin = player.skin[player.name2 === "mb_cuilingyi" ? "name2" : "name"],
+						index = lib.characterSubstitute["mb_cuilingyi"].map(i =>i[0]).indexOf(skin);
+					if (index >= 0) {
+						const trueSkill = `${skill}_${skin.slice(13, -1)}x`;
+						return get.skillInfoTranslation(trueSkill, player, false);
+					}
+				}
+				return "这衣服，岂是你配穿的？";
+			},
 			yizan_use: function (player) {
 				if (player.storage.yizan) return "你可以将一张基本牌当做任意基本牌使用或打出。";
 				return "你可以将两张牌（其中至少一张为基本牌）当做任意基本牌使用或打出。";
@@ -20571,6 +21358,28 @@ game.import("character", function () {
 			xiawei_info: "锁定技。①你的手牌上限等于体力上限。②有牌非因使用进入弃牌堆后，你记录这些牌的花色，然后若你因此记录了至少四种花色且你的体力上限小于9，则你增加1点体力上限并摸一张牌。",
 			baoxi: "暴袭",
 			baoxi_info: "每回合每项各限一次，当一次性至少有两张基本牌/非基本牌进入弃牌堆时，你可以减1点体力上限，视为对一名角色使用【决斗】/【杀】。",
+			mb_cuilingyi: "手杀崔令仪",
+			mb_cuilingyi_ab: "手杀崔芙",
+			mb_cuilingyi_prefix: "手杀",
+			mbcaiqiu: "裁裘",
+			mbcaiqiu_info: "①每轮开始时，你观看牌堆顶X张牌（X为游戏人数），然后可以获得其中任意张牌。②其他角色使用牌结算结束后，若你本轮因〖裁裘〗获得过同名牌，你失去1点体力。",
+			mbxishang: "袭裳",
+			// 临时修改（by 棘手怀念摧毁）
+			// mbxishang_info: `锁定技，①游戏开始时，你选择本局形象并获得${get.poptip("mbweizhuang")}。②你不因摸牌而获得牌时，明置之。`,
+			mbxishang_info: "锁定技，①游戏开始时，你选择本局形象并获得〖褽装〗。②你不因摸牌而获得牌时，明置之。③你的明置手牌被其他角色选择时不可见。",
+			faceup_tag: "明置牌",
+			mbweizhuang: "褽装",
+			// 临时修改（by 棘手怀念摧毁）
+			// mbweizhuang_info: `此技能效果根据你的形象发生变化：${get.poptip("mbweizhuang_guidianx")}${get.poptip("mbweizhuang_dongjiaox")}${get.poptip("mbweizhuang_xiugex")}。`,
+			mbweizhuang_info: "此技能效果根据你的形象发生变化：〖桂殿〗/〖东郊〗/〖绣阁〗。",
+			mbweizhuang_guidianx: "桂殿",
+			// 临时修改（by 棘手怀念摧毁）
+			// mbweizhuang_guidianx_info: `①有明置牌的角色的结束阶段，你可令以下一个数值-1并发动${get.poptip("mbcaiqiu")}：1.摸牌阶段摸牌数；2.出【杀】次数；3.手牌上限；4.体力值。②每局游戏限X+1次，每X+1张牌被明置后，你令以上一项数值+1（X为游戏人数）。`,
+			mbweizhuang_guidianx_info: "①有明置牌的角色的结束阶段，你可令以下一个数值-1并发动〖裁裘〗：1.摸牌阶段摸牌数；2.出【杀】次数；3.手牌上限；4.体力值。②每局游戏限X+1次，每X+1张牌被明置后，你令以上一项数值+1（X为游戏人数）。",
+			mbweizhuang_dongjiaox: "东郊",
+			mbweizhuang_dongjiaox_info: `每回合每项各限一次，若你的明置牌包含类型数不小于：1，你使用基本牌数值+1；2，你使用锦囊牌指定目标后，可以获得其中一个目标一张牌；3，你使用装备牌结算结束后，可以令一名有明置牌的角色摸两张牌。`,
+			mbweizhuang_xiugex: "绣阁",
+			mbweizhuang_xiugex_info: `①每回合每项各限一次，你可以弃置一张指定副类别的牌并视为使用一张无次数限制的对应牌，此牌结算结束后获得一张与弃置牌花色相同的牌：1.武器牌，【杀】；2.防具牌，【闪】；3.防御坐骑牌，【桃】；4.进攻坐骑牌，【酒】。②若你的明置牌包含四种花色，将此技能的“弃置”改为“展示”。`,
 
 			mobile_longxue: "龙血玄黄",
 			mobile_yijiang: "将星独具",

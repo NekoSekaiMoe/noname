@@ -53,6 +53,7 @@ game.import("character", function () {
 				"wu",
 				3,
 				["sxrmchanyu", "sxrmcongfeng"],
+				["clan:吴郡陆氏"],
 			],
 			sxrm_lvmeng: [
 				"male",
@@ -336,7 +337,7 @@ game.import("character", function () {
 								if (player.storage.hujiaing) {
 									return false;
 								}
-								return game.hasPlayer(current => current != player && current.group == "wei");
+								return game.hasPlayer(current => current != player);
 							},
 						},
 						// 临时修改（by 棘手怀念摧毁）
@@ -2381,9 +2382,7 @@ game.import("character", function () {
 								global: "phaseEnd",
 							})
 							.filter(evt => evt.skill == event.name)
-							.vars({
-								skillName,
-							})
+							.vars({ skillName: skillName })
 							.then(() => {
 								player.removeAdditionalSkill(skillName);
 								let cards = player.getExpansions("sxrmshefu_effect");
@@ -2475,7 +2474,8 @@ game.import("character", function () {
 				derivation: "sxrmshefu",
 			},
 			sxrmshefu: {
-				audio: "shefu",
+				// 临时修改（by 棘手怀念摧毁）
+				// audio: "shefu",
 				trigger: {
 					player: "phaseJieshuBegin",
 				},
@@ -3578,8 +3578,8 @@ game.import("character", function () {
 					// <br><li>一名角色因为使用、打出、弃置而失去连接牌时，所有角色依次弃置被连接的手牌（不可嵌套）
 					// <br><li>一张连接牌再次被连接或离开手牌区时，重置为正常状态
 				// `,
-			// })}的手牌。你每回合首次失去${get.poptip("sxrm_connect")}牌后，本次同时失去${get.poptip("sxrm_connect")}牌的角色依次摸X张牌（X为这些角色数且至多为5）`,
-			sxrmyinmou_info: "一名男性角色的结束阶段，其可以连接你与其各一张未被“连接”的手牌。你每回合首次失去“连接”牌后，本次同时失去“连接”牌的角色依次摸X张牌（X为这些角色数且至多为5）"+
+			// })}的手牌。你每回合首次失去${get.poptip("sxrm_connect")}牌后，本次同时失去${get.poptip("sxrm_connect")}牌的角色依次摸X张牌（X为这些角色数且至多为5）。`,
+			sxrmyinmou_info: "一名男性角色的结束阶段，其可以连接你与其各一张未被“连接”的手牌。你每回合首次失去“连接”牌后，本次同时失去“连接”牌的角色依次摸X张牌（X为这些角色数且至多为5）。"+
 				"<br><br>“连接”（一种对手牌的动作）："+
 				"<li>被连接的手牌对所有角色可见"+
 				"<li>一名角色因为使用、打出、弃置而失去连接牌时，所有角色依次弃置被连接的手牌（不可嵌套）"+

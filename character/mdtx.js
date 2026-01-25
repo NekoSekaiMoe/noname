@@ -439,6 +439,7 @@ game.import("character", function () {
 			mdtx_wangzuo: "王佐倡义",
 			mdtx_youlin: "幼麟绝战",
 			mdtx_boyan: "伯言绽火",
+			mdtx_fengchu: "凤雏溯攻",
 			
 			mdtx_waitforsort: "等待分包",
 		},

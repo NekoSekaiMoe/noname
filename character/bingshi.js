@@ -7,6 +7,19 @@ game.import("character", function () {
 			
 		],
 		character: {
+			sp_zhonghui: [
+				"male",
+				"wei",
+				4,
+				["mbsizi", "mbxiezhi", "mbyunan", "mbkechang"],
+				["zhu", "clan:颍川钟氏", "doublegroup:wei:qun"],
+			],
+			pot_zanghong: [
+				"male",
+				"qun",
+				4,
+				["pot_liezhi", "pot_jugu"],
+			],
 			pot_chenjiao: [
 				"male",
 				"wei",
@@ -90,6 +103,7 @@ game.import("character", function () {
 				"wu",
 				3,
 				["mbrunwei", "mbshuanghuai"],
+				["clan:吴郡陆氏"],
 			],
 			mb_yanghong: [
 				"male",
@@ -146,8 +160,8 @@ game.import("character", function () {
 			bingshi: {
 				bingshi_qi: ["pot_lougui", "pot_yuji", "mb_xiahoushang", "sunsháo", "mb_yanghong", "pot_dengai"],
 				bingshi_zheng: ["pot_chenjiao", "mb_sunjun", "guoyuan", "pot_taishici", "pot_chendao", "mb_tianfeng"],
-				bingshi_shi: ["pot_weiyan", "mb_huangzu", "pot_dongzhao", "pangxi", "mb_zhangyan", "mb_chenzhi"],
-				bingshi_jie: ["pot_xinxianying", "pot_lusu", "mb_luyusheng", "pot_huanjie"],
+				bingshi_shi: ["pot_weiyan", "mb_huangzu", "pot_dongzhao", "pangxi", "mb_zhangyan", "mb_chenzhi", "sp_zhonghui"],
+				bingshi_jie: ["pot_xinxianying", "pot_lusu", "mb_luyusheng", "pot_huanjie", "pot_zanghong"],
 			},
 		},
 		characterSubstitute: {
@@ -164,6 +178,7 @@ game.import("character", function () {
 			pot_yuji: [["pot_yuji_shadow", []]],
 		},
 		characterIntro: {
+			zanghong: "臧洪（？—约196年），字子源，广陵射阳（今江苏宝应县东）人，东汉文学家。臧洪十五岁时，以父功拜童子郎，知名太学。后举孝廉为郎，任即丘长。中平末，弃官还家，太守张超任为功曹。后董卓专权，臧洪劝说张超联合兖州刺史刘岱等起兵讨卓，于酸枣设坛。臧洪升坛盟誓，辞气慷慨，涕泣横下，闻者莫不激扬。后归袁绍，任青州刺史、东郡太守。后张超被曹操围困，求救于臧洪，袁绍不允发兵，臧洪遂与袁绍决裂。袁绍兴兵围东郡，历年攻城不下，便令陈琳写信给臧洪，劝其归降。但臧洪回信拒绝，后城破被杀。臧洪在“缔谋连衡”西伐董卓的过程中，起了重大的积极作用的。臧洪著有《酸枣盟辞》《答陈琳书》。",
 			huanjie: "桓阶（？—221年），字伯绪（《孙夫人碑》作伯序），长沙临湘（今湖南长沙）人。三国时期曹魏大臣，先为郡功曹，太守孙坚举为孝廉，朝廷任命他做尚书郎。孙坚战死，桓阶冒险求见刘表，索回孙坚尸体。曹操平定荆州，感念桓阶曾游说长沙太守张羡投曹，任命他当丞相主薄、赵郡太守。曹操封公建国，桓阶任虎贲中郎将、侍中。曹丕继位，桓阶任尚书令、侍中，封高乡亭侯，被曹丕视为寄命之臣。黄初二年（221年），桓阶得病，进爵安乐乡侯，改任太常，同年去世，谥号贞侯。",
 			chenzhi: "陈祗（？―258年/259年9月23日），字奉宗，汝南（今河南平舆）人，三国时期蜀汉大臣，大司徒许靖兄长的外孙。陈祗早年受费祎的赏拔，董允死后担任侍中，逐渐成为蜀汉后主刘禅的宠臣，官至尚书令、镇军将军。陈祗上承主指，下接阉竖，权力甚至超过大将军姜维，也导致宦官黄皓开始干预政事。景耀元年（《华阳国志》作景耀二年八月丙子），陈祗去世，被追谥为“忠侯”。",
 			guoyuan: "国渊，字子尼，乐安郡盖县人，三国时期曹魏官吏。汉末经学大师郑玄的高足，曾跟从管宁“邴原避乱辽东，后来回归中原，曹操任其为司空豫，而国渊亦忠于职守，在朝议上讨论问题时，经常厉言疾色，敢于发言，正直无私。曹操推行屯田制，令国渊负责处理屯田事宜。国渊发挥其管理才能，多方面平衡政策利害，将屯田的土地分配给人民，又按照人民比例安排更员跟进，更列明屯田的各项实行措施，短短五年间就令到国家仓廪丰实，百姓亦能安居乐业。曹操证伐关中，留国渊作后勤，担任居府长史，统摄府中诸事。不久，田银、苏伯于河间造反，将军贾信破之，田银属下千余人众请求投降，程显劝曹操不诛降众，国渊亦认为请降余党并非首恶，为其求救，结果这千余人都得以保命。后来国渊任职太仆，位列九卿，但是仍穿布衣吃素食，把俸禄赏赐都分给亲朋故旧，自己却保持着谦恭节俭，最后死在官任上。",
@@ -271,7 +286,7 @@ game.import("character", function () {
 								player.line(event.TARGET);
 								if (!event.USED) {
 									player.addTempSkill("mbrunwei_used", "phaseUseAfter");
-									player.addMark("mbrunwei_used", event.CARDS.length, false);
+									player.addMark("mbrunwei_used", event.gainCard.length, false);
 								}
 								if (player == event.TARGET) {
 									player.addTempSkill("mbrunwei_discard", "phaseUseAfter");
@@ -325,7 +340,7 @@ game.import("character", function () {
 								player.logSkill("mbrunwei", null, null, null, [3]);
 								player.removeSkill(event.name);
 								delete player.getStat().skill.mbrunwei;
-								game.log(player, "重置了", `#g〖${get.translation(event.name)}〗`);
+								game.log(player, "重置了", `#g【${get.translation(event.name)}】`);
 							} else {
 								player.removeMark(event.name, num, false);
 								// player.addTip(event.name, `润微  ${player.countMark(event.name)}`);
@@ -500,6 +515,404 @@ game.import("character", function () {
 
 
 
+			//势钟会 by柴油鹿鹿
+			mbsizi: {
+				audio: 7,
+				logAudio(event) {
+					if (typeof event == "number") {
+						return `mbsizi${event}.mp3`;
+					}
+					return 2;
+				},
+				enable: "phaseUse",
+				usable: 1,
+				beginMarkCount: 4,
+				chargeSkill: 4,
+				filter(event, player) {
+					return player.countCharge() > 0;
+				},
+				chooseButton: {
+					dialog(event, player) {
+						return ui.create.dialog(get.prompt2("mbsizi"), "hidden");
+					},
+					chooseControl(event, player) {
+						const choices = Array.from(Array(player.countCharge())).map((v, i) => i + 1);
+						return [...choices, "cancel2"];
+					},
+					check(event, player) {
+						return get.rand(1, player.countCharge());
+					},
+					backup(result, player) {
+						return {
+							audio: "mbsizi",
+							logAudio: () => 2,
+							control: result.control,
+							async content(event, trigger, player) {
+								const { control: num } = get.info(event.name),
+									skill = "mbsizi_effect";
+								player.removeCharge(num);
+								player.addTempSkill(skill, { player: "phaseBegin" });
+								player.addMark(skill, num, false);
+								if (num > player.getHp()) {
+									player.addTempSkill("mbsizi_extra", { player: "phaseBegin" });
+								}
+							},
+						};
+					},
+					prompt(result, player) {
+						let prompt = `直到你的回合开始，接下来${get.cnNumber(result.control)}个回合：`;
+						let list = ["所有角色使用【杀】造成的伤害+1", "每个回合结束时，本回合内使用过【杀】的角色失去一点体力，你摸两张牌", "每个回合结束时，若本回合未有角色使用过【杀】，你与当前回合角色各失去1点体力"];
+						if (result.control <= player.hp) {
+							list = list.slice(0, 2);
+						}
+						return `###${prompt}###${list.join("<br>")}`;
+					},
+				},
+				group: "mbsizi_init",
+				subSkill: {
+					backup: {},
+					init: {
+						audio: "mbsizi",
+						logAudio: () => "mbsizi3.mp3",
+						trigger: {
+							player: "enterGame",
+							global: "phaseBefore",
+						},
+						filter(event, player) {
+							if (!player.countCharge(true)) {
+								return false;
+							}
+							return event.name != "phase" || game.phaseNumber == 0;
+						},
+						forced: true,
+						locked: false,
+						async content(event, trigger, player) {
+							const num = lib.skill.mbsizi.beginMarkCount;
+							player.addCharge(num);
+							await game.asyncDelayx();
+						},
+					},
+					extra: {
+						charlotte: true,
+					},
+					effect: {
+						charlotte: true,
+						onremove(player, skill) {
+							player.clearMark(skill, false);
+							player.removeSkill("mbsizi_extra");
+						},
+						intro: {
+							content(storage, player) {
+								if (!storage) {
+									return "已无效果";
+								}
+								let list = ["所有角色使用【杀】造成的伤害+1", "每个回合结束时，你摸两张牌且本回合内使用过【杀】的角色失去一点体力", "每个回合结束时，若本回合未有角色使用过【杀】，当前回合角色失去1点体力"];
+								if (!player.hasSkill("mbsizi_extra")) {
+									list = list.slice(0, 2);
+								}
+								return `剩余可用${storage || "0"}个回合<br>${list.map(i => `<li>${i}`).join("<br>")}`;
+							},
+						},
+						trigger: {
+							global: ["phaseEnd", "damageBegin1"],
+						},
+						filter(event, player) {
+							if (!player.countMark("mbsizi_effect")) {
+								return false;
+							}
+							return event.name == "phase" || (event.card?.name == "sha" && event.notLink());
+						},
+						async cost(event, trigger, player) {
+							if (trigger.name == "phase") {
+								player.removeMark(event.skill, 1, false);
+								event.result = {
+									bool: true,
+									skill_popup: false,
+								};
+							} else {
+								trigger.num++;
+							}
+						},
+						async content(event, trigger, player) {
+							const targets = game.filterPlayer2(
+								current => {
+									return current.hasHistory("useCard", evt => evt.card?.name == "sha");
+								},
+								undefined,
+								true
+							);
+							const func = async target => {
+								if (!target?.isIn()) {
+									return;
+								}
+								await target.loseHp();
+							};
+							player.logSkill("mbsizi", null, null, null, [get.rand(4, 5)]);
+							await player.draw(2);
+							if (targets.length) {
+								await game.doAsyncInOrder(targets, func);
+							}
+							if (player.hasSkill("mbsizi_extra") && !targets?.length) {
+								player.logSkill("mbsizi", null, null, null, [get.rand(6, 7)]);
+								await game.doAsyncInOrder([_status.currentPhase], func);
+							}
+						},
+					},
+				},
+				ai: {
+					order: 10,
+					result: {
+						player: 1,
+					},
+				},
+			},
+			mbxiezhi: {
+				audio: 2,
+				trigger: {
+					player: "changeHpAfter",
+				},
+				filter(event, player) {
+					return event.num != 0;
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					const max = Math.max(player.countCharge(true), 0);
+					const num = Math.min(Math.abs(trigger.num), max);
+					if (num > 0) {
+						player.addCharge(num);
+					}
+					const num2 = Math.abs(trigger.num) - num;
+					if (num2 > 0) {
+						const buff = `${event.name}_effect`;
+						player.addSkill(buff);
+						player.addMark(buff, 1, false);
+						game.log(player, "的手牌上限和出杀次数", "#y+1");
+						// 临时修改（by 棘手怀念摧毁）
+						await game.asyncDelayx();
+						// await game.delayx();
+					}
+				},
+				subSkill: {
+					effect: {
+						charlotte: true,
+						onremove: true,
+						mark: true,
+						intro: {
+							content: "手牌上限和出杀次数+#",
+						},
+						mod: {
+							maxHandcard(player, num) {
+								return num + player.countMark("mbxiezhi_effect");
+							},
+							cardUsable(card, player, num) {
+								if (card.name == "sha") {
+									return num + player.countMark("mbxiezhi_effect");
+								}
+							},
+						},
+					},
+				},
+			},
+			mbyunan: {
+				audio: 4,
+				trigger: {
+					source: "dying",
+				},
+				juexingji: true,
+				initGroup: "wei",
+				forced: true,
+				skillAnimation: true,
+				animationColor: "purple",
+				filter(event, player) {
+					return game.getRoundHistory("everything", evt => evt.name == "die").length > 0;
+				},
+				async content(event, trigger, player) {
+					await player.changeGroup("qun");
+					player.awakenSkill(event.name);
+					const skill = "mbkechang";
+					if (!player.hasSkill(skill, null, null, false)) {
+						await player.addSkills(skill);
+					} else {
+						player.setStorage(skill, true);
+						player.popup(skill, "purple");
+						game.log(player, "升级了技能", `#g【${get.translation(skill)}】`);
+						// 临时修改（by 棘手怀念摧毁）
+						await game.asyncDelayx();
+						// await game.delayx();
+					}
+				},
+				// 临时修改（by 棘手怀念摧毁）
+				// derivation: ["mbkechang"],
+				// 临时适配登场势力
+				group: ["mbyunan_init"],
+				subSkill: {
+					init: {
+						trigger: {
+							global: 'gameStart',
+							player: 'enterGame',
+						},
+						forced: true,
+						popup: false,
+						silent: true,
+						priority: 910,
+						firstDo: true,
+						filter(event, player) {
+							return get.mode() != "guozhan" && get.is.double(player.name1) && !player._groupChosen1;
+						},
+						content: function () {
+							player._groupChosen = true;
+							player._groupChosen1 = true;
+							player.changeGroup("wei");
+						},
+					},
+				},
+			},
+			mbkechang: {
+				audio: 2,
+				onremove: true,
+				zhuSkill: true,
+				forced: true,
+				trigger: {
+					player: "useCard1",
+				},
+				filter(event, player) {
+					if (event.card.name != "sha") {
+						return false;
+					}
+					return player.getStorage("mbkechang", false) === true;
+				},
+				async content(event, trigger, player) {
+					trigger.directHit.addArray(game.players);
+				},
+				ai: {
+					directHit_ai: true,
+					skillTagFilter(player, tag, arg) {
+						return player.getStorage("mbkechang", false) && arg?.card?.name == "sha";
+					},
+				},
+				derivation: ["mbkechang_rewrite"],
+				global: "mbkechang_global",
+				subSkill: {
+					rewrite: {
+						nopop: true,
+					},
+					global: {
+						charlotte: true,
+						mod: {
+							targetInRange(card, player) {
+								if (player.group != "qun" || card.name != "sha") {
+									return;
+								}
+								if (game.hasPlayer(current => current.hasSkill("mbkechang"))) {
+									return true;
+								}
+							},
+						},
+					},
+				},
+			},
+			//势臧洪
+			pot_liezhi: {
+				audio: 2,
+				enable: "chooseToUse",
+				usable: 1,
+				locked: false,
+				mod: {
+					cardUsable(card) {
+						if (card?.storage?.potliezhi) {
+							return Infinity;
+						}
+					},
+				},
+				filter(event, player) {
+					return ["tao", "jiu"].some(name => {
+						const card = new lib.element.VCard({ name, isCard: true, storage: { potliezhi: true } });
+						return event.filterCard(card, player, event);
+					});
+				},
+				chooseButton: {
+					dialog(event, player) {
+						const list = ["tao", "jiu"].filter(name => {
+							const card = new lib.element.VCard({ name, isCard: true, storage: { potliezhi: true } });
+							return event.filterCard(card, player, event);
+						});
+						const dialog = ui.create.dialog("烈志", [list, "vcard"], "hidden");
+						dialog.direct = true;
+						return dialog;
+					},
+					check(button) {
+						if (get.event().getParent().type != "phase") {
+							return 1;
+						}
+						const player = get.player(),
+							card = new lib.element.VCard({ name: button.link[2], isCard: true, storage: { potliezhi: true } });
+						if (button.link[2] == "tao" && player.getDamagedHp() <= 1) {
+							return 0;
+						}
+						return player.getUseValue(card);
+					},
+					prompt(links) {
+						return `减少1点体力上限，视为使用一张${get.translation(links[0][2])}`;
+					},
+					backup(links, player) {
+						return {
+							viewAs: {
+								name: links[0][2],
+								isCard: true,
+								storage: {
+									potliezhi: true,
+								},
+							},
+							filterCard: () => false,
+							selectCard: -1,
+							manualConfirm: true,
+							log: false,
+							popname: true,
+							async precontent(event, trigger, player) {
+								event.getParent().addCount = false;
+								player.logSkill("pot_liezhi");
+								await player.loseMaxHp();
+							},
+						};
+					},
+				},
+				hiddenCard(player, name) {
+					return ["tao", "jiu"].includes(name);
+				},
+				ai: {
+					order: 1,
+					result: {
+						player(player) {
+							if (player.maxHp <= 1) {
+								return -2;
+							}
+							if (_status.event.dying) {
+								return get.attitude(player, _status.event.dying);
+							}
+							return 1;
+						},
+					},
+				},
+			},
+			pot_jugu: {
+				audio: 2,
+				trigger: {
+					target: "useCardToTargeted",
+				},
+				filter(event, player) {
+					return !player.isDamaged();
+				},
+				check(event, player) {
+					return player.getHistory("useSkill", evt => evt.skill == "pot_jugu").length < 2;
+				},
+				async content(event, trigger, player) {
+					await player.draw(2);
+					const num = Math.min(player.countDiscardableCards(player, "he"), player.getHistory("useSkill", evt => evt.skill == event.name).length);
+					if (num > 0) {
+						await player.chooseToDiscard(num, "he", true);
+					}
+				},
+			},
 			//势陈矫
 			potqingyan: {
 				audio: 3,
@@ -1250,7 +1663,7 @@ game.import("character", function () {
 								.when({ player: "phaseBegin" })
 								.filter(evt => evt.skill == event.name)
 								.then(() => {
-									player.logSkill("mbquanchong", null, null, null, [get.rand(1, 2)]);
+									player.logSkill("mbquanchong", null, null, null, [get.rand(3, 4)]);
 									player.loseHp();
 								})
 								.assign({ firstDo: true });
@@ -1259,7 +1672,7 @@ game.import("character", function () {
 								.when({ player: "phaseBegin" })
 								.filter(evt => evt.skill == event.name)
 								.step(async (event, trigger, player) => {
-									player.logSkill("mbquanchong", null, null, null, [get.rand(1, 2)]);
+									player.logSkill("mbquanchong", null, null, null, [get.rand(3, 4)]);
 									await player.loseHp();
 								})
 								.assign({ firstDo: true });
@@ -3531,7 +3944,7 @@ game.import("character", function () {
 					player
 						.when({ player: "phaseJieshuBegin" })
 						.filter(evt => evt.getParent("phase") == trigger.getParent("phase"))
-						.vars({ control: control })
+						.vars({ control: control, num: num })
 						.then(() => {
 							if (control === 1) {
 								player.draw(num);
@@ -4752,7 +5165,7 @@ game.import("character", function () {
 					const links = ui.selected.cards;
 					// 临时修改（by 棘手怀念摧毁）
 					const selectedcard = links[ui.selected.targets.length - 1];
-					const nature = get.translation(selectedcard.nature) || "";;
+					const nature = get.translation(selectedcard.nature) || "";
 					const name = nature + get.translation(selectedcard.name);
 					return ["获得", name.substring(0, Math.min(name.length, 2))].join("");
 					// return ["获得", get.translation(links[ui.selected.targets.length - 1])].join("<br>");
@@ -5520,6 +5933,12 @@ game.import("character", function () {
 			},
 		},
 		dynamicTranslate: {
+			mbkechang(player, skill) {
+				if (player.getStorage(skill, false)) {
+					return lib.translate[`${skill}_rewrite_info`];
+				}
+				return lib.translate[`${skill}_info`];
+			},
 			potkuanggu(player) {
 				if (player.getStorage("potkuanggu", 0)) {
 					return lib.translate["potkuanggu_pot_weiyan_achieve_info"];
@@ -5558,6 +5977,29 @@ game.import("character", function () {
 			},
 		},
 		translate: {
+			sp_zhonghui: "势钟会",
+			sp_zhonghui_prefix: "势",
+			mbsizi: "肆恣",
+			mbsizi_info: `蓄力技（4/4）。出牌阶段限一次，你可消耗任意蓄力点，令从此回合开始的等量个回合，执行以下效果（你的回合开始时，这些效果失效）：1.所有角色使用【杀】造成的伤害+1；2.每个回合结束时，你摸两张牌且本回合内使用过【杀】的角色失去1点体力。若你消耗的蓄力点大于你的体力值，执行一个额外效果：每个回合结束时，若本回合未有角色使用过【杀】，当前回合角色失去1点体力。`,
+			mbxiezhi: "挟志",
+			mbxiezhi_info: "锁定技，当你的体力值变化后，你获得X点蓄力点（X为本次变化的值）。若你有因此未获得的蓄力点，你的手牌上限与使用【杀】的次数永久+1。",
+			mbyunan: "迂难",
+			// 临时修改（by 棘手怀念摧毁）
+			// mbyunan_info: `觉醒技，你的登场势力为魏。当你令一名角色进入濒死状态时，若本轮已有角色死亡，你将势力变更为群，然后获得${get.poptip("mbkechang")}，若已有则改为升级${get.poptip({
+				// id: "yunan_kechang",
+				// name: "〖克昌〗",
+				// type: "character",
+				// info: "主公技，锁定技，群势力角色使用【杀】无距离限制；你使用的【杀】不可被响应。",
+			// })}。`,
+			mbyunan_info: `觉醒技，你的登场势力为魏。当你令一名角色进入濒死状态时，若本轮已有角色死亡，你将势力变更为群，然后获得〖克昌〗，若已有则改为升级〖克昌〗。`,
+			mbkechang: "克昌",
+			mbkechang_info: "主公技，锁定技，群势力角色使用【杀】无距离限制。",
+			mbkechang_rewrite: "克昌·二级",
+			get mbkechang_rewrite_info() {
+				// 临时修改（by 棘手怀念摧毁）
+				// return lib.poptip.getInfo("yunan_kechang");
+				return "主公技，锁定技，群势力角色使用【杀】无距离限制；你使用的【杀】不可被响应。";
+			},
 			pot_taishici: "势太史慈",
 			pot_taishici_prefix: "势",
 			pothanzhan: "酣战",
@@ -5591,7 +6033,7 @@ game.import("character", function () {
 			potwanglie: "往烈",
 			potwanglie_info: "出牌阶段开始时，你可以选择一张手牌，你此阶段使用此牌无距离限制且不可被响应，且你使用此牌结算结束后，你于此阶段不能对其他角色使用牌。",
 			pothongyi: "弘毅",
-			pothongyi_info: "锁定技。①游戏开始时，你获得2个「毅」标记；当你造成或受到伤害后，你获得1个「毅」标记；你至多拥有4个「毅」标记。②准备阶段，你选择一项，并于结束阶段执行另一项：1.摸X张牌（X为你当前拥有的「毅」标记数）；2.移去所有「毅」标记",
+			pothongyi_info: "锁定技。①游戏开始时，你获得2个「毅」标记；当你造成或受到伤害后，你获得1个「毅」标记；你至多拥有4个「毅」标记。②准备阶段，你选择一项，并于结束阶段执行另一项：1.摸X张牌（X为你当前拥有的「毅」标记数）；2.移去所有「毅」标记。",
 			pangxi: "势庞羲",
 			pangxi_prefix: "势",
 			mbxuye: "蓄业",
@@ -5647,7 +6089,7 @@ game.import("character", function () {
 			mb_zhangyan: "势张燕",
 			mb_zhangyan_prefix: "势",
 			mbfeijing: "飞径",
-			mbfeijing_info: "你可以将一张伤害类锦囊牌当做【杀】使用或打出。每回合限两次，你使用【杀】指定唯一目标时，可以令你与其中间逆时针或顺时针方向上的所有角色同时展示并依次弃置一张手牌，然后你可以选择一种颜色，令弃置此颜色牌的角色成为此【杀】的额外目标，",
+			mbfeijing_info: "你可以将一张伤害类锦囊牌当做【杀】使用或打出。每回合限两次，你使用【杀】指定唯一目标时，可以令你与其中间逆时针或顺时针方向上的所有角色同时展示并依次弃置一张手牌，然后你可以选择一种颜色，令弃置此颜色牌的角色成为此【杀】的额外目标。",
 			mbxiaoge: "骁戈",
 			mbxiaoge_info: "锁定技，你使用的【杀】：对因〖飞径〗成为此【杀】目标的角色造成伤害时，防止之，然后你回复1点体力并获得其因〖飞径〗弃置的牌；仅指定了一名角色为目标，此【杀】结算后你视为对其使用一张【决斗】。",
 			pot_weiyan: "势魏延",
@@ -5721,6 +6163,12 @@ game.import("character", function () {
 			potqingyan_info: "你需要使用【闪】或【无懈可击】时，可以展示X张手牌（X为本轮发动此技能的次数且至多为5）并视为使用之，然后此技能失效直到你手牌中没有以此法展示过的牌。",
 			potceduan: "策断",
 			potceduan_info: "出牌阶段限一次，你可以选择一名攻击范围包含你的角色，其攻击范围内的所有角色同时展示一张手牌，然后你将手牌中展示牌最多颜色的所有牌当做一张不计入次数限制的【杀】对其使用，若造成伤害，你摸一张牌。",
+			pot_zanghong: "势臧洪",
+			pot_zanghong_prefix: "势",
+			pot_liezhi: "烈志",
+			pot_liezhi_info: "每回合限一次，你可减少1点体力上限，视为使用一张无次数限制的【桃】/【酒】。",
+			pot_jugu: "据孤",
+			pot_jugu_info: "你成为牌的目标后，若你未受伤，你可摸两张牌，然后弃置X张牌（X为你本回合发动此技能的次数）。",
 
 			bingshi_qi: "兵势篇·奇",
 			bingshi_zheng: "兵势篇·正",

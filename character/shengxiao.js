@@ -357,7 +357,10 @@ game.import("character", function () {
 					skip: {
 						audio: "olwuma",
 						trigger: {
-							player: ["phaseAnySkipped", "phaseAnyCancelled"],
+							// 临时修改（by 棘手怀念摧毁）
+							player: ["phaseZhunbeiSkipped", "phaseJudgeSkipped", "phaseDrawSkipped", "phaseUseSkipped", "phaseDiscardSkipped", "phaseJieshuSkipped",
+							"phaseZhunbeiCancelled", "phaseJudgeCancelled", "phaseDrawCancelled", "phaseUseCancelled", "phaseDiscardCancelled", "phaseJieshuCancelled"],
+							// player: ["phaseAnySkipped", "phaseAnyCancelled"],
 						},
 						forced: true,
 						content() {

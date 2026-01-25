@@ -316,5 +316,7 @@ window.config={
 		['akane_quanqing','relianying'],
 		['akane_quanqing','shangshi'],
 		['dcruyi','cxliushi'],
+		['olwuma','shensu'],
+		['olwuma','xinshensu'],
 	]
 };

@@ -1347,6 +1347,8 @@ game.import("character", function () {
 					},
 				},
 				ai: {
+					respondSha: true,
+					respondShan: true,
 					pretao: true,
 					order(item, player) {
 						if (player.countCards("h") < 4) return get.order({ name: "sha" }, player) + 0.2;

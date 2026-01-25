@@ -302,6 +302,16 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 				background: 'skin_panshu_FanYouYinFang_bg.png',
 			},
 		},
+		sunhanhua:{
+			威灵尽显: {
+				name:"孙寒华/威灵尽显/XingXiang",
+				action: 'DaiJi',
+				x:[0, 0.48],
+				y:[0, 0.44],
+				scale: 0.41,
+				background: '孙寒华/威灵尽显/BeiJing_bg.png',
+			},
+		},
 		sunluban:{
 			沅茝香兰:{
 				name: 'skin_sunluban_YuanChaiXiangLan',

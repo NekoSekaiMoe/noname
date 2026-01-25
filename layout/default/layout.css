@@ -1784,7 +1784,9 @@ div:not(.handcards) > .card > .info > span,
 	width: 100%;
 }
 .content > div {
-	margin-top: 8px;
+	/* 临时修改（by 棘手怀念摧毁） */
+	margin-top: 4px;
+	/* margin-top: 8px; */
 	margin-bottom: 8px;
 	margin-left: 4px;
 	margin-right: 4px;
@@ -1796,13 +1798,13 @@ div:not(.handcards) > .card > .info > span,
 	/* width: calc(100% - 8px); */
 /* } */
 
-.content > .caption + .buttons:not(*:last-child) {
-	margin-top: 0;
-	margin-bottom: 0;
-}
-.content > .caption + .buttons:last-child {
-	margin-top: 0;
-}
+/* .content > .caption + .buttons:not(*:last-child) { */
+	/* margin-top: 0; */
+	/* margin-bottom: 0; */
+/* } */
+/* .content > .caption + .buttons:last-child { */
+	/* margin-top: 0; */
+/* } */
 .content > .config {
 	height: 20px;
 	line-height: 20px;

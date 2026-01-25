@@ -7,7 +7,7 @@ game.import("character", function () {
 			
 		],
 		character: {
-			std_yuejin: ["male", "wei", 4, ["stdxiaoguo"], ["die_audio:yuejin","character:gz_yuejin"]],
+			std_yuejin: ["male", "wei", 4, ["stdxiaoguo"], ["die_audio:yuejin"]],
 			old_re_lidian: ["male", "wei", 3, ["xunxun", "wangxi"], ["die_audio:lidian"]],
 			ganfuren: ["female", "shu", 3, ["stdshushen", "shenzhi"]],
 			std_panfeng: ["male", "qun", 4, ["stdkuangfu"]],

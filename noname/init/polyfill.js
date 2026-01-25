@@ -187,6 +187,10 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 					nameinfo = get.character(name);
 				}
 			}
+			
+			// character[4]添加character:xxx标签的武将皮肤按原名来（而不是跟随xxx的皮肤）
+			let name1 = name;
+			
 			let imgPrefixUrl;
 			if (!modeimage && nameinfo && nameinfo[4]) {
 				for (const value of nameinfo[4]) {
@@ -214,6 +218,8 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 				this.setBackgroundDB(dbimage.slice(3));
 				return this;
 			} else if (modeimage) src = `image/mode/${modeimage}/character/${name}${ext}`;
+			else if (type == "character" && lib.config.skin[name1] && arguments[2] != "noskin")
+				src = `image/skin/${name1}/${lib.config.skin[name1]}${ext}`;
 			else if (type == "character" && lib.config.skin[name] && arguments[2] != "noskin")
 				src = `image/skin/${name}/${lib.config.skin[name]}${ext}`;
 			else if (type == "character") {

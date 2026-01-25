@@ -8,6 +8,7 @@ game.import("character", function () {
 		],
 		character: {
 			old_shen_huangzhong: ["male", "shen", 4, ["old_1！5！", "old_chiren"], ["shu", "die_audio:shen_huangzhong"]],
+			new_simayi: ["male", "shen", 4, ["jilin", "yingyou", "yingtian"], ["wei"]],
 			junk_zhangjiao: ["male", "shen", 3, ["yizhao", "junksijun", "tianjie"], ["qun", "die_audio:shen_zhangjiao"]],
 
 			old_shixie: ["male", "qun", 3, ["biluan", "lixia"]],
@@ -112,7 +113,7 @@ game.import("character", function () {
 				old_yijiang5: ["old_caoxiu", "old_zhuzhi"],
 				old_yijiang6: ["old_huanghao", "old_liyan"],
 				old_refresh: ["old_zhangfei", "old_huatuo", "old_zhaoyun", "ol_huaxiong", "old_guanyu"],
-				old_extra: ["old_shen_zhaoyun", "old_caocao", "junk_sunquan", "old_shen_huangzhong", "junk_zhangjiao"],
+				old_extra: ["old_shen_huangzhong", "old_shen_zhaoyun", "old_caocao", "junk_sunquan", "junk_zhangjiao", "new_simayi"],
 				old_sp: [
 					"old_shixie",
 					"panfeng",
