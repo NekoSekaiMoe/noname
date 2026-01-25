@@ -6,6 +6,8 @@
 var pinyin_dict_polyphone = {
 	// noname's pinyin
 	// START
+	"血": "xuè",
+	
 	// 名词
 	"用间": " jiàn",
 	"少阴": "shào ",
@@ -39,6 +41,7 @@ var pinyin_dict_polyphone = {
 	"于禁": " jìn",
 	"赵累": " lèi",
 	"夏侯令女": " hóu lìng nǚ",
+	"崔令仪": " lìng ",
 	"马日磾": " mì dī",
 	"史阿": " ē",
 	"曲阿": "qū ē",
@@ -62,16 +65,18 @@ var pinyin_dict_polyphone = {
 	"欧阳少恭": "  shào ",
 	"卡尔维特": "kǎ   ",
 	"卡西尔": "kǎ  ",
-	"卡扎库斯": "kǎ   ",
 	"卡德加": "kǎ  ",
 	"法兰茜斯卡": "    kǎ",
 	"卡利莫斯": "kǎ   ",
 	"安卡": " kǎ",
 	"卡玛": "kǎ ",
+	"卡扎": "kǎ zhā",
 	"梼杌": "táo ",
 	"亚煞极": " shà ",
 	"枣祗任峻": "  rén ",
 	"加尔鲁什": "   shí",
+	"格罗玛什": "   shí",
+	"克鲁什": "  shí",
 	"句芒": "gōu ",
 	
 	"库特莉亚芙卡": "     kǎ",
@@ -187,9 +192,17 @@ var pinyin_dict_polyphone = {
 	"累卵": "lěi ",
 	"印卡": " kǎ",
 	"弊蒙": " méng",
+	"袭裳": " cháng",
+	"鸱咽": " yàn",
 	
 	"蒙斥": "méng ",
 	
+	"重振": "chóng ",
+	"行夏": "xíng ",
+	"越行": " xíng",
+	"侠行": " xíng",
+	"枭行": " xíng",
+	"劫行": " xíng",
 	"乐动": "yuè ",
 	"血凰": "xuè ",
 	"血戮": "xuè ",
@@ -199,10 +212,6 @@ var pinyin_dict_polyphone = {
 	"血咒": "xuè ",
 	"血殇": "xuè ",
 	"血池": "xuè ",
-	"越行": " xíng",
-	"侠行": " xíng",
-	"枭行": " xíng",
-	"劫行": " xíng",
 	"割发": " fà",
 	"落梅": "luò ",
 	"落石": "luò shí",
@@ -219,10 +228,19 @@ var pinyin_dict_polyphone = {
 	"冥煞": " shà",
 	"虎煞": " shà",
 	"煞魂": "shà ",
+	"理发": " fà",
 	
 	// 卡牌名
 	"四乘粮舆": " shèng  ",
 	"大宛": "dà yuān",
+	"的卢": "dì ",
+	"百辟刀": " pì ",
+	"折戟": "zhé ",
+	"赤血青锋": " xuè  ",
+	
+	"水没": " mò",
+	"舒筋散": "  sǎn",
+	"流风散": "  sǎn",
 	
 	// 增补
 	// "撒贝宁": "sà bèi níng", // 彩蛋（已放弃）
@@ -237,6 +255,12 @@ var pinyin_dict_polyphone = {
 	"长儒赡宗": "zhǎng   ",
 	"雄长百越": " zhǎng  ",
 	"少传融业": "shào chuán  ",
+	"为君梳妆浓": "wèi    ",
+	
+	// 存在读音差异，暂先改为第四声
+	// "为国为民": "wèi  wèi ",
+	"为国": "wèi ",
+	"为民": "wèi ",
 	
 	"勇冠": " guàn",
 	"冲应": "chōng yìng",
@@ -35730,7 +35754,7 @@ var pinyin_dict_polyphone = {
 	"为非作恶": "wéi   è",
 	"为国捐躯": "wèi   ",
 	"为非作歹": "wéi   ",
-	"为国为民": "wéi  wéi ",
+	// "为国为民": "wéi  wéi ",
 	"为好成歉": "wéi hǎo  ",
 	"为虎傅翼": "wèi   ",
 	"为虎添翼": "wèi   ",
@@ -41666,7 +41690,8 @@ var pinyin_dict_withtone = "yī,dīng zhēng,kǎo qiǎo yú,qī,shàng,xià,hǎn
 	 */
 	function parsePolyphone(chinese, result, splitter, withtone) {
 		// 先删除中文字符之外的所有字符（包括英文字母、数字、标点符号、空格和其他非中文字符），然后再查找多音字
-		chinese = chinese.replace(/[^\u4e00-\u9fa5]/g, '');
+		// 特殊处理：若含·则不处理
+		if(!chinese.includes('·')) chinese = chinese.replace(/[^\u4e00-\u9fa5]/g, '');
 		if(chinese.length == 0) return result;
 		
 		var poly = window.pinyin_dict_polyphone;

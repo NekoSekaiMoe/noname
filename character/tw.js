@@ -16,7 +16,7 @@ game.import("character", function () {
 			old_jiakui: ["male", "wei", 3, ["zhongzuo", "wanlan"]],
 			huan_luxun: ["male", "wu", 3, ["twlifeng", "twniwo"]],
 			huan_liushan: ["male", "shu", 3, ["twguihan", "twrenxian", "twyanzuo"], ["zhu"]],
-			licuilianzhaoquanding: ["double", "qun", 3, ["twciyin", "twchenglong"]],
+			licuilianzhaoquanding: ["double", "shu", 3, ["twciyin", "twchenglong"]],
 			huan_zhugeliang: ["male", "shu", "3/4", ["twbeiding", "twjielv", "twhunyou"]],
 			huan_jiangwei: ["male", "shu", 4, ["twqinghan", "twzhihuan"]],
 			huan_zhugeguo: ["female", "shu", 3, ["rexianyuan", "twlingyin"]],
@@ -330,7 +330,7 @@ game.import("character", function () {
 			jianshuo:
 				"蹇硕（？—189年），东汉末宦官。中平五年（188年），蹇硕为上军校尉，汉灵帝以蹇硕壮健而有武略，对其特别信任，并以其为西园军元帅，领导袁绍、曹操等八校尉，以监督司隶校尉以下诸官。蹇硕虽然握有兵权，但对何进非常畏忌，曾和宦官们一起说服灵帝派遣何进西击边章、韩遂。中平六年（189年），灵帝在病重时将刘协托给蹇硕。灵帝去世后，蹇硕想先杀何进再立刘协为天子，但因手下司马潘隐与何进有旧对何进使眼色而失败。刘辩继承帝位后，蹇硕与中常侍赵忠、郭胜等写信欲合谋除去何进兄弟，因郭胜与何进为同郡且何进及何皇后发迹亦有其功劳于是亲信何氏便怂恿赵忠等人不听蹇硕之计，且将蹇硕的书信告知何进，何进于是便派黄门将之诛杀，其部下士兵亦被何进所领。",
 			liufuren:
-				"刘夫人，东汉末年军阀袁绍的后妻，袁谭与袁尚的母亲。袁绍的二子中，袁谭年长而贤惠，袁尚年幼相貌美好。袁绍的后妻刘夫人有宠，她偏爱少子袁尚而讨厌长子袁谭，多次称赞袁尚的才能，袁绍也为三子的容貌感到惊奇，想要作为继承人，于是让袁谭做哥哥的后代，出外任青州刺史，后导致二子相争。。",
+				"刘夫人，东汉末年军阀袁绍的后妻，袁谭与袁尚的母亲。袁绍的二子中，袁谭年长而贤惠，袁尚年幼相貌美好。袁绍的后妻刘夫人有宠，她偏爱少子袁尚而讨厌长子袁谭，多次称赞袁尚的才能，袁绍也为三子的容貌感到惊奇，想要作为继承人，于是让袁谭做哥哥的后代，出外任青州刺史，后导致二子相争。",
 			niufudongxie:
 				"牛辅，东汉末年武将，东汉相国董卓的女婿。董翓，牛辅之妻，董卓之女。牛辅曾任中郎将，征讨白波军，不能取胜。董卓被杀时，牛辅别屯于陕地。吕布派李肃前去征讨牛辅，被牛辅击败。后来，牛辅营中有士兵半夜背叛出逃，造成内乱，牛辅以为整营皆叛，于是带着金银珠宝，独与亲信胡赤儿等五六人逾城北渡河。赤儿等人以绳索系在牛辅腰间将其从城头放下，但赤儿等因为谋财而在离地面数丈高的地方就松开了绳子使得牛辅重重摔在地上腰部受伤，而后赤儿与诸胡人将牛辅斩首，将其首级送去长安。",
 			tw_zhangji:
@@ -15678,7 +15678,7 @@ game.import("character", function () {
 						!player.canUse("sha", event.source, false, false)
 					)
 						return false;
-					return player.countCards("h") > 0;
+					return player.hasUsableCard("sha", "use");
 				},
 				direct: true,
 				content: function () {

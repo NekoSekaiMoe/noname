@@ -362,20 +362,6 @@ game.import("card", function () {
 				},
 				skills: ["taigongyinfu_skill", "taigongyinfu_link"],
 			},
-			baipidao: {
-				audio: true,
-				fullskin: true,
-				type: "equip",
-				subtype: "equip1",
-				bingzhu: ["曹操"],
-				distance: { attackFrom: -1 },
-				ai: {
-					basic: {
-						equipValue: 4,
-					},
-				},
-				skills: ["baipidao_skill"],
-			},
 		},
 		skill: {
 			baipidao_skill: {

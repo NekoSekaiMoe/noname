@@ -15,7 +15,6 @@ game.import("character", function () {
 				["shu"],
 			],
 			shen_huangzhong: ["male", "shen", 4, ["1！5！", "chiren"], ["shu"]],
-			new_simayi: ["male", "shen", 4, ["jilin", "yingyou", "yingtian"], ["wei"]],
 			xin_simayi: ["male", "shen", 4, ["xinrenjie", "xinbaiyin", "xinlianpo"], ["tempname:new_simayi", "wei", "die_audio:new_simayi"]],
 			dc_shen_huatuo: ["male", "shen", 3, ["jingyu", "lvxin", "huandao"], ["qun"]],
 			shen_xuzhu: ["male", "shen", 5, ["zhengqing", "zhuangpo"], ["wei"]],
@@ -65,7 +64,7 @@ game.import("character", function () {
 				extra_lei: ["shen_ganning", "shen_zhangliao"],
 				extra_ol: ["ol_zhangliao", "shen_caopi", "shen_zhenji", "shen_sunquan"],
 				extra_decade: ["shen_huangzhong", "shen_jiangwei", "shen_machao", "shen_zhangfei", "shen_zhangjiao", "shen_dengai", "shen_xuzhu", "dc_shen_huatuo"],
-				extra_mb: ["xin_simayi", "new_simayi"],
+				extra_mb: ["xin_simayi"],
 				extra_mobilezhi: ["shen_guojia", "shen_xunyu"],
 				extra_mobilexin: ["shen_taishici", "shen_sunce"],
 				extra_mobileren: ["shen_huatuo", "shen_lusu"],
@@ -91,9 +90,9 @@ game.import("character", function () {
 		},
 		characterFilter: {
 			// 临时修改（by 棘手怀念摧毁）
-			zc26_shen_huangyueying: function (mode) {
-				return false;
-			},
+			// zc26_shen_huangyueying: function (mode) {
+				// return false;
+			// },
 			
 			shen_diaochan(mode) {
 				return (
@@ -585,6 +584,9 @@ game.import("character", function () {
 		skill: {
 			//26珍藏神黄月英
 			zc26_cangqiao: {
+				// 临时修改（by 棘手怀念摧毁）
+				derivation: ["duanjian", "serafuku", "yonglv"],
+				
 				trigger: {
 					player: "useCard",
 					global: "roundStart",
@@ -2150,6 +2152,8 @@ game.import("character", function () {
 				// 魔改（by 棘手怀念摧毁）
 				// derivation: ["xinjilve", "reguicai", "fangzhu", "rejizhi", "rezhiheng", "rewansha"],
 				derivation: ["xinjilve", "reguicai", "fangzhu", "rejizhi", "rezhiheng", "rewansha", "xiongzhi"],
+				// 修复资料卡显示（by 棘手怀念摧毁）
+				derivation1: ["xinjilve", "reguicai", "fangzhu", "rejizhi", "rezhiheng", "rewansha", "xiongzhi"],
 				ai: {
 					combo: "xinrenjie",
 				},
@@ -2163,7 +2167,9 @@ game.import("character", function () {
 				async cost(event, trigger, player) {
 					const skills = get
 						.info("xinbaiyin")
-						.derivation.removeArray(["xinjilve", "reguicai"])
+						// 修复资料卡显示（by 棘手怀念摧毁）
+						// .derivation.removeArray(["xinjilve", "reguicai"])
+						.derivation1.removeArray(["xinjilve", "reguicai"])
 						.filter(skill => !player.hasSkill(skill, null, null, false));
 					if (skills.length && player.hasSkill("xinjilve", null, null, false)) {
 						const next = player.chooseButton(["连破：请选择一项", [skills.map(i => [i, `获得【${get.translation(i)}】`]).concat(["于此回合结束后获得一个额外回合"]), "textbutton"]]);
@@ -2193,7 +2199,9 @@ game.import("character", function () {
 				},
 				async content(event, trigger, player) {
 					const links = event.cost_data;
-					if (links && get.info("xinbaiyin").derivation.includes(links[0])) await player.addSkills(links[0]);
+					// 修复资料卡显示（by 棘手怀念摧毁）
+					// if (links && get.info("xinbaiyin").derivation.includes(links[0])) await player.addSkills(links[0]);
+					if (links && get.info("xinbaiyin").derivation1.includes(links[0])) await player.addSkills(links[0]);
 					else {
 						player.addTempSkill("xinlianpo_mark");
 						player.insertPhase();
@@ -2228,7 +2236,9 @@ game.import("character", function () {
 					const num = Math.max(2, history.length + 1);
 					const skills = get
 						.info("xinbaiyin")
-						.derivation.removeArray(["xinjilve", "reguicai"])
+						// 修复资料卡显示（by 棘手怀念摧毁）
+						// .derivation.removeArray(["xinjilve", "reguicai"])
+						.derivation1.removeArray(["xinjilve", "reguicai"])
 						.filter(skill => !player.hasSkill(skill, null, null, false));
 					if (skills.length && limit >= num) {
 						const next = player.chooseButton(2, ["极略：请选择你要移去的“忍”标记数和相应操作", '<div class="text center">移去“忍”标记数</div>', [choices, "tdnodes"], '<div class="text center">执行的操作</div>', [skills.map(i => [i, `获得【${get.translation(i)}】`]).concat(["摸牌"]), "tdnodes"]]);
@@ -2291,7 +2301,9 @@ game.import("character", function () {
 					if (typeof choice == "number") {
 						player.removeMark("xinrenjie", choice + 1);
 						await player.draw(choice + 1);
-					} else if (get.info("xinbaiyin").derivation.includes(choice[0])) {
+					// 修复资料卡显示（by 棘手怀念摧毁）
+					// } else if (get.info("xinbaiyin").derivation.includes(choice[0])) {
+					} else if (get.info("xinbaiyin").derivation1.includes(choice[0])) {
 						const history = game.getAllGlobalHistory("everything", evt => evt.name == "xinjilve" && evt.player == player && Array.isArray(evt.cost_data) && get.info("xinbaiyin").derivation.includes(evt.cost_data[0]));
 						const num = Math.max(2, history.length);
 						player.removeMark("xinrenjie", num);
@@ -2321,7 +2333,9 @@ game.import("character", function () {
 								["qun", "rewansha"],
 								// 魔改（by 棘手怀念摧毁）
 								["jin", "xiongzhi"],
-								["shen", get.info("xinbaiyin").derivation.randomGet()],
+								// ["shen", get.info("xinbaiyin").derivation.randomGet()],
+								// 修复资料卡显示（by 棘手怀念摧毁）
+								["shen", get.info("xinbaiyin").derivation1.randomGet()],
 							]);
 							if (Array.from(groupList.keys()).includes(player.group)) skills.push(groupList.get(player.group));
 							skills = skills.filter(skill => !player.hasSkill(skill, null, null, false));

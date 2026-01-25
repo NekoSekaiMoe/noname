@@ -2978,8 +2978,15 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 									_status.zc26_huaxiu_origin[name] = { info: lib.card[name], translate: lib.translate[name], translate2: lib.translate[`${name}_info`] };
 								}
 							}
-							lib.card[name] = lib.card[map[name]];
-							lib.translate[name] = lib.translate[map[name]];
+							// 临时修改（by 棘手怀念摧毁）
+							// 修复菜单-卡牌不显示的bug
+							// lib.card[name] = lib.card[map[name]];
+							lib.card[name] = {};
+							for (var i in lib.card[map[name]]) {
+								if(i != "derivation") lib.card[name][i] = lib.card[map[name]][i];
+							}
+							// 卡牌名翻译不应该修改
+							// lib.translate[name] = lib.translate[map[name]];
 							lib.translate[`${name}_info`] = lib.translate[`${map[name]}_info`];
 							// 临时修改（by 棘手怀念摧毁）
 							if (_status.zc26_huaxiu == null) _status.zc26_huaxiu = {};
@@ -3046,7 +3053,13 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					mark: true,
 					marktext: "折戟",
 					intro: {
-						content() { return "“藏巧”装备牌【折戟】的效果修改为【魂·诸葛连弩】：<br>" + get.translation("zc26_zhuge_info") },
+						mark(dialog, storage, player){
+							var name = "zc26_zhuge";
+							dialog.addText("装备牌【折戟】的效果修改为【魂·诸葛连弩】：<br><li>攻击范围：1<br><li>" + get.translation(name+"_info"), false);
+							var card = game.createCard(name);
+							card.classList.add('menusize');
+							dialog.addSmall(card);
+						},
 					},
 				},
 				zc26_bagua_mark: {
@@ -3054,7 +3067,13 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					mark: true,
 					marktext: "女装",
 					intro: {
-						content() { return "“藏巧”装备牌【女装】的效果修改为【魂·八卦阵】：<br>" + get.translation("zc26_bagua_info") },
+						mark(dialog, storage, player){
+							var name = "zc26_bagua";
+							dialog.addText("装备牌【女装】的效果修改为【魂·八卦阵】：<br><li>" + get.translation(name+"_info"), false);
+							var card = game.createCard(name);
+							card.classList.add('menusize');
+							dialog.addSmall(card);
+						},
 					},
 				},
 				zc26_lingling_mark: {
@@ -3062,7 +3081,13 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					mark: true,
 					marktext: "庸驴",
 					intro: {
-						content() { return "“藏巧”装备牌【庸驴】的效果修改为【軨軨】：<br>" + get.translation("zc26_lingling_info") },
+						mark(dialog, storage, player){
+							var name = "zc26_lingling";
+							dialog.addText("装备牌【庸驴】的效果修改为【軨軨】：<br><li>距离：-2<br><li>" + get.translation(name+"_info"), false);
+							var card = game.createCard(name);
+							card.classList.add('menusize');
+							dialog.addSmall(card);
+						},
 					},
 				},
 				
@@ -3131,7 +3156,9 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 									delete _status.zc26_huaxiu[name];
 								}, name);
 								lib.card[name] = _status.zc26_huaxiu_origin[name].info;
-								lib.translate[name] = _status.zc26_huaxiu_origin[name].translate;
+								// 临时修改（by 棘手怀念摧毁）
+								// 卡牌名翻译不应该修改
+								// lib.translate[name] = _status.zc26_huaxiu_origin[name].translate;
 								lib.translate[`${name}_info`] = _status.zc26_huaxiu_origin[name].translate2;
 								const addSkill = get.skillsFromEquips([{ name }]),
 									removeSkill = get.skillsFromEquips([{ name: map[name] }]);

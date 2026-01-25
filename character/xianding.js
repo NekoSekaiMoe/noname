@@ -12,7 +12,7 @@ game.import("character", function () {
 			dc_jiangqing: ["male", "wu", 4, ["dcshangyi", "dcniaoxiang"], ["die_audio:gz_jiangqing"]],
 			dc_tianfeng: ["male", "qun", 3, ["sijian", "dcsuishi"], ["die_audio:tianfeng"]],
 			dc_zhangren: ["male", "qun", 4, ["dcchuanxin", "dcfengshi"], ["die_audio:zhangren"]],
-			dc_lingcao: ["male", "wu", "3/5", ["dcdufeng"]],
+			dc_lingcao: ["male", "wu", "4/5", ["dcdufeng"]],
 			zhugejing: ["male", "qun", 4, ["dcyanzuo", "dczuyin", "dcpijian"]],
 			liutan: ["female", "shu", 3, ["dcjingyin", "dcchixing"]],
 			bianyue: ["female", "wei", 3, ["dcbizu", "dcwuxie"]],
@@ -41,7 +41,6 @@ game.import("character", function () {
 			dc_guansuo: ["male", "shu", 4, ["xinzhengnan", "xiefang"]],
 			xin_baosanniang: ["female", "shu", 3, ["decadewuniang", "decadexushen"]],
 			xurong: ["male", "qun", 4, ["xinfu_xionghuo", "xinfu_shajue"], []],
-			zhangqiying: ["female", "qun", 3, ["xinfu_falu", "xinfu_dianhua", "xinfu_zhenyi"], []],
 			dc_shixie: ["male", "qun", 3, ["rebiluan", "ollixia"]],
 			dc_sp_machao: ["male", "qun", 4, ["zhuiji", "dc_olshichou"]],
 			old_huangfusong: ["male", "qun", 4, ["xinfenyue"]],
@@ -130,7 +129,7 @@ game.import("character", function () {
 				sp2_yuxiu: ["dongguiren", "dc_tengfanglan", "zhangjinyun", "zhoubuyi", "dc_xujing", "guanyue", "zhugejing"],
 				sp2_yinyu: ["zhouyi", "luyi", "sunlingluan", "caoyi"],
 				sp2_gaoshan: ["wanglang", "liuhui"],
-				sp2_qifu: ["dc_guansuo", "xin_baosanniang", "dc_zhaoxiang", "xurong", "zhangqiying"],
+				sp2_qifu: ["dc_guansuo", "xin_baosanniang", "dc_zhaoxiang", "xurong"],
 				sp2_wumiao: ["wu_zhugeliang", "wu_luxun", "wu_guanyu", "wu_huangfusong"],
 				
 				xianding_waitforsort: ["zhangjian"],
@@ -154,6 +153,7 @@ game.import("character", function () {
 			],
 		},
 		characterIntro: {
+			cuilingyi: "崔妃（？-？），清河郡东武城县（今河北故城）人，崔妃出身河北高门士族清河崔氏，崔妃的叔叔为名士崔琰。之后出嫁权臣曹操之子曹植为妻。因衣装过于华美，曹操登台看到后，认为她违反了穿着朴素的禁令，回家后崔妃就被赐死了。崔令仪为《三国杀》虚构名。",
 			wenyuan: "文鸳，虚构人物，姜维之妻、文鸯的姐姐。曾经协助丈夫姜维起义回复蜀国，但是因为有小人告密，文鸳在兵败的时候被杀害。",
 			xurong: "徐荣（？－192年），玄菟人（一说为辽东襄平人，《公孙度传》中说公孙度本辽东襄平人，迁居玄菟，为同郡徐荣所举，任辽东太守。同郡当是同“玄菟”郡），东汉末年将领。本为中郎将，曾向董卓推举同郡出身的公孙度出任辽东太守。于汴水之战中击败曹操的独立追击军，以及在梁东之战中击败孙坚的部队。在董卓死后，受司徒王允的命令与李傕、郭汜交战，因部将胡珍投降，寡不敌众，于新丰之战被击败，战死在乱军之中。",
 			zhangqiying:
@@ -1271,7 +1271,7 @@ game.import("character", function () {
 				async content(event, trigger, player) {
 					const target = event.targets[0];
 					target.addSkill("dcjingyin_tag");
-					target.gain(trigger.cards.filterInD(), "gain2").set("gaintag", "dcjingyin_tag");
+					target.gain(trigger.cards.filterInD(), "gain2").set("gaintag", ["dcjingyin_tag"]);
 				},
 				subSkill: {
 					tag: {
@@ -5804,7 +5804,7 @@ game.import("character", function () {
 								const cardsToDiscard = target.getExpansions("dcxiaoyin").filter(card => get.type2(card, false) === type);
 								if (cardsToDiscard.length === 1) await target.loseToDiscardpile(cardsToDiscard);
 								else if (cardsToDiscard.length > 1) {
-									const result = await source.chooseButton([`请选择移去${get.translation(source)}的一张“硝引”牌`, cardsToDiscard], true).forResult();
+									const result = await source.chooseButton([`请选择移去${get.translation(target)}的一张“硝引”牌`, cardsToDiscard], true).forResult();
 									await target.loseToDiscardpile(result.links);
 								}
 								trigger.addNumber("num", 1);
@@ -5813,7 +5813,7 @@ game.import("character", function () {
 								const cards = target.getExpansions("dcxiaoyin");
 								if (cards.length === 1) await source.gain(cards, target, "give");
 								else if (cards.length > 1) {
-									const result = await source.chooseButton([`请选择获得${get.translation(source)}的一张“硝引”牌`, cards], true).forResult();
+									const result = await source.chooseButton([`请选择获得${get.translation(target)}的一张“硝引”牌`, cards], true).forResult();
 									await source.gain(result.links, target, "give");
 								}
 								game.setNature(trigger, "fire");

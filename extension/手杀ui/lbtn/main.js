@@ -309,7 +309,7 @@ var node6= ui.create.div('.shenfenpic', ui.arena);
           
         };
         node.updateCardnumber = function() {
-        if (!game.me) return;
+        if (!game.me || (get.mode() == "boss" && !game.boss)) return;
           
         var cardNumber2 = game.me.countCards('h') || 0;
           var cardNumber = game.me.getHandcardLimit() || 0;
@@ -582,7 +582,7 @@ var node6= ui.create.div('.shenfenpic', ui.arena);
 					// typeResult.delay ??= [];
 					
 					for (let key of Object.keys(typeResult).sort((a, b) => {
-						let arr = ["basic", "trick", "delay", "equip", "jiqi", "spell", "zhenfa", "food", "jiguan", "land"];
+						let arr = ["basic", "trick", "delay", "equip", "food", "jiqi", "jiguan", "spell", "land", "zhenfa"];
 						return arr.indexOf(a) - arr.indexOf(b);
 					})) {
 						let result = Object.groupBy(typeResult[key], card => get.name(card));

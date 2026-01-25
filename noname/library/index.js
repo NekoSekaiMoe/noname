@@ -12306,7 +12306,6 @@ export class Library {
 			firstDo: true,
 			trigger: {
 				player: [
-					"playercontrol",
 					"chooseToUseBegin",
 					"chooseToRespondBegin",
 					"chooseToDiscardBegin",
@@ -12323,6 +12322,11 @@ export class Library {
 					"chooseToMoveBegin",
 					"chooseToPlayBeatmapBegin",
 					"chooseToGiveBegin",
+					"chooseToGuanxingBegin",
+					"chooseButtonTargetBegin",
+					"chooseNumbersBegin",
+					
+					"playercontrol",
 				],
 			},
 			forced: true,
@@ -14474,6 +14478,17 @@ export class Library {
 			},
 		],
 		[
+			"赛马",
+			{
+				getSpan: () => {
+					const span = document.createElement("span");
+					span.style.fontFamily = "NonameSuits";
+					span.textContent = "🏇";
+					return span.outerHTML;
+				},
+			},
+		],
+		[
 			"SP",
 			{
 				getSpan: () => {
@@ -14549,7 +14564,43 @@ export class Library {
 			{
 				color: "#f0cf13",
 				nature: "shenmm",
-			}
+			},
+		],
+		[
+			"射",
+			{
+				color: "#f0cf13",
+				nature: "shenmm",
+			},
+		],
+		[
+			"书",
+			{
+				color: "#f0cf13",
+				nature: "shenmm",
+			},
+		],
+		[
+			"数",
+			{
+				color: "#f0cf13",
+				nature: "shenmm",
+			},
+		],
+		[
+			"御",
+			{
+				color: "#f0cf13",
+				nature: "shenmm",
+			},
+		],
+		[
+			"手杀乐",
+			{
+				showName: "乐",
+				color: "#f0cf13",
+				nature: "shenmm",
+			},
 		],
 		[
 			"TW",
@@ -14869,6 +14920,14 @@ export class Library {
 		[
 			"友",
 			{
+				color: "#AAABFF",
+				nature: "blackmm",
+			},
+		],
+		[
+			"手杀合",
+			{
+				showName: "合",
 				color: "#AAABFF",
 				nature: "blackmm",
 			},

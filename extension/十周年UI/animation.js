@@ -1465,7 +1465,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_ahao: {
 					default: {
-						name: 'skin_ahao_default',
+						name: 'servant/skin_ahao_default',
 						action: 'daiji1',
 						x: [ 0, 0.84],
 						y: [ 0, 0.05],
@@ -1474,25 +1474,43 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_ale: {
 					default: {
-						name: 'skin_ale_default',
+						name: 'servant/skin_ale_default',
 						action: 'daiji1',
 						x: [ 0, 0.847],
 						y: [ 0, 0.038],
 						height: [0, 0.4],
 					},
 				},
+				skin_ameng: {
+					default: {
+						name: 'servant/skin_ameng_default',
+						action: 'daiji1',
+						x: [ 0, 0.852],
+						y: [ 0, 0.014],
+						height: [0, 0.5],
+					},
+				},
 				skin_datong: {
 					default: {
-						name: 'skin_datong_default',
+						name: 'servant/skin_datong_default',
 						action: 'daiji1',
 						x: [ 0, 0.852],
 						y: [ 0, 0.03],
 						height: [0, 0.4],
 					},
 				},
+				skin_kunpeng: {
+					default: {
+						name: 'servant/skin_kunpeng_default',
+						action: 'daiji1',
+						x: [ 0, 0.803],
+						y: [ 0, 0.127],
+						height: [0, 0.53],
+					},
+				},
 				skin_liuli: {
 					default: {
-						name: 'skin_liuli_default',
+						name: 'servant/skin_liuli_default',
 						action: 'daiji1',
 						x: [ 0, 0.85],
 						y: [ 0, 0.26],
@@ -1501,7 +1519,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_lulu: {
 					default: {
-						name: 'skin_lulu_default',
+						name: 'servant/skin_lulu_default',
 						action: 'daiji1',
 						x: [ 0, 0.85],
 						y: [ 0, 0.05],
@@ -1510,16 +1528,25 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_manman: {
 					default: {
-						name: 'skin_manman_default',
+						name: 'servant/skin_manman_default',
 						action: 'daiji1',
 						x: [ 0, 0.84],
 						y: [ 0, 0.01],
 						height: [0, 0.39],
 					},
 				},
+				skin_pipi: {
+					default: {
+						name: 'servant/skin_pipi_default',
+						action: 'daiji4',
+						x: [ 0, 0.867],
+						y: [ 0, 0.204],
+						height: [0, 0.34],
+					},
+				},
 				skin_rui: {
 					default: {
-						name: 'skin_rui_default',
+						name: 'servant/skin_rui_default',
 						action: 'daiji1',
 						x: [ 0, 0.85],
 						y: [ 0, 0.018],
@@ -1528,7 +1555,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_xiaoxiao: {
 					default: {
-						name: 'skin_xiaoxiao_default',
+						name: 'servant/skin_xiaoxiao_default',
 						action: 'daiji1',
 						x: [ 0, 0.85],
 						y: [ 0, 0.025],
@@ -1537,7 +1564,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_xuanwu: {
 					default: {
-						name: 'skin_xuanwu_default',
+						name: 'servant/skin_xuanwu_default',
 						action: 'daiji1',
 						x: [ 0, 0.823],
 						y: [ 0, 0.043],
@@ -1546,7 +1573,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_xueren: {
 					default: {
-						name: 'skin_xueren_default',
+						name: 'servant/skin_xueren_default',
 						action: 'daiji1',
 						x: [ 0, 0.843],
 						y: [ 0, 0.02],
@@ -1555,7 +1582,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_yan: {
 					default: {
-						name: 'skin_yan_default',
+						name: 'servant/skin_yan_default',
 						action: 'daiji1',
 						x: [ 0, 0.85],
 						y: [ 0, 0.015],
@@ -1564,7 +1591,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_yueer: {
 					default: {
-						name: 'skin_yueer_default',
+						name: 'servant/skin_yueer_default',
 						action: 'daiji1',
 						x: [ 0, 0.82],
 						y: [ 0, 0.025],
@@ -1762,6 +1789,15 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 						x: [ 0, 0.79],
 						y: [0, 0.25],
 						height: [0, 0.56],
+					},
+				},
+				孙寒华: {
+					威灵尽显: {
+						name:"孙寒华/威灵尽显/XingXiang",
+						action: 'DaiJi',
+						x:[0, 0.81],
+						y:[0, 0.25],
+						scale: 0.43,
 					},
 				},
 				skin_sunluban: {
@@ -2059,7 +2095,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_ahao: {
 					default: {
-						name: 'skin_ahao_default',
+						name: 'servant/skin_ahao_default',
 						action: 'daiji1',
 						x: [ 0, 0.845],
 						y: [ 0, 0.04],
@@ -2068,25 +2104,43 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_ale: {
 					default: {
-						name: 'skin_ale_default',
+						name: 'servant/skin_ale_default',
 						action: 'daiji1',
 						x: [ 0, 0.853],
 						y: [ 0, 0.03],
 						height: [0, 0.3],
 					},
 				},
+				skin_ameng: {
+					default: {
+						name: 'servant/skin_ameng_default',
+						action: 'daiji1',
+						x: [ 0, 0.857],
+						y: [ 0, 0.01],
+						height: [0, 0.394],
+					},
+				},
 				skin_datong: {
 					default: {
-						name: 'skin_datong_default',
+						name: 'servant/skin_datong_default',
 						action: 'daiji1',
 						x: [ 0, 0.855],
 						y: [ 0, 0.02],
 						height: [0, 0.3],
 					},
 				},
+				skin_kunpeng: {
+					default: {
+						name: 'servant/skin_kunpeng_default',
+						action: 'daiji1',
+						x: [ 0, 0.8],
+						y: [ 0, 0.11],
+						height: [0, 0.46],
+					},
+				},
 				skin_liuli: {
 					default: {
-						name: 'skin_liuli_default',
+						name: 'servant/skin_liuli_default',
 						action: 'daiji1',
 						x: [ 0, 0.849],
 						y: [ 0, 0.2],
@@ -2095,7 +2149,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_lulu: {
 					default: {
-						name: 'skin_lulu_default',
+						name: 'servant/skin_lulu_default',
 						action: 'daiji1',
 						x: [ 0, 0.85],
 						y: [ 0, 0.035],
@@ -2104,16 +2158,25 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_manman: {
 					default: {
-						name: 'skin_manman_default',
+						name: 'servant/skin_manman_default',
 						action: 'daiji1',
 						x: [ 0, 0.845],
 						y: [ 0, 0.01],
 						height: [0, 0.3],
 					},
 				},
+				skin_pipi: {
+					default: {
+						name: 'servant/skin_pipi_default',
+						action: 'daiji4',
+						x: [ 0, 0.869],
+						y: [ 0, 0.155],
+						height: [0, 0.26],
+					},
+				},
 				skin_rui: {
 					default: {
-						name: 'skin_rui_default',
+						name: 'servant/skin_rui_default',
 						action: 'daiji1',
 						x: [ 0, 0.845],
 						y: [ 0, 0.017],
@@ -2122,7 +2185,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_xiaoxiao: {
 					default: {
-						name: 'skin_xiaoxiao_default',
+						name: 'servant/skin_xiaoxiao_default',
 						action: 'daiji1',
 						x: [ 0, 0.855],
 						y: [ 0, 0.018],
@@ -2131,7 +2194,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_xuanwu: {
 					default: {
-						name: 'skin_xuanwu_default',
+						name: 'servant/skin_xuanwu_default',
 						action: 'daiji1',
 						x: [ 0, 0.83],
 						y: [ 0, 0.03],
@@ -2140,7 +2203,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_xueren: {
 					default: {
-						name: 'skin_xueren_default',
+						name: 'servant/skin_xueren_default',
 						action: 'daiji1',
 						x: [ 0, 0.85],
 						y: [ 0, 0.018],
@@ -2149,7 +2212,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_yan: {
 					default: {
-						name: 'skin_yan_default',
+						name: 'servant/skin_yan_default',
 						action: 'daiji1',
 						x: [ 0, 0.855],
 						y: [ 0, 0.01],
@@ -2158,7 +2221,7 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 				},
 				skin_yueer: {
 					default: {
-						name: 'skin_yueer_default',
+						name: 'servant/skin_yueer_default',
 						action: 'daiji1',
 						x: [ 0, 0.825],
 						y: [ 0, 0.02],
@@ -2356,6 +2419,15 @@ if (decadeModule) decadeModule.import(function(lib, game, ui, get, ai, _status) 
 						x: [ 0, 0.79],
 						y: [0, 0.23],
 						height: [0, 0.51],
+					},
+				},
+				孙寒华: {
+					威灵尽显: {
+						name:"孙寒华/威灵尽显/XingXiang",
+						action: 'DaiJi',
+						x:[0, 0.8],
+						y:[0, 0.25],
+						scale: 0.52,
 					},
 				},
 				skin_sunluban: {

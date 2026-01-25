@@ -3886,6 +3886,7 @@ game.import("character", function () {
 			clan_xun: "颍川·荀氏",
 			clan_han: "颍川·韩氏",
 			clan_zhong: "颍川·钟氏",
+			clan_chen: "颍川·陈氏",
 			clan_wang: "太原·王氏",
 			clan_yang: "弘农·杨氏",
 			clan_lu: "吴郡·陆氏",

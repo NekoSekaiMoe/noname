@@ -159,8 +159,8 @@ game.import("character", function () {
 		characterSort: {
 			sixiang: {
 				// 分包调整（by棘手怀念摧毁）
-				shaoyin_li: ["std_lijue", "std_chengpu", "std_db_wenyang", "std_re_dengzhi", "std_zhangyì", "std_chengyu", "std_fanyufeng", "std_feiyi"],
 				shaoyin_zhen: ["std_jianggan", "std_mayunlu", "std_mateng", "std_sunhao", "std_dc_luotong", "std_dc_yanghu", "std_lvlingqi", "std_zhouchu"],
+				shaoyin_li: ["std_lijue", "std_chengpu", "std_db_wenyang", "std_re_dengzhi", "std_zhangyì", "std_chengyu", "std_fanyufeng", "std_feiyi"],
 				taiyin_gen: ["std_guanxing", "std_sunshao", "std_jiangwan", "std_maliang", "std_xushu", "std_xuezong", "std_wangyuanji", "std_zhonghui"],
 				taiyin_kun: ["std_liuzhang", "std_liubiao", "std_gongsunyuan", "std_fuhuanghou", "std_cenhun", "std_wanglang", "std_huaxin", "std_simashi"],
 				shaoyang_xun: ["std_zhangbao", "std_guansuo", "std_liuchen", "std_caorui", "std_guohuanghou", "std_liuye", "std_dingfeng", "std_sunluban"],
@@ -4327,8 +4327,8 @@ game.import("character", function () {
 			stdyoudi: "诱敌",
 			stdyoudi_info: "结束阶段，你可以将一张红色牌当【顺手牵羊】使用。",
 
-			shaoyin_li: "少阴·离",
 			shaoyin_zhen: "少阴·震",
+			shaoyin_li: "少阴·离",
 			taiyin_gen: "太阴·艮",
 			taiyin_kun: "太阴·坤",
 			shaoyang_xun: "少阳·巽",
@@ -4340,6 +4340,8 @@ game.import("character", function () {
 			sixiang_sort_baihu: "四象封印·白虎",
 			sixiang_sort_zhuque: "四象封印·朱雀",
 			sixiang_sort_xuanwu: "四象封印·玄武",
+			
+			sixiang_zhencang: "珍藏·封印",
 		},
 		perfectPair: {
 			
