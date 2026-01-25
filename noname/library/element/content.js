@@ -2752,6 +2752,29 @@ export const Content = {
 		} else {
 			event.player = event.player.next;
 		}
+		"step 4";
+		// 临时修改（by 棘手怀念摧毁）
+		// roundEnd时机适配，部分代码搬运自上方phase: function () {
+		if (game.players.includes(player)) {
+			var isRoundEnd = false;
+			if (lib.onround.every(i => i(event, player))) {
+				isRoundEnd = _status.roundSkipped;
+				if (_status.isRoundFilter) {
+					isRoundEnd = _status.isRoundFilter(event, player);
+				} else if (_status.seatNumSettled) {
+					var seatNum = player.getSeatNum();
+					if (seatNum != 0) {
+						if (get.itemtype(_status.lastPhasedPlayer) != "player" || seatNum < _status.lastPhasedPlayer.getSeatNum()) isRoundEnd = true;
+						// _status.lastPhasedPlayer = player;
+					}
+				} else if (player == _status.roundStart) isRoundEnd = true;
+				if (isRoundEnd && _status.globalHistory.some(i => i.isRound)) {
+					game.log();
+					event.trigger("roundEnd");
+				}
+			}
+		}
+		"step 5";
 		event.goto(1);
 	},
 	loadPackage: function () {

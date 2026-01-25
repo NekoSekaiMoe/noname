@@ -2089,25 +2089,25 @@ game.import("character", function () {
 					tiaoxin: {
 						audio: "olzhouxi",
 						// 临时修改（by 棘手怀念摧毁）
-						// trigger: { global: "roundEnd" },
-						trigger: { global: "roundStart" },
+						trigger: { global: "roundEnd" },
+						// trigger: { global: "roundStart" },
 						filter(event, player) {
 							// 临时修改（by 棘手怀念摧毁）
-							const curLen = player.actionHistory.length;
-							if (curLen <= 2) return false;
+							// const curLen = player.actionHistory.length;
+							// if (curLen <= 2) return false;
 							
 							return lib.skill.olzhouxi_tiaoxin.logTarget(event, player).length > 0;
 						},
 						
 						// 临时修改
-						firstDo: true,
+						// firstDo: true,
 						
 						forced: true,
 						logTarget(event, player) {
 							return player
 								// 临时修改
-								// .getRoundHistory("sourceDamage", evt => evt.num > 0)
-								.getRoundHistory("sourceDamage", evt => evt.num > 0, 1)
+								.getRoundHistory("sourceDamage", evt => evt.num > 0)
+								// .getRoundHistory("sourceDamage", evt => evt.num > 0, 1)
 								?.map(evt => evt.player)
 								// 临时修改
 								// .unique()
@@ -2139,24 +2139,24 @@ game.import("character", function () {
 				charlotte: true,
 				
 				// 临时修改（by 棘手怀念摧毁）
-				firstDo: true,
+				// firstDo: true,
 				
-				// trigger: { global: "roundEnd" },
-				trigger: { global: "roundStart" },
-				/*
+				trigger: { global: "roundEnd" },
+				// trigger: { global: "roundStart" },
+				// /*
 				filter(event, player) {
 					return !player.getRoundHistory("sourceDamage", evt => evt.num > 0).length;
 				},
-				*/
+				// */
 				forced: true,
 				popup: false,
 				content() {
 					// 临时修改（by 棘手怀念摧毁）
-					if (!player.getRoundHistory("sourceDamage", evt => evt.num > 0, 1)?.length) {
-						player.loseHp();
-					}
+					// if (!player.getRoundHistory("sourceDamage", evt => evt.num > 0, 1)?.length) {
+						// player.loseHp();
+					// }
 					
-					// player.loseHp();
+					player.loseHp();
 				},
 				nopop: true,
 				mark: true,

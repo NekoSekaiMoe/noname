@@ -10562,7 +10562,7 @@ game.import("character", function () {
 				content: function () {
 					player.awakenSkill("bihuo");
 					trigger.player.draw(3);
-					trigger.player.addTempSkill("bihuo_effect", "roundStart");
+					trigger.player.addTempSkill("bihuo_effect", "roundEnd");
 					trigger.player.addMark("bihuo_effect", game.countPlayer(), false);
 				},
 				subSkill: {

@@ -201,8 +201,8 @@ game.import("character", function () {
 						// target.addTip(`${skill}_${current.playerid}`, `撼国 ${get.translation(current)}`);
 					});
 					// 临时修改（by 棘手怀念摧毁）
-					target.addTempSkill(skill, "roundStart");
-					// target.addTempSkill(skill, "roundEnd");
+					// target.addTempSkill(skill, "roundStart");
+					target.addTempSkill(skill, "roundEnd");
 					const cards = target.getCards("he");
 					if (!cards.length) {
 						return;
@@ -2339,13 +2339,13 @@ game.import("character", function () {
 			sxrmqingjun: {
 				trigger: {
 					// 临时修改（by 棘手怀念摧毁）
-					global: "roundStart",
-					// global: "roundEnd",
+					// global: "roundStart",
+					global: "roundEnd",
 				},
 				filter(event, player) {
 					// 临时修改（by 棘手怀念摧毁）
-					const curLen = player.actionHistory.length;
-					if (curLen <= 2) return false;
+					// const curLen = player.actionHistory.length;
+					// if (curLen <= 2) return false;
 					
 					return game.hasPlayer(current => current != player);
 				},

@@ -3199,7 +3199,7 @@ game.import("character", function () {
 					const result = event.cost_data;
 					if (result.type === "addSkill") {
 						player.markAuto("liyingxia_wumai", [result.skill]);
-						player.addTempSkills(result.skill, "roundStart");
+						player.addTempSkills(result.skill, "roundEnd");
 					} else if (result.type === "drawCards") {
 						player.draw(result.num);
 					}

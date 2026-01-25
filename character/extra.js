@@ -1186,8 +1186,8 @@ game.import("character", function () {
 				trigger: {
 					player: "phaseZhunbeiBegin",
 					// 临时修改（by 棘手怀念摧毁）
-					global: "roundStart",
-					// global: "roundEnd",
+					// global: "roundStart",
+					global: "roundEnd",
 				},
 				getIndex(event, player) {
 					if (event.name == "phaseZhunbei") {
@@ -1208,8 +1208,8 @@ game.import("character", function () {
 				},
 				filter(event, player, triggername, card) {
 					// 临时修改（by 棘手怀念摧毁）
-					const curLen = player.actionHistory.length;
-					if (curLen <= 2) return false;
+					// const curLen = player.actionHistory.length;
+					// if (curLen <= 2) return false;
 					
 					if (event.name == "phaseZhunbei") {
 						return true;

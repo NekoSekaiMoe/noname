@@ -3286,11 +3286,15 @@ game.import("character", function () {
 				},
 			},
 			tyxihun: {
-				trigger: { global: "roundStart" },
+				// 临时修改（by 棘手怀念摧毁）
+				trigger: { global: "roundEnd" },
+				// trigger: { global: "roundStart" },
 				forced: true,
 				filter(event, player) {
-					const curLen = player.actionHistory.length;
-					if (curLen <= 2) return false;
+					// 临时修改（by 棘手怀念摧毁）
+					// const curLen = player.actionHistory.length;
+					// if (curLen <= 2) return false;
+					
 					return true;
 				},
 				async content(event, trigger, player) {
@@ -3448,7 +3452,7 @@ game.import("character", function () {
 						direct:true,
 						content(){
 							if(!player.getStorage("tyansha_range").length){
-								player.when({global:"roundStart"}).then(()=>{
+								player.when({global:"roundEnd"}).then(()=>{
 									player.unmarkAuto("tyansha_range",player.getStorage("tyansha_range"));
 								});
 							}
@@ -3503,7 +3507,7 @@ game.import("character", function () {
 					return event.card.name=="sha";
 				},
 				async content(event,trigger,player){
-					player.tempBanSkill("tycangshen","roundStart");
+					player.tempBanSkill("tycangshen","roundEnd");
 				},
 				mod:{
 					globalTo(from, to, num) {
@@ -4998,7 +5002,7 @@ game.import("character", function () {
 				},
 				async content(event, trigger, player) {
 					await player.discard(event.cards);
-					player.addTempSkill("tyzhaowu_wusheng", "roundStart");
+					player.addTempSkill("tyzhaowu_wusheng", "roundEnd");
 					player.markAuto("tyzhaowu_wusheng", event.targets);
 				},
 				subSkill: {
@@ -8932,7 +8936,7 @@ game.import("character", function () {
 					}
 					if (card1 && card2) {
 						const skill = get.color(card1, player) == get.color(card2, target) ? "psdaohe" : "pszhiyi";
-						await player.addTempSkills(skill, "roundStart");
+						await player.addTempSkills(skill, "roundEnd");
 					}
 				},
 				derivation: ["psdaohe", "pszhiyi"],

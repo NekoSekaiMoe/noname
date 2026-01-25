@@ -9058,7 +9058,7 @@ game.import("character", function () {
 							);
 						},
 						content: function () {
-							player.addTempSkill("olmiuyan_blocker", "roundStart");
+							player.addTempSkill("olmiuyan_blocker", "roundEnd");
 							game.log(player, "的", "#g【谬焰】", "失效了");
 						},
 					},

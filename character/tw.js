@@ -19163,14 +19163,14 @@ game.import("character", function () {
 									"twlingfa",
 									game.filterPlayer((current) => current != player).sortBySeat()
 								);
-								player.addTempSkill("twlingfa_sha", "roundStart");
+								player.addTempSkill("twlingfa_sha", "roundEnd");
 								break;
 							case 2:
 								player.logSkill(
 									"twlingfa",
 									game.filterPlayer((current) => current != player).sortBySeat()
 								);
-								player.addTempSkill("twlingfa_tao", "roundStart");
+								player.addTempSkill("twlingfa_tao", "roundEnd");
 								break;
 							default:
 								player.logSkill("twlingfa");
