@@ -4304,12 +4304,18 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				};
 				next.setContent(function () {
 					"step 0";
+					//执行event.player的回合
 					var next = player.phase();
 					if (!game.players.some((current) => current.classList.contains("acted"))) {
 						next._isThreeRound = true;
 					}
 					player.classList.add("acted");
 					"step 1";
+					// phaseOver时机适配
+					event.trigger("phaseOver");
+					"step 2";
+					//继续执行某一方的回合
+					/*
 					if (player.identity != "zhu") {
 						for (var i = 0; i < game.players.length; i++) {
 							if (
@@ -4324,7 +4330,34 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							}
 						}
 					}
-					"step 2";
+					*/
+					// 临时修改（by 棘手怀念摧毁）
+					// phaseOver时机适配
+					event.numlist = [];
+					if (player.identity != "zhu") {
+						for (var i = 0; i < game.players.length; i++) {
+							if (
+								game.players[i].side == player.side &&
+								game.players[i].identity != "zhu" &&
+								game.players[i] != player &&
+								!game.players[i].classList.contains("acted")
+							) {
+								event.numlist.push(i);
+								break;
+							}
+						}
+					}
+					if(!event.numlist.length) event.goto(6);
+					"step 3";
+					var i = event.numlist.shift();
+					game.players[i].classList.add("acted");
+					game.players[i].phase();
+					"step 4";
+					event.trigger("phaseOver");
+					"step 5";
+					if(event.numlist.length) event.goto(3);
+					"step 6";
+					//判断双方该谁执行回合
 					var target = event.swap(player);
 					var swap = [],
 						swap2 = [];
@@ -4343,6 +4376,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							target = event.swap(target);
 							swap = swap2;
 						} else {
+							//双方的角色都执行过回合后开始新的对战轮次
 							for (var i = 0; i < game.players.length; i++) {
 								// if (game.players[i].isOut()) continue;
 								game.players[i].classList.remove("acted");
@@ -4356,6 +4390,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					if (swap.length == 1) {
 						event.directresult = swap[0];
 					} else {
+						//选择要先行动的角色
 						var rand = Math.random();
 						var next = target.chooseTarget(
 							"选择行动的角色",
@@ -4391,16 +4426,48 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							return num;
 						};
 					}
-					"step 3";
+					"step 7";
 					if (event.directresult) {
 						event.player = event.directresult;
 						delete event.directresult;
 					} else if (result.bool) {
 						event.player = result.targets[0];
 					}
+					"step 8";
+					// 临时修改（by 棘手怀念摧毁）
+					// roundEnd时机适配
+					
+					// 额外加修复代码
+					if (_status.roundStart == undefined) {
+						_status.roundStart = event.player;
+					}
+					
+					if (game.players.includes(player)) {
+						var isRoundEnd = false;
+						if (lib.onround.every(i => i(event, player))) {
+							isRoundEnd = _status.roundSkipped;
+							// 修改
+							/*if (_status.isRoundFilter) {
+								isRoundEnd = _status.isRoundFilter(event, player);
+							} else if (_status.seatNumSettled) {
+								var seatNum = player.getSeatNum();
+								if (seatNum != 0) {
+									if (get.itemtype(_status.lastPhasedPlayer) != "player" || seatNum < _status.lastPhasedPlayer.getSeatNum()) isRoundEnd = true;
+									// _status.lastPhasedPlayer = player;
+								}
+							} else */if (player == _status.roundStart) isRoundEnd = true;
+							if (isRoundEnd && _status.globalHistory.some(i => i.isRound)) {
+								game.log();
+								event.trigger("roundEnd");
+							}
+						}
+					}
+					"step 9";
 					event.goto(0);
 				});
 			},
+			// 临时修改（by 棘手怀念摧毁）
+			/*
 			versusPhaseLoop: function (player) {
 				var next = game.createEvent("phaseLoop");
 				next.player = player;
@@ -4457,6 +4524,98 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					event.goto(0);
 				});
 			},
+			*/
+			versusPhaseLoop: function (player) {
+				var next = game.createEvent("phaseLoop");
+				next.player = player;
+				next.setContent(function () {
+					"step 0";
+					//执行回合
+					if (lib.storage.zhu) {
+						player.classList.add("acted");
+					}
+					player.phase();
+					"step 1";
+					// phaseOver时机适配
+					event.trigger("phaseOver");
+					"step 2";
+					//判断接着行动的一方和角色
+					if (lib.storage.zhu) {
+						_status.currentSide = !_status.currentSide;
+						_status.round++;
+						if (_status.round >= 2 * Math.max(game.friend.length, game.enemy.length)) {
+							//行动次数达到上限
+							_status.round = 0;
+							for (var i = 0; i < game.players.length; i++) {
+								game.players[i].classList.remove("acted");
+							}
+							delete _status.roundStart;
+						}
+						var list =
+							_status.currentSide == game.me.side ? game.friend.slice(0) : game.enemy.slice(0);
+						for (var i = 0; i < list.length; i++) {
+							if (list[i].classList.contains("acted") || list[i].isOut()) {
+								list.splice(i, 1);
+								i--;
+							}
+						}
+						if (list.length == 0) event.redo();
+						else if (
+							list.length == 1 ||
+							(game.me != game.friendZhu && !lib.storage.single_control) ||
+							_status.currentSide != game.me.side
+						) {
+							list.sort(function (a, b) {
+								if (a.countCards("j") > b.countCards("j")) return 1;
+								return a.hp - b.hp;
+							});
+							event.player = list[0];
+							event.goto(4);
+						} else {
+							game.me.chooseTarget("选择要行动的角色", true, function (card, player, target) {
+								return (
+									target.classList.contains("acted") == false && target.side == game.me.side
+								);
+							}).includeOut = true;
+						}
+					} else {
+						event.player = event.player.next;
+						event.goto(4);
+					}
+					"step 3";
+					event.player = result.targets[0];
+					"step 4";
+					// 额外加修复代码
+					if (_status.roundStart == undefined) {
+						_status.roundStart = event.player;
+					}
+					
+					if (game.players.includes(player)) {
+						var isRoundEnd = false;
+						if (lib.onround.every(i => i(event, player))) {
+							isRoundEnd = _status.roundSkipped;
+							// 修改
+							/*if (_status.isRoundFilter) {
+								isRoundEnd = _status.isRoundFilter(event, player);
+							} else if (_status.seatNumSettled) {
+								var seatNum = player.getSeatNum();
+								if (seatNum != 0) {
+									if (get.itemtype(_status.lastPhasedPlayer) != "player" || seatNum < _status.lastPhasedPlayer.getSeatNum()) isRoundEnd = true;
+									// _status.lastPhasedPlayer = player;
+								}
+							} else */if (player == _status.roundStart) isRoundEnd = true;
+							if (isRoundEnd && _status.globalHistory.some(i => i.isRound)) {
+								game.log();
+								event.trigger("roundEnd");
+							}
+						}
+					}
+					"step 5";
+					event.goto(0);
+				});
+			},
+			// 临时修改（by 棘手怀念摧毁）
+			/*
 			phaseLoopJiange: function () {
 				var next = game.createEvent("phaseLoop");
 				next.num = 0;
@@ -4470,6 +4629,36 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					}
 					event.num++;
 					event.redo();
+				});
+			},
+			*/
+			phaseLoopJiange: function () {
+				var next = game.createEvent("phaseLoop");
+				next.num = 0;
+				next.setContent(function () {
+					"step 0";
+					if (event.num >= 8) {
+						event.num -= 8;
+					}
+					var player = _status.actlist[event.num];
+					if (player.isAlive()) {
+						player.phase();
+					}
+					"step 1";
+					// phaseOver时机适配
+					var player = _status.actlist[event.num];
+					if (player.isAlive()) {
+						event.trigger("phaseOver");
+					}
+					"step 2";
+					event.num++;
+					// roundEnd时机适配
+					if (event.num >= 8) {
+						game.log();
+						event.trigger("roundEnd");
+					}
+					"step 3";
+					event.goto(0);
 				});
 			},
 			replacePlayerOL: function (player) {

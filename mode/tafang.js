@@ -768,6 +768,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						game.over(true);
 					}
 					"step 8";
+					/*
 					if (event.xingdong.length) {
 						var toact = event.xingdong.shift();
 						if (game.players.includes(toact)) {
@@ -777,7 +778,27 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					} else {
 						event.xingdong = _status.enemies.slice(0);
 					}
+					*/
+					// 临时修改（by 棘手怀念摧毁）
+					// phaseOver时机适配
+					if (event.xingdong.length) {
+						event.goto(9);
+					} else {
+						event.xingdong = _status.enemies.slice(0);
+						event.goto(12);
+					}
 					"step 9";
+					var toact = event.xingdong.shift();
+					event.toacttrigger = toact;
+					if (game.players.includes(toact)) {
+						toact.phase();
+					}
+					"step 10";
+					if (game.players.includes(event.toacttrigger)) event.trigger("phaseOver");
+					"step 11";
+					event.goto(8);
+					"step 12";
+					/*
 					if (event.xingdong.length) {
 						var enemy = event.xingdong.shift();
 						if (!event.justadded.includes(enemy.name) && game.players.includes(enemy)) {
@@ -787,7 +808,26 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					} else {
 						event.mechlist = game.treasures.slice(0);
 					}
-					"step 10";
+					*/
+					// 临时修改（by 棘手怀念摧毁）
+					// phaseOver时机适配
+					if (event.xingdong.length) {
+						event.goto(13);
+					} else {
+						event.mechlist = game.treasures.slice(0);
+						event.goto(16);
+					}
+					"step 13";
+					var enemy = event.xingdong.shift();
+					event.enemytrigger = enemy;
+					if (!event.justadded.includes(enemy.name) && game.players.includes(enemy)) {
+						enemy.phase();
+					}
+					"step 14";
+					if (!event.justadded.includes(event.enemytrigger.name) && game.players.includes(event.enemytrigger)) event.trigger("phaseOver");
+					"step 15";
+					event.goto(12);
+					"step 16";
 					if (event.mechlist.length) {
 						var mech = event.mechlist.shift();
 						var info = lib.skill[mech.name + "_skill"];
@@ -810,15 +850,27 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						}
 						event.redo();
 					}
-					"step 11";
+					"step 17";
 					delete event.xingdong;
 					delete event.mechlist;
 					if (_status.turnCount >= _status.turnTotal) {
 						game.over(true);
 					} else {
-						event.goto(0);
-						game.delay();
+						// 临时修改（by 棘手怀念摧毁）
+						// roundEnd时机适配
+						event.goto(18);
+						// game.delay();
 					}
+					"step 18";
+					// 临时修改（by 棘手怀念摧毁）
+					// roundEnd时机适配
+					if(game.roundNumber >= 1) {
+						game.log();
+						event.trigger("roundEnd");
+					}
+					"step 19";
+					event.goto(0);
+					game.delay();
 				});
 			},
 			loadMap: function () {

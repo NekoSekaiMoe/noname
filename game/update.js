@@ -15,7 +15,7 @@ window.noname_update = {
 		// "其他更新略",
 		
 		// 备忘：
-		// roundEnd、phaseOver时机待适配（对决、战棋、塔防、炉石模式待继续适配）
+		// roundEnd时机待修复（部分模式有武将阵亡后时机触发有问题？）
 		// phaseAny时机待适配
 		// event.checkKuanggu、event.checkJiushi等待适配（现暂时要先改成新本体noname\library\assembly\buildin.js里的代码）
 		// typeof get.strNumber待适配
