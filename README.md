@@ -75,7 +75,8 @@
 
 无名杀原版
 
-- 开源地址：https://github.com/libccy/noname
+- 开源地址（新仓库）：https://github.com/libnoname/noname
+- 开源地址（旧仓库）：https://github.com/libccy/noname
 
 ##### 无名杀懒人包
 

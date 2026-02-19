@@ -60,6 +60,10 @@ game.import("play", function () {
 				lib.characterIntro.boss_baijiwenyuan = lib.characterIntro.zhangliao;
 				lib.characterIntro.boss_yihanyunchang = lib.characterIntro.guanyu;
 				lib.characterIntro.boss_fuweizilong = lib.characterIntro.zhaoyun;
+				lib.characterIntro.boss_weiwuyide = lib.characterIntro.zhangfei;
+				lib.characterIntro.boss_elaiziman = lib.characterIntro.dianwei;
+				lib.characterIntro.boss_shenjianhansheng = lib.characterIntro.huangzhong;
+				lib.characterIntro.boss_yiyongwenze = lib.characterIntro.yujin;
 				lib.characterIntro.boss_lvbu1 = lib.characterIntro.lvbu;
 				lib.characterIntro.boss_lvbu2 = lib.characterIntro.lvbu;
 				lib.characterIntro.boss_lvbu3 = lib.characterIntro.lvbu;

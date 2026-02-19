@@ -108,8 +108,9 @@ game.import("character", function () {
 		},
 		characterInitFilter: {
 			dc_zhaoyun(tag) {
-				if (tag == "noZhuSkill" && (get.mode() != "doudizhu" || _status.mode != "normal"))
+				if (tag == "noZhuSkill" && (get.mode() != "doudizhu" || _status.mode != "normal")) {
 					return false;
+				}
 			},
 		},
 		card: {
@@ -4247,11 +4248,9 @@ game.import("character", function () {
 	"#potzhengshuo2": "孙权在远称臣，此即天人之应也。",
 	"#qice_pot_huanjie1": "无有奇策，何以解之？",
 	"#qice_pot_huanjie2": "为今之际，唯效图纬故事。",
-	
-	// 待补
+	// 待补？
 	// "#kanpo_pot_huanjie1": "",
 	// "#kanpo_pot_huanjie2": "",
-	
 	"#pot_huanjie:die": "陛下厚遇，臣唯结草相报……",
 	"#pottuntian1": "屯田开渠，为军农要用。",
 	"#pottuntian2": "农者，胜之本也。",
@@ -4646,8 +4645,6 @@ game.import("character", function () {
 	"#reguicai_new_simayi2": "天地造化，不过老夫一念之间！",
 	"#fangzhu_new_simayi1": "此非老夫不仁，实乃汝咎由自取。",
 	"#rejizhi_new_simayi1": "一策一划，皆为成吾之远图！",
-	"#xiongzhi_new_simayi1": "烈士雄心，志存高远。",//彩蛋（声音克隆）
-	"#xiongzhi_new_simayi2": "乱世之中，唯我司马！",//彩蛋（声音克隆）
 	"#rezhiheng_new_simayi1": "轮回不止，因果不休。",
 	"#jilin1": "戢鳞潜翼，蓄志待时！",
 	"#jilin2": "老臣一心为国，还望陛下明鉴。",
@@ -5547,6 +5544,18 @@ game.import("character", function () {
 	"#lunshi_yj_sb_guojia_shadow2": "嘉窃料之，绍有十败，公有十胜。",
 	"#yj_sb_guojia:die": "生如夏花，死亦何憾？",
 	"#yj_sb_guojia_shadow:die": "江湖路远，诸君，某先行一步……",
+	
+	// wztx
+	"#dcshuren1": "嫁舟过江浦，荷花犹记女儿红。",
+	"#dcshuren2": "玉锁枷春风，却惊小荷角上蜓。",
+	"#dcsaran1": "愈创愈狂愈烈，越伤越战越凶！",
+	"#dcsaran2": "阵前女儿怒，一步一杀一雷霆！",
+	"#v_sunshangxiang:die": "荷残风住时，无物可赠君……",
+	"#dcshuren_v_sunshangxiang_shadow1": "南雁忽啼王孙去，唯闻故园捣衣声。",
+	"#dcshuren_v_sunshangxiang_shadow2": "褪得绫罗去，清风渡我怀。",
+	"#dcsaran_v_sunshangxiang_shadow1": "赤焰烧云我裁舟，敢教江水逆弓流！",
+	"#dcsaran_v_sunshangxiang_shadow2": "娥眉贯弓，大江作炉熔，千帆成冢，滴铁如红！",
+	"#v_sunshangxiang_shadow:die": "终未成藏剑鞘，倒做了隔岸火……",
 	
 	// mobile
 	"#mbcaiqiu1": "衣为礼之大者，岂可草草而决？",
@@ -9230,7 +9239,7 @@ game.import("character", function () {
 	"#yaowu2": "哼，先让你尝点甜头！",
 	"#huaxiong:die": "这，怎么可能……",
 	"#yicong1": "冲啊！",
-	"#yicong2": "众将听令，排好阵势，御敌！",
+	"#yicong2": "众将听令，摆好阵势，御敌！",
 	"#gongsunzan:die": "我军将败，我已无颜苟活于世……",
 	"#xinfu_jijie1": "一拜一起，未足为劳。",
 	"#xinfu_jijie2": "识言观行，方能雍容风议。",
@@ -10287,6 +10296,11 @@ game.import("character", function () {
 	"#xinfu_zhanji2": "功曹之恩，吾必有展骥之机。",
 	
 	// yijiang
+	"#fjzhitu1": "辨广轮之度，正彼此之体，远近无所隐其形。",
+	"#fjzhitu2": "地有六合，图有六体，可校其经纬。",
+	"#dcfujue1": "《周礼》有言，爵分公、侯、伯、子、男。",
+	"#dcfujue2": "复五等之爵，明尊卑之序。",
+	"#fj_peixiu:die": "这酒，是冷的……",
 	"#xvzhi1": "鹿复现于野，孰不可射乎？",
 	"#xvzhi2": "天下之士合纵，欲复攻于秦。",
 	"#linghuyu:die": "咳咳……我欲谋大事，奈何命不由己……",
@@ -11259,6 +11273,16 @@ game.import("character", function () {
 	// 3v3赵云待补
 	// "#jiuzhu1": "子龙在此，主公莫急！",
 	// "#jiuzhun2": "此处有我抵挡，主公速速撤退。",
+	
+	//彩蛋（声音克隆）
+	// 极略神司马懿
+	"#xiongzhi_new_simayi1": "烈士雄心，志存高远。",
+	"#xiongzhi_new_simayi2": "乱世之中，唯我司马！",
+	// 赵云义从
+	"#reyicong_jsp_zhaoyun1": "变阵冲轭，以守代攻。",
+	"#reyicong_jsp_zhaoyun2": "列阵锋矢，直取要害。",
+	"#yicong_yy_zhaoyun1": "冲啊！",
+	"#yicong_yy_zhaoyun2": "众将听令，摆好阵势，御敌！",
 /*--------------------------------台词因名将吴懿而更新，所以都放这里很合理吧（结束）--------------------------------*/
 		},
 		perfectPair: {

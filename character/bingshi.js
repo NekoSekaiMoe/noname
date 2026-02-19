@@ -35,13 +35,13 @@ game.import("character", function () {
 			pot_dengai: [
 				"male",
 				"wei",
-				3,
+				4,
 				["pottuntian", "potjixi", "potzaoxian"],
 			],
 			pot_huanjie: [
 				"male",
 				"wei",
-				3,
+				4,
 				["potgongmou", "potzhengshuo"],
 			],
 			pot_xinxianying: [
@@ -190,9 +190,9 @@ game.import("character", function () {
 		},
 		characterFilter: {
 			// 临时修改（by 棘手怀念摧毁）
-			mb_chenzhi: function (mode) {
-				return false;
-			},
+			// mb_chenzhi: function (mode) {
+				// return false;
+			// },
 			// guoyuan: function (mode) {
 				// return false;
 			// },
@@ -367,6 +367,7 @@ game.import("character", function () {
 					},
 				},
 			},
+			/*
 			//国渊
 			mbqingdao: {
 				audio: 2,
@@ -509,12 +510,174 @@ game.import("character", function () {
 					event.finish();
 				},
 			},
-			
+			*/
 
 
 
 
 
+			//势邓艾·重做
+			pottuntian: {
+				audio: 2,
+				chargeSkill: 0,
+				locked: false,
+				forced: true,
+				group: ["pottuntian_phaseUse"],
+				trigger: {
+					player: "loseAfter",
+					global: ["loseAsyncAfter", "gainAfter", "addToExpansionAfter", "addJudgeAfter", "equipAfter", "phaseBegin"],
+				},
+				filter(event, player) {
+					if (event.name == "phase") {
+						return !player.countCharge(true);
+					}
+					return player.countCharge(true) && event.getl?.(player)?.cards2.some(card => !get.tag(card, "damage"));
+				},
+				async content(event, trigger, player) {
+					if (trigger.name == "phase") {
+						await player.draw();
+						game.log(player, "的蓄力值上限+1");
+						player.addMark(event.name, 1, false);
+						player.markSkill("charge");
+					} else {
+						player.addCharge(1);
+					}
+				},
+				mod: {
+					maxCharge(player, num) {
+						return num + player.countMark("pottuntian");
+					},
+				},
+				subSkill: {
+					phaseUse: {
+						audio: "potjixi",
+						enable: "phaseUse",
+						filter(event, player) {
+							return player.countCharge() > 0;
+						},
+						usable: 1,
+						async precontent(event, trigger, player) {
+							const skill = event.name.slice(4);
+							const result = await player
+								.chooseNumbers(`###${get.translation(skill)}###出牌阶段限一次，你可以消耗任意点蓄力点，令至多等量名角色从牌堆或弃牌堆中各获得一张红桃牌`, [{ prompt: "请选择要移去的蓄力值", min: 1, max: player.countCharge() }])
+								.set("processAI", () => {
+									const player = get.player();
+									const num = Math.min(player.countCharge(), 3);
+									return [num];
+								})
+								.forResult();
+							if (result?.bool && result.numbers?.length) {
+								event.result = {
+									bool: true,
+								};
+								event.getParent().set(skill, result.numbers[0]);
+							} else {
+								event.getParent().goto(0);
+							}
+						},
+						async content(event, trigger, player) {
+							const { [event.name]: num } = event.getParent(2);
+							if (!num) {
+								return;
+							}
+							player.removeCharge(num);
+							const result = await player
+								.chooseTarget(`屯田：令至多${num}名角色各获得一张红桃牌`, [1, num], true)
+								.set("ai", target => get.attitude(get.player(), target) > 0)
+								.forResult();
+							const { targets } = result;
+							if (!targets?.length) {
+								return;
+							}
+							player.line(targets);
+							await game.doAsyncInOrder(targets, async target => {
+								const card = get.cardPile(card => get.suit(card) == "heart");
+								if (card) {
+									return target.gain(card, "gain2");
+								} else if (target != player) {
+									//牢萌最爱的免费鸡蛋
+									target.throwEmotion(player, "egg");
+									target.chat("我的免费鸡蛋呢");
+								}
+							});
+						},
+						ai: {
+							order: 8,
+							result: {
+								player: 1,
+							},
+						},
+					},
+				},
+			},
+			potjixi: {
+				audio: 2,
+				forced: true,
+				trigger: { player: "removeMark" },
+				filter(event, player) {
+					return event.markName == "charge" && event.num >= 3;
+				},
+				async content(event, trigger, player) {
+					const { num } = trigger;
+					const list = ["wuzhong", "wuxie", "wugu"];
+					for (let i = 0; i < 3; i++) {
+						if (num >= (i + 1) * 2 + 1) {
+							const card = get.discardPile(card => get.name(card) == list[i]);
+							if (card) {
+								await player.gain(card, "gain2");
+							} else {
+								player.chat(`没有${get.translation(list[i])}!`);
+							}
+						}
+					}
+				},
+			},
+			potzaoxian: {
+				audio: 2,
+				trigger: { global: "phaseEnd" },
+				filter(event, player) {
+					return get.info("potzaoxian").getTargets(player).length && _status.currentPhase?.countDiscardableCards(player, "he") > 0;
+				},
+				getTargets(player) {
+					return player
+						.getHistory("useCard")
+						.flatMap(evt => evt.targets || [])
+						.unique()
+						.remove(player);
+				},
+				logTarget: () => _status.currentPhase,
+				check(event, player) {
+					return get
+						.info("potzaoxian")
+						.getTargets(player)
+						.some(target => get.effect(target, { name: "shunshou" }, player, player) > 0);
+				},
+				async content(event, trigger, player) {
+					const {
+						targets: [target],
+					} = event;
+					await player.discardPlayerCard(target, "he", true);
+					const card = get.autoViewAs({ name: "shunshou", isCard: true });
+					const targets = get
+						.info(event.name)
+						.getTargets(player)
+						.filter(target => player.canUse(card, target, false));
+					if (targets.length) {
+						const result = await player
+							.chooseTarget(`凿险：视为对任意名其他角色使用一张无距离限制的【顺手牵羊】`, [1, Infinity], (card, player, target) => {
+								return get.event().targets.includes(target);
+							})
+							.set("_get_card", card)
+							.set("targets", targets)
+							.set("ai", target => get.effect(target, get.card(), get.player(), get.player()))
+							.forResult();
+						const { targets: targetsx } = result;
+						if (targetsx?.length) {
+							await player.useCard(card, targetsx);
+						}
+					}
+				},
+			},
 			//势钟会 by柴油鹿鹿
 			mbsizi: {
 				audio: 7,
@@ -1081,289 +1244,6 @@ game.import("character", function () {
 					},
 				},
 			},
-			//势邓艾（神笔三技能互绑的三血白）
-			pottuntian: {
-				audio: 2,
-				beginMarkCount: 1,
-				chargeSkill: 3,
-				getNum(player) {
-					const num = game
-						.getGlobalHistory("everything", evt => {
-							if (evt.player != player || evt.name != "removeMark") {
-								return false;
-							}
-							return evt.markName == "charge";
-						})
-						.reduce((sum, evt) => sum + evt.num, 0);
-					return num;
-				},
-				enable: "phaseUse",
-				usable: 1,
-				filter(event, player) {
-					return player.countCharge();
-				},
-				filterTarget(event, player, target) {
-					return target.countCards("he");
-				},
-				async content(event, trigger, player) {
-					const target = event.targets[0];
-					player.removeCharge();
-					const cards = await target
-						.chooseCard("he", true, "选择一张牌置于" + get.translation(player) + "的武将牌上作为「田」")
-						.set("ai", card => {
-							const player = get.player(),
-								target = get.event("target"),
-								att = get.attitude(player, target);
-							if (att <= 0) {
-								return 6 - get.value(card);
-							}
-							return target.getUseValue(card);
-						})
-						.set("target", player)
-						.forResultCards();
-					if (cards?.length) {
-						const next = player.addToExpansion(cards, target, "give");
-						next.gaintag.add("pottuntian");
-						await next;
-					}
-				},
-				marktext: "田",
-				intro: {
-					content: "expansion",
-					markcount: "expansion",
-				},
-				onremove(player, skill) {
-					const cards = player.getExpansions(skill);
-					if (cards.length) {
-						player.loseToDiscardpile(cards);
-					}
-				},
-				group: ["pottuntian_init", "pottuntian_biyue", "pottuntian_addCharge"],
-				subSkill: {
-					init: {
-						audio: "pottuntian",
-						trigger: {
-							player: "enterGame",
-							global: "phaseBefore",
-						},
-						filter(event, player) {
-							if (!player.countCharge(true)) {
-								return false;
-							}
-							return event.name != "phase" || game.phaseNumber == 0;
-						},
-						forced: true,
-						locked: false,
-						async content(event, trigger, player) {
-							const num = lib.skill.pottuntian.beginMarkCount;
-							player.addCharge(num);
-						},
-					},
-					biyue: {
-						audio: "pottuntian",
-						trigger: { player: "phaseEnd" },
-						filter(event, player) {
-							const num = lib.skill.pottuntian.getNum(player);
-							return num > 0;
-						},
-						forced: true,
-						locked: false,
-						async content(event, trigger, player) {
-							const num = lib.skill.pottuntian.getNum(player);
-							if (num > 0) {
-								await player.draw(num);
-							}
-						},
-					},
-					addCharge: {
-						audio: "pottuntian",
-						trigger: {
-							player: "loseAfter",
-							global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
-						},
-						filter(event, player) {
-							if (player == _status.currentPhase || !player.countCharge(true)) {
-								return false;
-							}
-							//我真没招了
-							if (event.name != "addToExpansion") {
-								if (event.name == "lose" && event.getlx !== false) {
-									for (var i in event.gaintag_map) {
-										if (event.gaintag_map[i].includes("pottuntian")) {
-											return true;
-										}
-									}
-								}
-								if (
-									game.getGlobalHistory("cardMove", evt => {
-										if (evt.name != "lose" || event != evt.getParent()) {
-											return false;
-										}
-										for (var i in evt.gaintag_map) {
-											if (evt.gaintag_map[i].includes("pottuntian") && evt.player == player) {
-												return true;
-											}
-										}
-										return false;
-									}).length
-								) {
-									return true;
-								}
-							}
-							if (event.name == "gain" && event.player == player) {
-								return false;
-							}
-							const evt = event.getl(player);
-							return evt && evt.cards2 && evt.cards2.length > 0;
-						},
-						forced: true,
-						locked: false,
-						async content(event, trigger, player) {
-							player.addCharge(1);
-						},
-					},
-				},
-				ai: {
-					order: 7,
-					result: {
-						player(player, target) {
-							return get.effect(target, { name: "shunshou_copy2" }, player, player);
-						},
-					},
-					//剩下这部分ai直接照抄手杀界屯田力
-					effect: {
-						target() {
-							return lib.skill.tuntian.ai.effect.target.apply(this, arguments);
-						},
-					},
-					threaten(player, target) {
-						if (target.countCards("h") == 0) {
-							return 2;
-						}
-						return 0.5;
-					},
-					nodiscard: true,
-					nolose: true,
-					notemp: true,
-				},
-			},
-			potjixi: {
-				audio: 2,
-				mod: {
-					targetInRange(card) {
-						if (card.storage?.potjixi) {
-							return true;
-						}
-					},
-				},
-				enable: ["chooseToUse", "chooseToRespond"],
-				hiddenCard(player, name) {
-					if (player.hasSkill("pottuntian", null, null, false) && player.hasMark("potzaoxian") && player.getExpansions("pottuntian").some(card => card.name == name)) {
-						return true;
-					}
-				},
-				filter(event, player) {
-					if (event.responded || event.potjixi || !player.hasSkill("pottuntian", null, null, false) || !player.hasMark("potzaoxian")) {
-						return false;
-					}
-					return player.getExpansions("pottuntian").some(card => event.filterCard(get.autoViewAs({ name: card.name, nature: card.nature, storage: { potjixi: true } }, [card]), player, event));
-				},
-				chooseButton: {
-					dialog(event, player) {
-						return ui.create.dialog("急袭", player.getExpansions("pottuntian"), "hidden");
-					},
-					filter(button, player) {
-						const evt = _status.event.getParent();
-						return evt.filterCard(get.autoViewAs({ name: button.link.name, nature: button.link.nature, storage: { potjixi: true } }, [button.link]), player, evt);
-					},
-					check(button) {
-						const card = button.link,
-							player = get.player();
-						return player.getUseValue({
-							name: card.name,
-							nature: card.nature,
-							storage: { potjixi: true },
-						});
-					},
-					backup(links, player) {
-						return {
-							audio: "potjixi",
-							filterCard(card) {
-								return card === lib.skill.potjixi_backup.card;
-							},
-							selectCard: -1,
-							viewAs: {
-								name: links[0].name,
-								nature: links[0].nature,
-								storage: { potjixi: true },
-							},
-							card: links[0],
-							position: "x",
-							precontent() {
-								player.removeMark("potzaoxian", 1);
-								event.result.card = get.autoViewAs(event.result.cards[0]);
-								event.getParent().addCount = false;
-								game.log(event.result.cards[0], "不计入次数");
-							},
-						};
-					},
-					prompt(links, player) {
-						return "急袭：请选择" + get.translation(links[0]) + "的目标";
-					},
-				},
-				ai: {
-					combo: ["pottuntian", "potzaoxian"],
-					effect: {
-						target(card, player, target, effect) {
-							if (get.tag(card, "respondShan")) {
-								return 0.7;
-							}
-							if (get.tag(card, "respondSha")) {
-								return 0.7;
-							}
-						},
-					},
-					order: 9,
-					respondShan: true,
-					respondSha: true,
-					result: {
-						player(player) {
-							if (_status.event.dying) {
-								return get.attitude(player, _status.event.dying);
-							}
-							return 1;
-						},
-					},
-				},
-				subSkill: {
-					backup: { audio: "potjixi" },
-				},
-			},
-			potzaoxian: {
-				audio: 2,
-				trigger: {
-					global: "phaseEnd",
-				},
-				filter(event, player) {
-					if (!player.hasSkill("pottuntian", null, null, false)) {
-						return false;
-					}
-					const num = player.countCharge();
-					return [0, 3].includes(num);
-				},
-				forced: true,
-				async content(event, trigger, player) {
-					player.addMark("potzaoxian", 1);
-				},
-				marktext: "峥",
-				intro: {
-					name: "峥嵘",
-					content: "mark",
-				},
-				ai: {
-					combo: ["pottuntian", "potjixi"],
-				},
-			},
 			//势桓阶（传奇搅屎棍，新时代鲁大师）
 			potgongmou: {
 				audio: 2,
@@ -1411,24 +1291,23 @@ game.import("character", function () {
 				skillAnimation: true,
 				animationColor: "fire",
 				filter(event, player) {
-					return !game.hasPlayer(target => target.countCards("h") == 4);
+					return true;
+					//return !game.hasPlayer(target => target.countCards("h") == 4);
 				},
-				prompt: "你可令全场角色依次弃置所有牌，然后洗牌并重新分发手牌",
+				filterTarget: true,
+				selectTarget: -1,
+				multiline: true,
+				multitarget: true,
+				line: "thunder",
+				prompt: "你可令全场角色依次弃置所有手牌，然后洗牌并重新分发手牌",
 				async content(event, trigger, player) {
 					player.awakenSkill(event.name);
-					const targets = game.filterPlayer().sortBySeat();
+					const { targets } = event;
 					player.chat("新年好啊！");
-					player.line(targets, "thunder");
-					for (const target of targets) {
-						if (target.countDiscardableCards(target, "he")) {
-							await target.modedDiscard(target.getCards("he"));
-						}
-					}
+					await game.doAsyncInOrder(targets, async target => target.modedDiscard(target.getCards("h")));
 					await game.washCard();
 					player.chat("发牌！");
-					for (const target of targets) {
-						await target.draw(4);
-					}
+					await game.asyncDraw(targets.sortBySeat(), 4);
 				},
 				ai: {
 					//贯彻搅屎棍精神，有大直接开
@@ -2900,7 +2779,7 @@ game.import("character", function () {
 				},
 			},
 			//国渊
-			/*
+			// /*
 			mbqingdao: {
 				audio: 2,
 				trigger: { global: "useCardAfter" },
@@ -3059,7 +2938,7 @@ game.import("character", function () {
 					}
 				},
 			},
-			*/
+			// */
 			mbxiugeng: {
 				audio: 4,
 				logAudio: index => (typeof index === "number" ? "mbxiugeng" + index + ".mp3" : 2),
@@ -6144,19 +6023,15 @@ game.import("character", function () {
 			// potgongmou_info: `准备阶段，你可以与一名其他角色交换手牌，若如此做，你获得技能${get.poptip("qice")}且其获得技能${get.poptip("kanpo")}至本回合结束。`,
 			potgongmou_info: "准备阶段，你可以与一名其他角色交换手牌，若如此做，你获得技能〖奇策〗且其获得技能〖看破〗至本回合结束。",
 			potzhengshuo: "正朔",
-			potzhengshuo_info: "限定技，出牌阶段，若没有角色的手牌数为4，你可以令所有角色弃置所有牌，然后洗牌。若如此做，所有角色各摸四张牌。",
+			potzhengshuo_info: "限定技，出牌阶段，你可以令所有角色弃置所有手牌，然后洗牌。若如此做，所有角色各摸四张牌。",//若没有角色的手牌数为4，
 			pot_dengai: "势邓艾",
 			pot_dengai_prefix: "势",
 			pottuntian: "屯田",
-			pottuntian_info: "蓄力技（1/3），出牌阶段限一次，你可以减少1点蓄力点，令一名角色将一张牌置于你的武将牌上，称为“田”。回合结束时，你摸X张牌（X为你本回合失去过的蓄力点数量）。你于回合外失去牌或“田”后，获得1点蓄力点。",
+			pottuntian_info: "蓄力技（0/0），当你失去非伤害牌后，你获得一点蓄力点；出牌阶段限一次，你可以消耗任意点蓄力点，令至多等量名角色从牌堆或弃牌堆中各获得一张红桃牌；一名角色的回合开始时，若你蓄力点已满，你摸一张牌且蓄力点上限+1。",
 			potjixi: "急袭",
-			// 临时修改（by 棘手怀念摧毁）
-			// potjixi_info: `若你拥有技能${get.poptip("pottuntian")}，你可移除1个“峥嵘”标记，然后将一张“田”以不计入次数且无距离限制的方式使用或打出。`,
-			potjixi_info: "若你拥有技能〖屯田〗，你可移除1个“峥嵘”标记，然后将一张“田”以不计入次数且无距离限制的方式使用或打出。",
+			potjixi_info: "锁定技，当你一次性消耗的蓄力点数量：不小于3，你从弃牌堆中获得一张【无中生有】；不小于5，你从弃牌堆中获得一张【无懈可击】；不小于7，你从弃牌堆中获得一张【五谷丰登】。",
 			potzaoxian: "凿险",
-			// 临时修改（by 棘手怀念摧毁）
-			// potzaoxian_info: `锁定技，一名角色的回合结束时，若你拥有技能${get.poptip("pottuntian")}，且你拥有0或3点蓄力点，你获得1个“峥嵘”标记。`,
-			potzaoxian_info: "锁定技，一名角色的回合结束时，若你拥有技能〖屯田〗，且你拥有0或3点蓄力点，你获得1个“峥嵘”标记。",
+			potzaoxian_info: "一名角色的回合结束时，若场上存在本回合你使用过牌指定为目标的其他角色，你可弃置当前回合角色一张牌，然后视为使用一张指定其中任意名角色为目标的无视距离的【顺手牵羊】。",
 			pot_chenjiao: "势陈矫",
 			pot_chenjiao_prefix: "势",
 			potqingyan: "清严",

@@ -86,7 +86,7 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 			},
 		},
 		gameStart:function(){
-			game.playAudio('../extension', decadeUI.extensionName, 'audio/game_start.mp3');
+			if(lib.config.background_audio) game.playAudio('../extension', decadeUI.extensionName, 'audio/game_start.mp3');
 			var animation = decadeUI.animation;
 			var bounds = animation.getSpineBounds('战火_背景');
 			if (bounds == null) return;
@@ -157,7 +157,7 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 			var anim = decadeUI.animation;
 			var bounds = anim.getSpineBounds('effect_jisha1');
 			
-			game.playAudio('../extension', decadeUI.extensionName, 'audio/kill_effect_sound.mp3');
+			if(lib.config.background_audio) game.playAudio('../extension', decadeUI.extensionName, 'audio/kill_effect_sound.mp3');
 			if (bounds == void 0) {
 				var lightLarge = decadeUI.dialog.create('li-big', effect);
 				victim.rout = decadeUI.dialog.create('rout', victim);

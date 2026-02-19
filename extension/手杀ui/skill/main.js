@@ -66,7 +66,9 @@ app.import(function(lib, game, ui, get, ai, _status, app) {
 		// 修复搬运：魔改十周年 萌修版
 		for (var i = 0; i < skills.length; i++) {
 			var info = get.info(skills[i]);
-			if (info&&info.nopop) skills.splice(i--, 1);
+			// 装备的被动技能不显示在技能栏里（by 棘手怀念摧毁）
+			if (info && (info.nopop || (info.equipSkill && !info.enable))) skills.splice(i--, 1);
+			// if (info&&info.nopop) skills.splice(i--, 1);
 		}
 		
 		var iSkills = player.invisibleSkills.slice(0);
@@ -191,6 +193,10 @@ app.import(function(lib, game, ui, get, ai, _status, app) {
           var node = self.querySelector('[data-id="' + item.id + '"]');
           if (node) return;
           if (item.type === 'enable') {
+			// 分离装备技能按钮
+			if(item.info?.equipSkill){
+				node = ui.create.div('.equipskillitem', self.node.enable, item.name);
+			}else
             node = ui.create.div('.skillitem', self.node.enable, item.name);
             node.dataset.id = item.id;
             app.listen(node, plugin.clickSkill);
@@ -219,7 +225,11 @@ app.import(function(lib, game, ui, get, ai, _status, app) {
             item.classList.remove('usable');
           }
 
-          if (_status.event.skill === item.dataset.id) {
+			// 修复部分技能按钮按下后字体颜色变灰的bug（by 棘手怀念摧毁）
+			// 注1：部分按钮按下后可通过再次点击该按钮恢复（字体颜色均保持原样不会变灰）
+			// 注2：部分按钮不能在按钮按下后通过再次点击恢复（是因为开自动确认了），按下后字体颜色会变灰（不是bug）
+			if (_status.event.skill === item.dataset.id || _status.event.skill === item.dataset.id+"_backup") {
+          // if (_status.event.skill === item.dataset.id) {
             item.classList.add('select');
           } else {
             item.classList.remove('select');

@@ -10847,7 +10847,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			priest_puzhao: "普照",
 			priest_puzhao_info: "你出场时，己方主将可令一名其他友方随从增加2点体力和体力上限。",
 			priest_suoxiao: "缩小",
-			priest_suoxiao_info: "你出场时，己方主将可令一名其他随从减少2点体力上限（不能小于1)。",
+			priest_suoxiao_info: "你出场时，己方主将可令一名其他随从减少2点体力上限（不能小于1）。",
 			priest_shengshui: "圣水",
 			priest_shengshui_info: "你跳过摸牌阶段；在你的准备阶段，令一名随机友方角色回复2点体力。",
 			priest_muguang: "暮光",
@@ -11296,7 +11296,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			stonesha: "进攻",
 			stonesha_info: "锁定技，你的装备牌均视为【杀】。",
 			stoneshan: "格挡",
-			stoneshan_info: "锁定技，你的随从和法术牌均视为闪。",
+			stoneshan_info: "锁定技，你的随从和法术牌均视为【闪】。",
 
 			stonecharacter: "随从",
 			spell_shengerpingdeng: "生而平等",

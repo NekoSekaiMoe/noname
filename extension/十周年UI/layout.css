@@ -824,6 +824,11 @@ html {
 	position: absolute;
 }
 
+/* 出牌记录栏高度修复 */
+#window.single-handcard #historybar {
+	height: calc(100% - 0px);
+}
+
 /* 本体回合内虚化效果魔改（修复十周年 UI 玩家装备区回合内显示问题） */
 #arena.selecting:not(.video) .player[data-position='0'] .card:not(.selectable)>.background,
 #arena.selecting:not(.video) .player[data-position='0'] .card:not(.selectable)>.image,
@@ -977,4 +982,43 @@ span[data-nature='qunmm'] {
 }
 .dui-mobile .card>.suit-num.menusizex>.suit {
 	font-size: 18px !important;
+}
+.card,
+.card.decade-card.menusizes {
+	width: 72px;
+	height: 100px;
+}
+
+/* 炉石模式界面修复 */
+#arena.stone > .player.minskin[data-position="4"] {
+	top: calc(100% - 345px) !important;
+	/* left: calc(100% - 120px); */
+}
+#arena.stone > .player.minskin[data-position="5"] {
+	top: calc(100% - 345px) !important;
+	/* left: 0; */
+}
+#arena.stone > .player.minskin[data-position="6"] {
+	top: calc(100% - 345px) !important;
+	/* left: calc(100% - 260px); */
+}
+#arena.stone > .player.minskin[data-position="7"] {
+	top: calc(100% - 345px) !important;
+	/* left: 140px; */
+}
+#arena.stone > .player.minskin[data-position="8"] {
+	top: 69px !important;
+	/* left: 0; */
+}
+#arena.stone > .player.minskin[data-position="9"] {
+	top: 69px !important;
+	/* left: calc(100% - 120px); */
+}
+#arena.stone > .player.minskin[data-position="10"] {
+	top: 69px !important;
+	/* left: 140px; */
+}
+#arena.stone > .player.minskin[data-position="11"] {
+	top: 69px !important;
+	/* left: calc(100% - 260px); */
 }

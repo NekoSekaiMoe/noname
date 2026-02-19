@@ -3057,7 +3057,7 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 							var name = "zc26_zhuge";
 							dialog.addText("装备牌【折戟】的效果修改为【魂·诸葛连弩】：<br><li>攻击范围：1<br><li>" + get.translation(name+"_info"), false);
 							var card = game.createCard(name);
-							card.classList.add('menusize');
+							card.classList.add('menusizes');
 							dialog.addSmall(card);
 						},
 					},
@@ -3071,7 +3071,7 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 							var name = "zc26_bagua";
 							dialog.addText("装备牌【女装】的效果修改为【魂·八卦阵】：<br><li>" + get.translation(name+"_info"), false);
 							var card = game.createCard(name);
-							card.classList.add('menusize');
+							card.classList.add('menusizes');
 							dialog.addSmall(card);
 						},
 					},
@@ -3085,7 +3085,7 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 							var name = "zc26_lingling";
 							dialog.addText("装备牌【庸驴】的效果修改为【軨軨】：<br><li>距离：-2<br><li>" + get.translation(name+"_info"), false);
 							var card = game.createCard(name);
-							card.classList.add('menusize');
+							card.classList.add('menusizes');
 							dialog.addSmall(card);
 						},
 					},
@@ -5096,6 +5096,106 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 			},
 		},
 		
+		// 临时修复装备技能（例如OL魔曹操）会参与到与技能相关的技能中去的bug
+		// 其他武将需临时修复（by 棘手怀念摧毁），示例：info && !info.charlotte && !info.equipSkill
+		// 封印、白板
+		fengyin: {
+			init: function (player, skill) {
+				player.addSkillBlocker(skill);
+			},
+			onremove: function (player, skill) {
+				player.removeSkillBlocker(skill);
+			},
+			charlotte: true,
+			skillBlocker: function (skill, player) {
+				// 临时修复：装备技能不失效
+				return !lib.skill[skill].persevereSkill && !lib.skill[skill].charlotte && !get.info(skill)?.equipSkill && !get.is.locked(skill, player);
+				// return !lib.skill[skill].persevereSkill && !lib.skill[skill].charlotte && !get.is.locked(skill, player);
+			},
+			mark: true,
+			intro: {
+				content: function (storage, player, skill) {
+					var list = player.getSkills(null, false, false).filter(function (i) {
+						return lib.skill.fengyin.skillBlocker(i, player);
+					});
+					if (list.length) return "失效技能：" + get.translation(list);
+					return "无失效技能";
+				},
+			},
+		},
+		baiban: {
+			init: function (player, skill) {
+				player.addSkillBlocker(skill);
+			},
+			onremove: function (player, skill) {
+				player.removeSkillBlocker(skill);
+			},
+			charlotte: true,
+			skillBlocker: function (skill, player) {
+				return !lib.skill[skill].persevereSkill && !lib.skill[skill].charlotte;
+			},
+			mark: true,
+			intro: {
+				content: function (storage, player, skill) {
+					var list = player.getSkills(null, false, false).filter(function (i) {
+						// 临时修复：装备技能失效但不显示
+						return lib.skill.baiban.skillBlocker(i, player) && !get.info(i)?.equipSkill;
+						// return lib.skill.baiban.skillBlocker(i, player);
+					});
+					if (list.length) return "失效技能：" + get.translation(list);
+					return "无失效技能";
+				},
+			},
+		},
+		// 异乡孤女胡笳
+		boss_hujia: {
+			audio: 2,
+			trigger: { player: "phaseJieshuBegin" },
+			direct: true,
+			unique: true,
+			filter: function (event, player) {
+				if (player.hp == player.maxHp) return false;
+				if (!player.countCards("he")) return false;
+				return true;
+			},
+			content: function () {
+				"step 0";
+				player.chooseCardTarget({
+					position: "he",
+					filterTarget: function (card, player, target) {
+						if (player == target) return false;
+						if (!lib.character[target.name]) return false;
+						return true;
+					},
+					filterCard: lib.filter.cardDiscardable,
+					ai1: function (card) {
+						return get.unuseful(card) + 9;
+					},
+					ai2: function (target) {
+						if (target.storage.boss_hujia) return Math.max(1, 10 - target.maxHp);
+						return 1 / target.maxHp;
+					},
+					prompt: get.prompt("boss_hujia"),
+				});
+				"step 1";
+				if (result.bool) {
+					var target = result.targets[0];
+					player.logSkill("boss_hujia", target);
+					if (target.storage.boss_hujia) {
+						target.loseMaxHp();
+					} else {
+						// 临时修复
+						target.addSkill("baiban");
+						// target.disableSkill("boss_hujia", lib.character[target.name][3]);
+						target.storage.boss_hujia = true;
+					}
+					player.discard(result.cards);
+				}
+			},
+			ai: {
+				expose: 0.2,
+			},
+		},
 		
 	};
 	

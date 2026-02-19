@@ -3522,26 +3522,61 @@ export class Player extends HTMLDivElement {
 		this.updateMarks();
 		return this;
 	}
+	/**
+	 * 清除玩家的标记
+	 * @param { string } i
+	 * @param { boolean } [log]
+	 */
 	clearMark(i, log) {
 		let num = this.countMark(i);
 		if (num > 0) this.removeMark(i, num, log);
 	}
+	/**
+	 * 移除玩家的标记
+	 * @param { string } i
+	 * @param { number } [num = 1]
+	 * @param { boolean } [log]
+	 */
 	removeMark(i, num, log) {
-		if (typeof num != "number" || !num) num = 1;
-		if (typeof this.storage[i] != "number" || !this.storage[i]) return;
-		if (num > this.storage[i]) num = this.storage[i];
+		if (typeof num != "number" || !num) {
+			num = 1;
+		}
+		if (typeof this.storage[i] != "number" || !this.storage[i]) {
+			return;
+		}
+		if (num > this.storage[i]) {
+			num = this.storage[i];
+		}
 		this.storage[i] -= num;
 		if (log !== false) {
 			var str = false;
 			var info = get.info(i);
-			if (info && info.intro && (info.intro.name || info.intro.name2))
+			if (info && info.intro && (info.intro.name || info.intro.name2)) {
 				str = info.intro.name2 || info.intro.name;
-			else str = lib.translate[i];
-			if (str) game.log(this, "移去了", get.cnNumber(num), "个", "#g【" + str + "】");
+			} else {
+				str = lib.translate[i];
+			}
+			if (str) {
+				game.log(this, "移去了", get.cnNumber(num), "个", "#g【" + str + "】");
+			}
 		}
 		this.syncStorage(i);
 		this[this.storage[i] || (lib.skill[i] && lib.skill[i].mark) ? "markSkill" : "unmarkSkill"](i);
+		const next = game.createEvent("removeMark", false, get.event());
+		next.player = this;
+		next.num = num;
+		next.markName = i;
+		next.log = log;
+		next.forceDie = true;
+		next.includeOut = true;
+		next.setContent("emptyEvent");
 	}
+	/**
+	 * 增加玩家的标记
+	 * @param { string } i
+	 * @param { number } [num = 1]
+	 * @param { boolean } [log]
+	 */
 	addMark(i, num, log) {
 		if (typeof num != "number" || !num) num = 1;
 		if (typeof this.storage[i] != "number") this.storage[i] = 0;
@@ -3557,13 +3592,20 @@ export class Player extends HTMLDivElement {
 		this.syncStorage(i);
 		this.markSkill(i);
 	}
+	/**
+	 * 设置玩家的标记数
+	 * @param { string } name
+	 * @param { number } num
+	 * @param { boolean } [log]
+	 */
 	setMark(name, num, log) {
 		const count = this.countMark(name);
 		if (count > num) this.removeMark(name, count - num, log);
 		else if (count < num) this.addMark(name, num - count, log);
 	}
 	/**
-	 * @param {*} i
+	 * 返回玩家的标记数
+	 * @param { string } i
 	 * @returns { number }
 	 */
 	countMark(i) {
@@ -3572,6 +3614,11 @@ export class Player extends HTMLDivElement {
 		if (Array.isArray(this.storage[i])) return this.storage[i].length;
 		return 0;
 	}
+	/**
+	 * 返回玩家是否拥有某个标记
+	 * @param { string } i
+	 * @returns { boolean }
+	 */
 	hasMark(i) {
 		return this.countMark(i) > 0;
 	}
@@ -3698,7 +3745,8 @@ export class Player extends HTMLDivElement {
 		let max = 0;
 		for (let skill of skills) {
 			let info = get.info(skill);
-			if (!info || !info.chargeSkill || typeof info.chargeSkill != "number") {
+			if (!info || typeof info.chargeSkill != "number") {
+				//|| !info.chargeSkill
 				continue;
 			}
 			if (info.chargeSkill == Infinity) {
@@ -5043,6 +5091,47 @@ export class Player extends HTMLDivElement {
 		if (next.ai1 == undefined) next.ai1 = get.unuseful2;
 		if (next.ai2 == undefined) next.ai2 = get.attitude2;
 		next.setContent("chooseCardTarget");
+		next._args = Array.from(arguments);
+		return next;
+	}
+	chooseButtonTarget(choose) {
+		var next = game.createEvent("chooseButtonTarget");
+		next.player = this;
+		if (arguments.length == 1) {
+			for (var i in choose) {
+				next[i] = choose[i];
+			}
+		}
+		if (typeof next.filterButton == "object") {
+			next.filterButton = get.filter(next.filterButton);
+		}
+		if (typeof next.filterTarget == "object") {
+			next.filterTarget = get.filter(next.filterTarget, 2);
+		}
+		if (next.filterButton == undefined || next.filterButton === true) {
+			next.filterButton = lib.filter.filterButton;
+		}
+		if (next.selectButton == undefined) {
+			next.selectButton = 1;
+		}
+		if (next.filterTarget == undefined || next.filterTarget === true) {
+			next.filterTarget = lib.filter.all;
+		}
+		if (next.selectTarget == undefined) {
+			next.selectTarget = 1;
+		}
+		if (next.ai1 == undefined) {
+			next.ai1 = function () {
+				return 1;
+			};
+		}
+		if (next.ai2 == undefined) {
+			next.ai2 = get.attitude2;
+		}
+		if (next.canHidden == undefined) {
+			next.canHidden = true;
+		}
+		next.setContent("chooseButtonTarget");
 		next._args = Array.from(arguments);
 		return next;
 	}

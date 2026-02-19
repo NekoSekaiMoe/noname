@@ -300,7 +300,7 @@ game.import("character", function () {
 				"荆州沔南白水人，沔阳名士黄承彦之女，诸葛亮之妻，诸葛瞻之母。容貌甚丑，而有奇才：上通天文，下察地理，韬略近于诸书无所不晓，诸葛亮在南阳闻其贤而迎娶。",
 			re_gongsunzan:
 				"群雄之一。出身贵族，因母地位卑贱，只当了郡中小吏。他貌美，声音洪亮，机智善辩。后随卢植于缑氏山中读书，粗通经传。",
-			re_lidian:
+			lidian:
 				"字曼成，曹操麾下将领。李典深明大义，不与人争功，崇尚学习与高贵儒雅，尊重博学之士，在军中被称为长者。李典有长者之风，官至破虏将军，三十六岁去世。魏文帝曹丕继位后追谥号为愍侯。",
 			sunben: " ",
 		},
@@ -308,7 +308,7 @@ game.import("character", function () {
 			
 		},
 		characterFilter: {
-			re_zuoci: function (mode) {
+			re_zuoci(mode) {
 				return mode != "guozhan";
 			},
 		},
@@ -5626,7 +5626,7 @@ game.import("character", function () {
 				},
 				position: "hes",
 				viewAs: { name: "bingliang" },
-				prompt: "将一张黑色非锦囊牌当做兵粮寸断使用",
+				prompt: "将一张黑色非锦囊牌当做【兵粮寸断】使用",
 				check: function (card) {
 					return 6 - get.value(card);
 				},
@@ -13624,7 +13624,9 @@ game.import("character", function () {
 						var str =
 							"<li>锁定技，你不能于〖蛊惑〗的结算流程中进行质疑。当你的体力值不大于1时，你的其他技能失效。";
 						var list = player.getSkills(null, false, false).filter(function (i) {
-							return lib.skill.rechanyuan.skillBlocker(i, player);
+							// 临时修复（by 棘手怀念摧毁）
+							return lib.skill.rechanyuan.skillBlocker(i, player) && !get.info(i)?.equipSkill;
+							// return lib.skill.rechanyuan.skillBlocker(i, player);
 						});
 						if (list.length) str += "<br><li>失效技能：" + get.translation(list);
 						return str;
@@ -16887,6 +16889,7 @@ game.import("character", function () {
 					player: ["changeHp"],
 				},
 				audio: 2,
+				audioname: ["jsp_zhaoyun"],//彩蛋（声音克隆）
 				audioname2: { gongsunzan: "yicong" },
 				forced: true,
 				filter: function (event, player) {
@@ -18476,7 +18479,7 @@ game.import("character", function () {
 			decadechunlao: "醇醪",
 			decadechunlao2: "醇醪",
 			decadechunlao_info:
-				"你可以对其他角色使用【酒（使用方法②）】。当你需要使用【酒】时，若你的武将牌未横置，则你可以将武将牌横置，然后视为使用【酒】。当你受到或造成伤害后，若伤害值大于1且你的武将牌横置，则你可以重置武将牌。",
+				"你可以对其他角色使用【酒】（使用方法②）。当你需要使用【酒】时，若你的武将牌未横置，则你可以将武将牌横置，然后视为使用【酒】。当你受到或造成伤害后，若伤害值大于1且你的武将牌横置，则你可以重置武将牌。",
 			rejuece: "绝策",
 			rejuece_info: "结束阶段，你可以对一名本回合内失去过牌的角色造成1点伤害。",
 			remieji: "灭计",

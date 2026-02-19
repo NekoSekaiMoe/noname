@@ -1,6 +1,6 @@
 'use strict';
 decadeModule.import(function(lib, game, ui, get, ai, _status){
-	// 临时修复扩展的武将包在武将界面不显示的bug
+	// 临时修复扩展的武将包在武将界面不显示的bug，示例：
 	// 活动武将
 	// if (lib.config.extensions && lib.config.extensions.contains('活动武将') && lib.config['extension_活动武将_enable']) {
 		// lib.config.all.characters.push('FaDongCharacter');
@@ -896,7 +896,9 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 						init: true,
 						type: 'autoskill',
 						onclick: clickAutoSkill,
-						intro: lib.translate[i + '_info']
+						// 选项-技能-自动发动加技能名ID
+						intro: "技能名ID：<br>"+i+"<br>技能描述:<br>"+(lib.translate[i + '_info']?lib.translate[i + '_info']:"/")
+						// intro: lib.translate[i + '_info']
 					};
 				}
 			}
@@ -927,7 +929,9 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					}
 					str += get.translation(forbid[i][j]) + '+';
 					str2 += forbid[i][j] + '+';
-					str3 += get.translation(forbid[i][j]) + '：' + lib.translate[forbid[i][j] + '_info'];
+					// 选项-技能-双将禁配加技能名ID
+					str3 += get.translation(forbid[i][j]) +" ["+forbid[i][j]+ ']：<br>' + lib.translate[forbid[i][j] + '_info'];
+					// str3 += get.translation(forbid[i][j]) + '：' + lib.translate[forbid[i][j] + '_info'];
 					if (j < forbid[i].length - 1) {
 						str3 += '<div class="placeholder slim" style="display:block;height:8px"></div>';
 					}
@@ -2108,6 +2112,11 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 								}
 							}
 							game.saveConfig('forbidai_user', lib.config.forbidai_user);
+							// 适配搬运自用扩展的快捷功能
+							if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kjaijywj']){
+								// 快捷AI禁用武将
+								updateActive();
+							}
 						},
 					});
 					if (!mode.startsWith('mode_')) {
@@ -2188,6 +2197,18 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 							}
 						}
 						else {
+							// 适配搬运自用扩展的快捷功能
+							if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kjaijywj']){
+								// 快捷AI禁用武将
+								_list = lib.config.forbidai_user;
+							} else if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kuaijieshoucang']){
+								// 快捷收藏功能
+								_list = lib.config.favouriteCharacter;
+							} else if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kuaijiezuijin']){
+								// 快捷最近功能
+								_list = get.config("recentCharacter");
+							} else 
+							// 当前模式快捷禁用武将（默认功能）
 							_list = lib.config[get.mode() + '_banned'];
 						}
 						if (_list && _list.includes(this.link)) {
@@ -2472,7 +2493,7 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 				};
 				
 				lib.config.nocharacters=[];
-				lib.config.defaultcharacters=['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan','collab','xianding','huicui','shiji','jsrg','sxrm','onlyOL','sixiang','bingshi','sbfm','mdtx','shengxiao','old'];
+				lib.config.defaultcharacters=['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan','collab','xianding','huicui','shiji','jsrg','sxrm','onlyOL','sixiang','bingshi','sbfm','mdtx','wztx','shengxiao','old'];
 				lib.config.notdefaultcharacters=['diy','ddd','key','yxs','hearth','gwent','mtg','ow','swd','gujian','xianjian'];
 				lib.config.benticharacters=lib.config.defaultcharacters.concat(lib.config.notdefaultcharacters);
 				var node1 = ui.create.div('.lefttext', '全部开启', start.firstChild, function () {
@@ -7403,6 +7424,13 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 				node.style.display = 'none';
 				page.classList.add('menu-help');
 				page.innerHTML = lib.help[i];
+				
+				// 更改菜单按钮字体
+				if (node.innerHTML.length >= 5) {
+					if (node.textContent.replace(/[^\u4e00-\u9fa5]/g, "").length >= 6) {
+						node.classList.add('minifont');
+					} else node.classList.add('smallfont');
+				}
 			}
 
 			if (!connectMenu) {

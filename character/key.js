@@ -1158,7 +1158,7 @@ game.import("character", function () {
 							if (
 								count >= 4 &&
 								(type[0] != "炸弹" || num > type[1] || count > type[2]) &&
-								numu.length < (type[0] == "炸弹" ? type2 : 4)
+								numu.length < (type[0] == "炸弹" ? type[2] : 4)
 							)
 								return 15;
 						}

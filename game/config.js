@@ -22,7 +22,7 @@ window.config={
 	zhinang_tricks:['guohe','wuxie','wuzhong','dongzhuxianji'],
 	connect_zhinang_tricks:['guohe','wuxie','wuzhong','dongzhuxianji'],
 	all:{
-		sgscharacters:['standard','shenhua','xinghuoliaoyuan','refresh','yijiang','sp','sp2','xianding','huicui','extra','old','mobile','shiji','tw','yingbian','offline','jsrg','sxrm','sb','clan','collab','onlyOL','sixiang','bingshi','sbfm','mdtx','shengxiao'],
+		sgscharacters:['standard','shenhua','xinghuoliaoyuan','refresh','yijiang','sp','sp2','xianding','huicui','extra','old','mobile','shiji','tw','yingbian','offline','jsrg','sxrm','sb','clan','collab','onlyOL','sixiang','bingshi','sbfm','mdtx','wztx','shengxiao'],
 		sgscards:['standard','extra','sp','guozhan','zhulu','yingbian','yongjian'],
 		sgsmodes:['identity','guozhan','versus','doudizhu','single','brawl','connect'],
 		stockmode:['identity','guozhan','versus','boss','doudizhu','single','chess','stone','connect','brawl','tafang'],
@@ -34,7 +34,7 @@ window.config={
 		image_background_filter:['default','blur','gray','sepia','invert','saturate','contrast','hue','brightness'],
 	},
 
-	modeorder:['identity','guozhan','versus','connect','boss','doudizhu','single','chess','tafang','stone','brawl'],
+	modeorder:['identity','guozhan','doudizhu','versus','single','boss','connect','chess','tafang','stone','brawl'],
 	game:'sgs',
 	duration:500,
 	hoveration:1000,
@@ -177,7 +177,7 @@ window.config={
 	sort:'type_sort',
 
 	cards:['standard','extra'],
-	characters:['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan','collab','xianding','huicui','shiji','jsrg','sxrm','onlyOL','sixiang','bingshi','sbfm','mdtx','shengxiao','old'],
+	characters:['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan','collab','xianding','huicui','shiji','jsrg','sxrm','onlyOL','sixiang','bingshi','sbfm','mdtx','wztx','shengxiao','old'],
 	connect_characters:['diy'],
 	connect_cards:['huanlekapai','guozhan','sp','zhulu','yingbian','yongjian'],
 	plays:[],
@@ -254,6 +254,7 @@ window.config={
 			revive:true,
 			continue_game:true,
 			show_replay:true,
+			feiyang_version:'mobile',
 		},
 		versus:{
 			olfeiyang_four:false,

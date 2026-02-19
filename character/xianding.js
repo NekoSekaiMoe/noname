@@ -7,6 +7,13 @@ game.import("character", function () {
 			
 		],
 		character: {
+			y_dc_zhangqiying: [
+				"female",
+				"qun",
+				3,
+				["y_dc_falu", "y_dc_zhenyi", "y_dc_dianhua"],
+				["die:zhangqiying"],
+			],
 			wu_huangfusong: ["male", "qun", 4, ["dcchaozhen", "dclianjie", "dcjiangxian"]],
 			wenyuan: ["female", "shu", 3, ["dckengqiang", "dckuichi", "dcshangjue"]],
 			dc_jiangqing: ["male", "wu", 4, ["dcshangyi", "dcniaoxiang"], ["die_audio:gz_jiangqing"]],
@@ -129,7 +136,7 @@ game.import("character", function () {
 				sp2_yuxiu: ["dongguiren", "dc_tengfanglan", "zhangjinyun", "zhoubuyi", "dc_xujing", "guanyue", "zhugejing"],
 				sp2_yinyu: ["zhouyi", "luyi", "sunlingluan", "caoyi"],
 				sp2_gaoshan: ["wanglang", "liuhui"],
-				sp2_qifu: ["dc_guansuo", "xin_baosanniang", "dc_zhaoxiang", "xurong"],
+				sp2_qifu: ["dc_guansuo", "xin_baosanniang", "dc_zhaoxiang", "xurong", "y_dc_zhangqiying"],
 				sp2_wumiao: ["wu_zhugeliang", "wu_luxun", "wu_guanyu", "wu_huangfusong"],
 				
 				xianding_waitforsort: ["zhangjian"],
@@ -224,11 +231,16 @@ game.import("character", function () {
 			// leitong:'#b对决限定武将',
 		},
 		characterFilter: {
-			// leitong:function(mode){
-			// 	return mode!='identity'&&mode!='guozhan';
+			// 临时修改（by 棘手怀念摧毁）
+			// y_dc_zhangqiying: function (mode) {
+				// return false;
 			// },
-			// wulan:function(mode){
-			// 	return mode!='identity'&&mode!='guozhan';
+			
+			// leitong(mode) {
+			// 	return mode != "identity" && mode != "guozhan";
+			// },
+			// wulan(mode) {
+			// 	return mode != "identity" && mode != "guozhan";
 			// },
 		},
 		characterInitFilter: {
@@ -239,6 +251,256 @@ game.import("character", function () {
 		},
 		/** @type { importCharacterConfig['skill'] } */
 		skill: {
+			//mega张琪瑛Y
+			y_dc_falu: {
+				audio: "xinfu_falu",
+				trigger: {
+					player: "loseAfter",
+					global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
+				},
+				forced: true,
+				locked: false,
+				filter(event, player) {
+					return event.getl(player).hs.length > 0;
+				},
+				intro: {
+					content(storage, player) {
+						if (storage) {
+							return `当前记录花色：${storage.map(i => get.translation(i)).join("")}`;
+						}
+						return "未记录";
+					},
+				},
+				async content(event, trigger, player) {
+					const suits = trigger.getl(player).hs.map(i => get.suit(i, player));
+					let list = player.getStorage(event.name).concat(suits);
+					if (list.length > 3) {
+						list = list.slice(-3);
+					}
+					player.setStorage(event.name, list, true);
+					const tip = player
+						.getStorage(event.name)
+						.map(i => get.translation(i))
+						.join("");
+					// 临时修改（by 棘手怀念摧毁）
+					// player.addTip(event.name, `法箓${tip}`);
+					if (list.length < 3) {
+						return;
+					}
+					if (list.toUniqued().length == 1) {
+						const suit = list[0];
+						player.setStorage(event.name, [], true);
+						// 临时修改（by 棘手怀念摧毁）
+						// player.removeTip(event.name);
+						const next = game.createEvent("removeFaluRecord", false);
+						next.player = player;
+						next.type = "same";
+						next.suit = suit;
+						next.setContent("emptyEvent");
+						await next;
+						const cards = [];
+						while (true) {
+							const card = get.cardPile2(card => {
+								return cards.every(cardx => get.suit(cardx) != get.suit(card)) && get.suit(card) != suit;
+							});
+							if (card) {
+								cards.add(card);
+							} else {
+								break;
+							}
+						}
+						if (cards?.length) {
+							await player.gain(cards, "gain2");
+						}
+					}
+					if (list.toUniqued().length == 3) {
+						player.setStorage(event.name, [], true);
+						// 临时修改（by 棘手怀念摧毁）
+						// player.removeTip(event.name);
+						const next = game.createEvent("removeFaluRecord", false);
+						next.player = player;
+						next.type = "diff";
+						next.setContent("emptyEvent");
+						await next;
+						const result = await player
+							.chooseButtonTarget({
+								createDialog: [
+									"法箓：是否令一名角色失去或回复1点体力？",
+									[
+										[
+											["loseHp", "失去1点体力"],
+											["recover", "回复1点体力"],
+										],
+										"tdnodes",
+									],
+								],
+								filterTarget(card, player, target) {
+									const buttons = ui.selected.buttons;
+									if (!buttons?.length) {
+										return false;
+									}
+									return buttons[0].link == "loseHp" || target.isDamaged();
+								},
+								ai1(button) {
+									const player = get.player();
+									let eff1 = 0,
+										eff2 = 0;
+									game.filterPlayer(current => {
+										const losehp = get.effect(current, { name: "losehp" }, current, player);
+										if (losehp > eff1) {
+											eff1 = losehp;
+										}
+										const recover = get.recoverEffect(current, player, player);
+										if (recover > eff2) {
+											eff2 = recover;
+										}
+									});
+									if (eff1 > eff2 && eff1 > 0) {
+										return button.link == "loseHp" ? 1 : 0;
+									}
+									if (eff1 < eff2 && eff2 > 0) {
+										return button.link == "loseHp" ? 0 : 1;
+									}
+									return 0;
+								},
+								ai2(target) {
+									const player = get.player(),
+										buttons = ui.selected.buttons;
+									if (!buttons?.length) {
+										return false;
+									}
+									if (buttons[0].link == "loseHp") {
+										return get.effect(target, { name: "losehp" }, target, player);
+									}
+									return get.recoverEffect(target, player, player);
+								},
+							})
+							.forResult();
+						if (!result?.bool) {
+							return;
+						}
+						const [target] = result.targets,
+							[link] = result.links;
+						player.line(target, "green");
+						await target[link](1, player);
+					}
+				},
+				onremove(player, skill) {
+					// 临时修改（by 棘手怀念摧毁）
+					// player.removeTip(skill);
+					delete player.storage[skill];
+				},
+			},
+			y_dc_zhenyi: {
+				audio: "xinfu_zhenyi",
+				trigger: { player: ["removeFaluRecord", "useCard"] },
+				filter(event, player) {
+					if (event.name == "useCard") {
+						return player.getStorage("y_dc_zhenyi_record").includes(get.suit(event.card));
+					}
+					if (event.type == "diff") {
+						return player.countMark("y_dc_zhenyi") < 4;
+					}
+					return !player.getStorage("y_dc_zhenyi_record").includes(event.suit);
+				},
+				intro: {
+					mark(dialog, storage, player) {
+						const list = player.getStorage("y_dc_zhenyi_record");
+						if (list?.length) {
+							dialog.addText(`使用${list.map(i => get.translation(i)).join("")}牌无距离限制且不可被响应`);
+						}
+						if (storage) {
+							dialog.addText(`发动〖点化〗观看牌数+${storage}`);
+						}
+						if (!list?.length && !storage) {
+							dialog.addText("未发动过〖真仪〗");
+						}
+					},
+					markcount: (storage, player) => `${player.getStorage("y_dc_zhenyi_record").length}/${(storage || 0).toString()}`,
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					if (trigger.name == "useCard") {
+						trigger.directHit.addArray(game.players);
+					} else {
+						if (trigger.type == "diff") {
+							player.addMark(event.name, 1, false);
+							// 临时修改（by 棘手怀念摧毁）
+							// player.addTip("y_dc_dianhua", "点化+" + player.countMark(event.name));
+						} else {
+							player.markAuto("y_dc_zhenyi_record", trigger.suit);
+							player.storage["y_dc_zhenyi_record"].sort((a, b) => lib.suit.indexOf(b) - lib.suit.indexOf(a));
+							player.markSkill(event.name);
+							// 临时修改（by 棘手怀念摧毁）
+							// player.addTip(event.name, "真仪" + player.storage["y_dc_zhenyi_record"].map(i => get.translation(i)).join(""));
+						}
+					}
+				},
+				ai: { combo: "y_dc_falu" },
+				mod: {
+					targetInRange(card, player) {
+						if (player.getStorage("y_dc_zhenyi_record").includes(get.suit(card))) {
+							return true;
+						}
+					},
+				},
+				onremove(player, skill) {
+					// 临时修改（by 棘手怀念摧毁）
+					// player.removeTip(skill);
+					// player.removeTip("y_dc_dianhua");
+					delete player.storage[skill];
+					delete player.storage[skill + "_record"];
+				},
+			},
+			y_dc_dianhua: {
+				audio: "xinfu_dianhua",
+				trigger: { player: ["phaseZhunbeiBegin", "phaseJieshuBegin"] },
+				frequent: true,
+				async content(event, trigger, player) {
+					const cards = get.cards(1 + player.countMark("y_dc_zhenyi"));
+					const result = await player
+						.chooseToMove(true)
+						.set("list", [["牌堆顶", cards], ["获得"]])
+						.set("prompt", "点化：获得一张牌，将其余牌以任意顺序放回牌堆顶")
+						.set("filterOk", moved => {
+							return moved[1].length == 1;
+						})
+						.set("filterMove", (from, to, moved) => {
+							if (moved[0].includes(from.link)) {
+								if (typeof to == "number") {
+									return to == 0 || !moved[1].length;
+								}
+								return true;
+							}
+							if (typeof to == "number") {
+								return to == 0;
+							}
+							return true;
+						})
+						.set("processAI", list => {
+							const { player } = get.event();
+							const cards = list[0][1].slice(0);
+							if (cards?.length) {
+								const card = cards.maxBy(card => get.value(card, player));
+								return [cards.remove(card), [card]];
+							}
+							return [cards, []];
+						})
+						.forResult();
+					if (result.bool && result.moved) {
+						const top = result.moved[0].reverse(),
+							gains = result.moved[1];
+						if (top?.length) {
+							for (let i = 0; i < top.length; i++) {
+								ui.cardPile.insertBefore(top[i], ui.cardPile.firstChild);
+							}
+						}
+						if (gains?.length) {
+							await player.gain(gains, "gain2");
+						}
+					}
+				},
+			},
 			//武皇甫嵩
 			dcchaozhen: {
 				audio: 2,
@@ -14897,7 +15159,9 @@ game.import("character", function () {
 					player.awakenSkill("huaping");
 					var skills = trigger.player.getSkills(null, false, false).filter(function (i) {
 						var info = get.info(i);
-						return info && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.charlotte && !info.equipSkill;
+						// return info && !info.charlotte;
 					});
 					if (skills.length) {
 						//for(var i of skills) player.addSkillLog(i);
@@ -19515,6 +19779,10 @@ game.import("character", function () {
 			},
 		},
 		dynamicTranslate: {
+			y_dc_dianhua(player) {
+				let num = get.cnNumber(1 + player.countMark("y_dc_zhenyi"));
+				return `准备阶段或结束阶段，你可以观看牌堆顶${num}张牌，然后获得其中一张牌，将其余牌以任意顺序放回牌堆顶。`;
+			},
 			dcsbkongwu(player) {
 				let str = "转换技，出牌阶段限一次，你可以弃置至多体力上限张牌，选择一名其他角色：",
 					yin = "阴，弃置其至多等量张牌；",
@@ -20365,6 +20633,14 @@ game.import("character", function () {
 			dclianjie_info: "你使用手牌指定目标时，若你有手牌且此牌点数不大于你的所有手牌，你可将手牌摸至体力上限，以此法获得的牌本回合无距离次数限制（每个点数每回合限一次，无点数视为0）。",
 			dcjiangxian: "将贤",
 			dcjiangxian_info: "限定技，出牌阶段，你可以选择一项：1.失去〖朝镇〗，将体力上限和手牌上限增加至5；2.本回合使用〖连捷〗获得的牌造成的伤害+X（X为你本回合造成伤害的次数且至多为5），回合结束后失去〖连捷〗。",
+			y_dc_zhangqiying: "新杀张琪瑛",
+			y_dc_zhangqiying_prefix: "新杀",
+			y_dc_falu: "法箓",
+			y_dc_falu_info: "你失去一张手牌时，记录此牌花色（只保留最后三个记录）；然后若你已记录三个花色且记录的花色：均相同，移去记录花色并从牌堆中获得其余花色的牌各一张；均不同，你移去记录花色并可以令一名角色失去或回复1点体力。",
+			y_dc_zhenyi: "真仪",
+			y_dc_zhenyi_info: "锁定技，你因〖法箓〗而移除：三个相同花色时，令你本局游戏使用该花色的牌无距离限制且不可被响应；三个不同花色时，令你本局游戏发动〖点化〗观看牌数+1（至多+4）。",
+			y_dc_dianhua: "点化",
+			y_dc_dianhua_info: "准备阶段或结束阶段，你可以观看牌堆顶一张牌，然后获得其中一张牌，将其余牌以任意顺序放回牌堆顶。",
 			
 			mp_xiangxiu: "向秀",
 			mpmiaoxi: "妙析",

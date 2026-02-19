@@ -7,6 +7,12 @@ game.import("character", function () {
 			// "qinmi"
 		],
 		character: {
+			fj_peixiu: [
+				"male",
+				"qun",
+				3,
+				["fjzhitu", "dcfujue"],
+			],
 			xiahoumao: ["male", "wei", 4, ["tongwei", "cuguo"]],
 			chenshi: ["male", "shu", 4, ["qingbei"]],
 			sunli: ["male", "wei", 4, ["kangli"]],
@@ -117,7 +123,7 @@ game.import("character", function () {
 				yijiang_2016: ["guohuanghou", "sunziliufang", "huanghao", "liyan", "sundeng", "cenhun", "zhangrang", "liuyu"],
 				yijiang_2017: ["xinxianying", "jikang", "wuxian", "qinmi", "xuezong", "xushi", "caiyong", "caojie"],
 				yijiang_2022: ["lukai", "kebineng", "zhugeshang", "liwan", "wuanguo", "hanlong", "yj_sufei", "yj_qiaozhou"],
-				yijiang_2023: ["xiahoumao", "chenshi", "sunli", "feiyao", "linghuyu", "yj_simafu", "yj_xuangongzhu", "xukun", "yj_majun"],
+				yijiang_2023: ["xiahoumao", "chenshi", "sunli", "feiyao", "linghuyu", "yj_simafu", "yj_xuangongzhu", "xukun", "yj_majun", "fj_peixiu"],
 				// yijiang_2025: [],
 			},
 		},
@@ -226,7 +232,114 @@ game.import("character", function () {
 		},
 		/** @type { importCharacterConfig['skill'] } */
 		skill: {
-			//一将2024
+			//一将2023，但有部分是2024上的
+			//复爵裴秀
+			fjzhitu: {
+				audio: 2,
+				trigger: {
+					player: "useCard2",
+				},
+				filter(event, player) {
+					const { card, targets } = event;
+					const info = get.info(card);
+					if (info.allowMultiple == false) {
+						return false;
+					}
+					const infox = lib.card[get.name(card)];
+					if (get.type(card) != "basic" && (!info || info.type != "trick" || info.notarget || (info.selectTarget && info.selectTarget != 1))) {
+						return false;
+					}
+					if (targets && targets.length == 1 && !info.multitarget) {
+						return game.hasPlayer(current => !targets.includes(current) && lib.filter.targetEnabled2(card, player, current) && get.distance(player, current) == get.distance(player, targets[0]));
+					}
+					return false;
+				},
+				async cost(event, trigger, player) {
+					const { card, targets } = trigger;
+					const prompt2 = `为${get.translation(card)}增加任意个你与其距离为${get.distance(player, targets[0])}的目标`;
+					event.result = await player
+						.chooseTarget(
+							get.prompt(event.skill),
+							(card, player, target) => {
+								const { card: cardx, targets } = get.event();
+								return !targets.includes(target) && lib.filter.targetEnabled2(cardx, get.player(), target) && get.distance(player, target) == get.distance(player, targets[0]);
+							},
+							[1, Infinity]
+						)
+						.set("prompt2", prompt2)
+						.set("ai", target => {
+							const { card, player } = get.event();
+							return get.effect(target, card, player, player);
+						})
+						.set("card", card)
+						.set("targets", targets)
+						.forResult();
+				},
+				async content(event, trigger, player) {
+					trigger.targets.addArray(event.targets);
+					game.log(event.targets, "也成为了", trigger.card, "的目标");
+				},
+			},
+			dcfujue: {
+				audio: 2,
+				enable: "phaseUse",
+				usable: 1,
+				filter(event, player) {
+					return player.canMoveCard();
+				},
+				async content(event, trigger, player) {
+					await player.moveCard(true);
+					const num = player.countCards("he") - 5;
+					if (num == 0) {
+						return;
+					}
+					if (num > 0) {
+						// 临时修改（by 棘手怀念摧毁）
+						// await player.chooseToDiscard("he", num, true, "allowChooseAll");
+						await player.chooseToDiscard("he", num, true);
+					} else {
+						await player.draw(-num);
+					}
+					const lose = player.hasHistory("lose", evt => evt.getParent(3) == event);
+					const bool1 = lose && player.hasHistory("gain", evt => evt.getParent(2) == event);
+					const bool2 = game.getGlobalHistory("everything", evt => evt.name == "equip" && evt.player == player && evt.getParent(2) == event).length && lose;
+					if (bool1 || bool2) {
+						player.addTempSkill(event.name + "_effect");
+						player.addMark(event.name + "_effect", 1, false);
+					}
+				},
+				ai: {
+					expose: 0.2,
+					order(item, player) {
+						if (player.countCards("he") > 4) {
+							return 0.5;
+						}
+						return 9;
+					},
+					result: {
+						player(player) {
+							if (player.canMoveCard(true)) {
+								return 1;
+							}
+							return 0;
+						},
+					},
+				},
+				subSkill: {
+					effect: {
+						charlotte: true,
+						onremove: true,
+						intro: {
+							content: `本回合计算与其他角色的距离-#`,
+						},
+						mod: {
+							globalFrom(from, to, current) {
+								return current - from.countMark("dcfujue_effect");
+							},
+						},
+					},
+				},
+			},
 			// 新杀马钧-临时写法 #1607
 			yjgongqiao: {
 				enable: "phaseUse",
@@ -349,7 +462,6 @@ game.import("character", function () {
 					threaten: 1.3,
 				},
 			},
-			//一将2023
 			//令狐愚
 			xvzhi: {
 				audio: 2,
@@ -15989,6 +16101,11 @@ game.import("character", function () {
 			yjgongqiao_info: "出牌阶段限一次，你可将一张手牌置入一个装备栏（替换原装备）；若你的装备区内有：基本牌，你使用基本牌数值+1；锦囊牌，你每回合首次使用一种类型的牌后摸一张牌；装备牌，手牌上限+3。",
 			yjjingyi: "精益",
 			yjjingyi_info: "锁定技，有牌进入你的装备区后，你摸X张牌，然后弃置两张牌（X为你装备区里的牌数）。",
+			fj_peixiu: "裴秀",
+			fjzhitu: "制图",
+			fjzhitu_info: "当你使用基本牌或单目标锦囊牌指定唯一目标时，你可以令任意名你与其距离等于你与目标角色距离的角色也成为此牌的目标。",
+			dcfujue: "复爵",
+			dcfujue_info: "出牌阶段限一次。你可以移动场上一张牌，然后你将牌调整至五张。若你于此流程中获得且失去过牌，本回合你计算与其他角色的距离-1。",
 
 			yijiang_2011: "一将成名2011",
 			yijiang_2012: "一将成名2012",

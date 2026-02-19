@@ -1244,7 +1244,7 @@ game.import("character", function () {
 				viewAsFilter(player) {
 					if (!player.countCards("he")) return false;
 				},
-				prompt: "将一张手牌或装备牌当酒使用",
+				prompt: "将一张手牌或装备牌当【酒】使用",
 				check(card) {
 					return 5 - get.value(card);
 				},
@@ -1498,7 +1498,7 @@ game.import("character", function () {
 					}
 					if (useCard) {
 						player
-							.chooseTarget("是否视为使用一张决斗？", function (card, player, target) {
+							.chooseTarget("是否视为使用一张【决斗】？", function (card, player, target) {
 								return lib.filter.targetEnabled({ name: "juedou" }, player, target);
 							})
 							.set("ai", function (target) {
@@ -2305,7 +2305,7 @@ game.import("character", function () {
 				},
 				position: "he",
 				viewAs: { name: "wuzhong" },
-				prompt: "将一张装备牌当无中生有使用",
+				prompt: "将一张装备牌当【无中生有】使用",
 				check(card) {
 					var player = _status.currentPhase;
 					if (player.countCards("he", { subtype: get.subtype(card) }) > 1) {
@@ -2797,13 +2797,13 @@ game.import("character", function () {
 			qingshu_info:
 				"结束阶段，你可以令一名角色永久获得一个你使用过且不是当前地图的地图牌效果（每个地图最多发动一次）。",
 			yanjiadan_heart: "偃甲蛋",
-			yanjiadan_heart_info: "可以当作紫阳丹、玉女元参或沙棠使用。",
+			yanjiadan_heart_info: "可以当作【紫阳丹】、【玉女元参】或【沙棠】使用。",
 			yanjiadan_diamond: "偃甲蛋",
-			yanjiadan_diamond_info: "可以当作流风散、舒筋散或神火飞鸦使用。",
+			yanjiadan_diamond_info: "可以当作【流风散】、【舒筋散】或【神火飞鸦】使用。",
 			yanjiadan_club: "偃甲蛋",
-			yanjiadan_club_info: "可以当作天女散花、六骰格或锦里针使用。",
+			yanjiadan_club_info: "可以当作【天女散花】、【六骰格】或【锦里针】使用。",
 			yanjiadan_spade: "偃甲蛋",
-			yanjiadan_spade_info: "可以当作飞镖、乾坤镖或龙须钩使用。",
+			yanjiadan_spade_info: "可以当作【飞镖】、【乾坤镖】或【龙须钩】使用。",
 			lingyan: "灵偃",
 			lingyan_bg: "偃",
 			lingyan_info:
@@ -2819,7 +2819,7 @@ game.import("character", function () {
 				"锁定技，奇数游戏轮次开始时，你获得潜行直到下一轮开始；偶数游戏轮次开始时，你随机获得一张机关牌。",
 			xuanci: "旋刺",
 			xuanci_info:
-				"出牌阶段限一次，你可以将一张梅花牌当作飞镖使用；锁定技，你使用飞镖无距离限制，你使用飞镖后对目标结算后视为对目标使用一张【杀】。",
+				"出牌阶段限一次，你可以将一张梅花牌当作【飞镖】使用；锁定技，你使用【飞镖】无距离限制，你使用【飞镖】后对目标结算后视为对目标使用一张【杀】。",
 			humeng: "湖梦",
 			humeng_sub: "偃甲谢衣",
 			humeng_info:
@@ -2843,7 +2843,7 @@ game.import("character", function () {
 			lianjing_info:
 				"每两轮限一次，回合结束后，你可以选择至多2名其他角色，将其他角色移出游戏，然后你与所选的角色依次进行一个回合。",
 			zuiji: "醉饮",
-			zuiji_info: "出牌阶段，你可以将一张手牌或装备牌当作酒使用。",
+			zuiji_info: "出牌阶段，你可以将一张手牌或装备牌当作【酒】使用。",
 			manwu: "曼舞",
 			manwu_info: "在一名角色的结束阶段，若其手牌数为全场最少或之一，你可以令其摸一张牌。",
 			xfanghua: "芳华",
@@ -2860,7 +2860,7 @@ game.import("character", function () {
 				"濒死阶段，你可以与一名体力值不超过你的体力上限的角色拼点，若你赢，你失去1点体力上限并将体力值回复至与该角色相同；若你没赢，你立即死亡。",
 			chizhen: "驰阵",
 			chizhen_info:
-				"出牌阶段开始时，你可以摸X张牌并弃置X张牌，若你弃置了【杀】，可以视为使用一张决斗（X为你已损失的体力值且至少为1）。",
+				"出牌阶段开始时，你可以摸X张牌并弃置X张牌，若你弃置了【杀】，可以视为使用一张【决斗】（X为你已损失的体力值且至少为1）。",
 			xidie: "戏蝶",
 			xidie2: "戏蝶",
 			xidie_info:

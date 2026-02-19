@@ -288,9 +288,13 @@ game.import("character", function () {
 			
 		},
 		characterFilter: {
-			simashi: function (mode) {
-				if (["boss", "chess", "tafang", "stone"].includes(mode)) return false;
-				if (mode == "versus") return _status.mode != "three";
+			simashi(mode) {
+				if (["boss", "chess", "tafang", "stone"].includes(mode)) {
+					return false;
+				}
+				if (mode == "versus") {
+					return _status.mode != "three";
+				}
 				return true;
 			},
 		},

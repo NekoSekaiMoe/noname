@@ -6531,6 +6531,7 @@ game.import("character", function () {
 				},
 				locked: false,
 				audio: 2,
+				// 待补？
 				audioname: ["pot_huanjie"],
 				enable: "chooseToUse",
 				filterCard(card) {
@@ -8336,7 +8337,7 @@ game.import("character", function () {
 					},
 					effect: {
 						target(card, player, target) {
-							if (get.tag(card, "damage") || get.tag(card, "losehp")) {
+							if (get.tag(card, "damage") || get.tag(card, "loseHp")) {
 								let num = target.getExpansions("buqu").length || target.getHp();
 								if (!num) return;
 								return Math.pow(2, Math.min(6, num));
@@ -9106,7 +9107,9 @@ game.import("character", function () {
 						var str =
 							"<li>锁定技。你不能于〖蛊惑〗的结算流程中进行质疑。当你的体力值为1时，你的其他技能失效。";
 						var list = player.getSkills(null, false, false).filter(function (i) {
-							return lib.skill.rechanyuan.skillBlocker(i, player);
+							// 临时修复（by 棘手怀念摧毁）
+							return lib.skill.rechanyuan.skillBlocker(i, player) && !get.info(i)?.equipSkill;
+							// return lib.skill.rechanyuan.skillBlocker(i, player);
 						});
 						if (list.length) str += "<br><li>失效技能：" + get.translation(list);
 						return str;

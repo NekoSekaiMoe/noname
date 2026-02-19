@@ -715,13 +715,13 @@ game.import("card", function () {
 
 			mtg_duzhao: "毒沼",
 			mtg_duzhao_skill: "毒沼",
-			mtg_duzhao_info: "选择一名角色令其获得一张毒。地图效果：结束阶段，你获得一张毒。",
-			mtg_duzhao_skill_info: "结束阶段，你获得一张毒。",
+			mtg_duzhao_info: "选择一名角色令其获得一张【毒】。地图效果：结束阶段，你获得一张【毒】。",
+			mtg_duzhao_skill_info: "结束阶段，你获得一张【毒】。",
 			mtg_linzhongjianta: "林中尖塔",
 			mtg_linzhongjianta_skill: "林中尖塔",
 			mtg_linzhongjianta_info:
-				"发现一张武器牌并装备之。地图效果：若你装备区内有武器牌，你可以将一张基本牌当作杀使用。",
-			mtg_linzhongjianta_skill_info: "若你装备区内有武器牌，你可以将一张基本牌当作杀使用。",
+				"发现一张武器牌并装备之。地图效果：若你装备区内有武器牌，你可以将一张基本牌当作【杀】使用。",
+			mtg_linzhongjianta_skill_info: "若你装备区内有武器牌，你可以将一张基本牌当作【杀】使用。",
 			mtg_cangbaohaiwan: "藏宝海湾",
 			mtg_cangbaohaiwan_skill: "藏宝海湾",
 			mtg_cangbaohaiwan_info:
@@ -729,13 +729,13 @@ game.import("card", function () {
 			mtg_cangbaohaiwan_skill_info: "你在摸牌时有可能摸到衍生牌。",
 			mtg_longlushanfeng: "龙颅山峰",
 			mtg_longlushanfeng_skill: "龙颅山峰",
-			mtg_longlushanfeng_info: "选项一：获得一张杀；选项二：获得一张闪。地图效果：你出杀的次数上限+1。",
-			mtg_longlushanfeng_skill_info: "你出杀的次数上限+1。",
+			mtg_longlushanfeng_info: "选项一：获得一张【杀】；选项二：获得一张【闪】。地图效果：你出【杀】的次数上限+1。",
+			mtg_longlushanfeng_skill_info: "你出【杀】的次数上限+1。",
 			mtg_bingheyaosai: "冰河要塞",
 			mtg_bingheyaosai_skill: "冰河要塞",
 			mtg_bingheyaosai_info:
-				"摸两张牌，然后弃置两张牌。地图效果：锁定技，每当你使用一张杀，若你有牌，则需弃置一张牌。",
-			mtg_bingheyaosai_skill_info: "锁定技，每当你使用一张杀，若你有牌，则需弃置一张牌。",
+				"摸两张牌，然后弃置两张牌。地图效果：锁定技，每当你使用一张【杀】，若你有牌，则需弃置一张牌。",
+			mtg_bingheyaosai_skill_info: "锁定技，每当你使用一张【杀】，若你有牌，则需弃置一张牌。",
 			mtg_lindixiliu: "林地溪流",
 			mtg_lindixiliu_skill: "林地溪流",
 			mtg_lindixiliu_info:

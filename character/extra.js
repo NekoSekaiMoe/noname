@@ -95,16 +95,15 @@ game.import("character", function () {
 			// },
 			
 			shen_diaochan(mode) {
-				return (
-					mode == "identity" ||
-					mode == "doudizhu" ||
-					mode == "single" ||
-					(mode == "versus" && _status.mode != "standard" && _status.mode != "three")
-				);
+				return mode == "identity" || mode == "doudizhu" || mode == "single" || (mode == "versus" && _status.mode != "standard" && _status.mode != "three");
 			},
 			shen_dengai(mode) {
-				if (["boss", "chess", "tafang", "stone"].includes(mode)) return false;
-				if (mode == "versus") return _status.mode != "three";
+				if (["boss", "chess", "tafang", "stone"].includes(mode)) {
+					return false;
+				}
+				if (mode == "versus") {
+					return _status.mode != "three";
+				}
 				return true;
 			},
 			le_shen_jiaxu(mode) {
@@ -2064,6 +2063,10 @@ game.import("character", function () {
 						return false;
 					}
 					if (event.name == "_wuxie") {
+						const directHit = event._trigger?.getParent()?.directHit;
+						if (directHit?.length && directHit.includes(player)) {
+							return false;
+						}
 						if (event.wuxieresult && event.wuxieresult == player) {
 							return false;
 						}

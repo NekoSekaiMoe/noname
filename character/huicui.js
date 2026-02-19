@@ -458,7 +458,9 @@ game.import("character", function () {
 					chooseControl(event, player) {
 						let list = player.getSkills(null, false, false).filter(skill => {
 							let info = get.info(skill);
-							if (!info || info.charlotte || get.skillInfoTranslation(skill, player).length == 0) return false;
+							// 临时修复（by 棘手怀念摧毁）
+							if (!info || info.charlotte || info.equipSkill || get.skillInfoTranslation(skill, player).length == 0) return false;
+							// if (!info || info.charlotte || get.skillInfoTranslation(skill, player).length == 0) return false;
 							return true;
 						});
 						if (player.countCards("he", card => get.subtype(card) == "equip1")) list.unshift("弃置武器牌");
@@ -11506,7 +11508,9 @@ game.import("character", function () {
 					var skills = target.getSkills(null, false, false).filter(function (i) {
 						if (i == "bazhen") return;
 						var info = get.info(i);
-						return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill && !info.equipSkill;
+						// return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
 					});
 					target.addAdditionalSkills("dcjiezhen_blocker", "bazhen");
 					target.addSkill("dcjiezhen_blocker");
@@ -11521,7 +11525,9 @@ game.import("character", function () {
 							var skills = target.getSkills(null, false, false).filter(function (i) {
 								if (i == "bazhen") return;
 								var info = get.info(i);
-								return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
+								// 临时修复（by 棘手怀念摧毁）
+								return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill && !info.equipSkill;
+								// return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
 							});
 							if (!skills.length && target.hasEmptySlot(2)) return 1;
 							return -0.5 * skills.length;
@@ -11541,7 +11547,9 @@ game.import("character", function () {
 						charlotte: true,
 						locked: true,
 						skillBlocker: function (skill, player) {
-							return skill != "bazhen" && skill != "dcjiezhen_blocker" && !lib.skill[skill].charlotte && !lib.skill[skill].persevereSkill && player.getStorage("dcjiezhen_blocker").includes(skill);
+							// 临时修复（by 棘手怀念摧毁）
+							return skill != "bazhen" && skill != "dcjiezhen_blocker" && !lib.skill[skill].charlotte && !get.info(skill)?.equipSkill && !lib.skill[skill].persevereSkill && player.getStorage("dcjiezhen_blocker").includes(skill);
+							// return skill != "bazhen" && skill != "dcjiezhen_blocker" && !lib.skill[skill].charlotte && !lib.skill[skill].persevereSkill && player.getStorage("dcjiezhen_blocker").includes(skill);
 						},
 						mark: true,
 						marktext: "阵",

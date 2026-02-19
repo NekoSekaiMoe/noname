@@ -2360,7 +2360,7 @@ game.import("card", function () {
 			gw_ansha: "暗杀",
 			gw_ansha_info: "令一名体力为1的随机敌方角立即死亡，然后结束出牌阶段。",
 			gw_shizizhaohuan: "十字召唤",
-			gw_shizizhaohuan_info: "从牌堆中获得一张杀以及决斗、火攻、火烧连营、南蛮入侵四张牌中的随机一张。",
+			gw_shizizhaohuan_info: "从牌堆中获得一张【杀】以及【决斗】、【火攻】、【火烧连营】、【南蛮入侵】四张牌中的随机一张。",
 			gw_zuihouyuanwang: "最后愿望",
 			gw_zuihouyuanwang_info: "摸X张牌并弃置X张牌，X为存活角色数。",
 			gw_zirankuizeng: "自然馈赠",

@@ -372,9 +372,9 @@ game.import("character", function () {
 				intro: {
 					content: function (storage, player) {
 						if (storage) {
-							return "每当你使用一张杀，你摸一张牌或回复1点体力";
+							return "每当你使用一张【杀】，你摸一张牌或回复1点体力";
 						} else if (player.hasSkill("bshaowei") && player.storage.bshaowei) {
-							return "你的杀无视距离和防具、无数量限制且不可闪避；你不能闪避杀";
+							return "你的【杀】无视距离和防具、无数量限制且不可闪避；你不能闪避【杀】";
 						} else {
 							return "无额外技能";
 						}
@@ -1711,7 +1711,7 @@ game.import("character", function () {
 								get.translation(target) +
 								"的距离视为1且" +
 								get.translation(target) +
-								"不能闪避你的杀，直到回合结束"
+								"不能闪避你的【杀】，直到回合结束"
 						);
 					}
 				},
@@ -3680,7 +3680,7 @@ game.import("character", function () {
 			owliyong: "力涌",
 			owliyong_info: "锁定技，你摸牌阶段摸牌数+X，X为你上一轮发动屏障的次数。",
 			dianji: "电击",
-			dianji_info: "出牌阶段限一次，你可以将一张手牌当作惊雷闪对距离2以内的角色使用。",
+			dianji_info: "出牌阶段限一次，你可以将一张手牌当作【惊雷闪】对距离2以内的角色使用。",
 			feitiao: "飞跳",
 			feitiao2: "飞跳",
 			feitiao_info:
@@ -3755,7 +3755,7 @@ game.import("character", function () {
 			mianzhen: "眠针",
 			mianzhen2: "眠针",
 			mianzhen_info:
-				"出牌阶段限一次，你可以弃置一张牌并令一名其他角色打出一张闪，否则该角色不能使用或打出卡牌直到其受到伤害或下一回合结束。",
+				"出牌阶段限一次，你可以弃置一张牌并令一名其他角色打出一张【闪】，否则该角色不能使用或打出卡牌直到其受到伤害或下一回合结束。",
 			aqianghua: "强化",
 			aqianghua2: "强化",
 			aqianghua_info:
@@ -3814,7 +3814,7 @@ game.import("character", function () {
 			chongzhuang: "重装",
 			chongzhuang_info: "在你失去机甲后，当你累计造成了4点伤害时，你重新获得机甲。",
 			shouge: "收割",
-			shouge_info: "每当你杀死一名角色，你可以获得一张治疗波。",
+			shouge_info: "每当你杀死一名角色，你可以获得一张【治疗波】。",
 			tuji: "突击",
 			tuji_info: "锁定技，在你的回合内，每当你使用一张牌，你的进攻距离+1。",
 			mujing: "目镜",

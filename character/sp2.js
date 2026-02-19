@@ -4957,7 +4957,9 @@ game.import("character", function () {
 						locked: true,
 						skillBlocker: function (skill, player) {
 							var info = get.info(skill);
-							return info && !info.charlotte && !info.persevereSkill && !get.is.locked(skill) && !info.limited && !info.juexingji;
+							// 临时修复（by 棘手怀念摧毁）
+							return info && !info.charlotte && !info.equipSkill && !info.persevereSkill && !get.is.locked(skill) && !info.limited && !info.juexingji;
+							// return info && !info.charlotte && !info.persevereSkill && !get.is.locked(skill) && !info.limited && !info.juexingji;
 						},
 						mark: true,
 						marktext: "扰",

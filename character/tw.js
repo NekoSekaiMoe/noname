@@ -373,10 +373,10 @@ game.import("character", function () {
 			
 		},
 		characterFilter: {
-			nashime: function (mode) {
+			nashime(mode) {
 				return mode != "guozhan";
 			},
-			tw_xiahouba: function (mode) {
+			tw_xiahouba(mode) {
 				return mode != "guozhan";
 			},
 		},
@@ -6643,7 +6643,9 @@ game.import("character", function () {
 					var skills = event.player.getSkills(null, false, false).filter((skill) => {
 						if (player.hasSkill(skill, null, false, false)) return false;
 						var info = get.info(skill);
-						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.equipSkill;
+						// return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
 					});
 					return skills.length > 0;
 				},
@@ -6652,7 +6654,9 @@ game.import("character", function () {
 					var skills = event.player.getSkills(null, false, false).filter((skill) => {
 						if (player.hasSkill(skill, null, false, false)) return false;
 						var info = get.info(skill);
-						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.equipSkill;
+						// return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
 					});
 					var str = "";
 					for (var i of skills) {
@@ -6669,7 +6673,9 @@ game.import("character", function () {
 					var skills = trigger.player.getSkills(null, false, false).filter((skill) => {
 						if (player.hasSkill(skill, null, false, false)) return false;
 						var info = get.info(skill);
-						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.equipSkill;
+						// return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
 					});
 					if (skills.length) {
 						//for(var i of skills) player.addSkillLog(i);

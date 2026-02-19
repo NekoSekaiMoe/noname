@@ -1225,7 +1225,7 @@ game.import("card", function () {
 				intro: {
 					content: function (storage, player) {
 						return (
-							"你可以将一张红桃牌当作桃使用（剩余" +
+							"你可以将一张红桃牌当作【桃】使用（剩余" +
 							player.storage.mizhilianou_markcount +
 							"回合）"
 						);
@@ -1921,9 +1921,9 @@ game.import("card", function () {
 			shujinsan: "舒筋散",
 			shujinsan_info: "出牌阶段对任意角色使用，目标可弃置任意张牌，并摸等量的牌。",
 			mutoumianju: "木头面具",
-			mutoumianju_info: "出牌阶段限一次，你可以将一张手牌当作杀使用。",
+			mutoumianju_info: "出牌阶段限一次，你可以将一张手牌当作【杀】使用。",
 			mutoumianju_skill: "木杀",
-			mutoumianju_skill_info: "出牌阶段限一次，你可以将一张手牌当作杀使用。",
+			mutoumianju_skill_info: "出牌阶段限一次，你可以将一张手牌当作【杀】使用。",
 			heilonglinpian: "黑龙鳞片",
 			heilonglinpian_info: "出牌阶段对自己使用，获得1点护甲，直到下一回合开始，你的防御距离+1。",
 			shatang: "沙棠",
@@ -1939,17 +1939,17 @@ game.import("card", function () {
 			liyutang: "鲤鱼汤",
 			liyutang_info: "结束阶段，若你的体力值为全场最少或之一，你获得1点护甲，持续两回合。",
 			mizhilianou: "蜜汁藕",
-			mizhilianou_info: "你可以将一张红桃牌当作桃使用，持续四回合。",
+			mizhilianou_info: "你可以将一张红桃牌当作【桃】使用，持续四回合。",
 			xiajiao: "虾饺",
 			xiajiao_info: "你在摸牌阶段额外摸一张牌，然后弃置一张牌，持续三回合。",
 			tanhuadong: "昙花冻",
 			tanhuadong_info: "出牌阶段结束时，你摸一张牌，持续三回合。",
 			qingtuan: "青团",
-			qingtuan_info: "你在回合内使用首张杀时摸一张牌，持续两回合。",
+			qingtuan_info: "你在回合内使用首张【杀】时摸一张牌，持续两回合。",
 			luyugeng: "鲈鱼羹",
 			luyugeng_info: "出牌阶段限一次，你可以弃置一张基本牌并发现一张牌，持续三回合。",
 			yuanbaorou: "元宝肉",
-			yuanbaorou_info: "你在出牌阶段可以额外使用一张杀，持续四回合。",
+			yuanbaorou_info: "你在出牌阶段可以额外使用一张【杀】，持续四回合。",
 			molicha: "茉莉茶",
 			molicha_info: "你不能成为其他角色的黑色牌的目标，持续四回合。",
 			mapodoufu: "麻婆豆腐",

@@ -213,7 +213,14 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 				}
 			}
 			if (imgPrefixUrl) src = imgPrefixUrl;
-			else if (extimage) src = extimage.replace(/^ext:/, "extension/");
+			else if (extimage) {
+				// 支持衍生篇扩展的原画还原功能
+				if (type == "character" && lib.config.skin[name] && arguments[2] != "noskin") {
+					src = `image/skin/${name}/${lib.config.skin[name]}${ext}`;
+				} else {
+					src = extimage.replace(/^ext:/, "extension/");
+				}
+			}
 			else if (dbimage) {
 				this.setBackgroundDB(dbimage.slice(3));
 				return this;

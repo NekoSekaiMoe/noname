@@ -572,8 +572,16 @@
 	border-radius: 8px;
 }
 
-/* 适配战棋/塔防模式 */
-.player.minskin>.avatar {
+/* 适配战棋/塔防/炉石模式 */
+.player.minskin>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="4"]>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="5"]>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="6"]>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="7"]>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="8"]>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="9"]>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="10"]>.avatar,
+#arena.stone > .player.fullskin.minskin[data-position="11"]>.avatar {
 	left: 3px !important;
 	top: 3px !important;
 	width: 114px !important;
@@ -1416,15 +1424,22 @@
 /*玩家获得的技能显示*/
 .player>.gain-skill {
 	position: absolute;
-    left: 15px;
-    right: 15px;
-    max-height: calc(97% - 81px);
-    bottom: calc(3% + 81px);
+	left: 25px;
+	right: 25px;
+	max-height: 70px;
+	bottom: calc(3% + 81px);
 	color: rgb(255,255,200);
-    font-size: 13px;
-    text-align: center;
-    background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.4) 60%, transparent 100%);
+	font-size: 13px;
+	text-align: center;
+	background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.4) 60%, transparent 100%);
 	z-index: 87;
+	overflow-y: scroll;
+}
+
+/* 适配战棋/塔防模式（暂不支持手机端上下滑动） */
+#arena.chess .player>.gain-skill {
+	max-height: 30px;
+	bottom: calc(3% + 61px);
 }
 
 #arena.decadeUI[data-gain-skills-visible='off']>.player>.gain-skill,
@@ -1454,7 +1469,26 @@
 	opacity: initial;
 }
 
-
+/* 适配战棋/塔防/炉石模式 */
+.player.minskin>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="4"]>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="5"]>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="6"]>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="7"]>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="8"]>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="9"]>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="10"]>.turned-over,
+#arena.stone > .player.fullskin.minskin[data-position="11"]>.turned-over {
+	width: 118px;
+	height: 118px;
+	left: 1px;
+	top: 1px;
+	border-radius: 11px;
+	background-size: 120% auto;
+	background-position-x: -23px;
+	background-position-y: -29px;
+	background-repeat: no-repeat;
+}
 
 /*说话泡泡框*/
 .player>.chat-bubble {

@@ -4451,6 +4451,7 @@ game.import("character", function () {
 						direct: true,
 						async content(event, trigger, player) {
 							trigger.directHit.addArray(game.players);
+							game.log(trigger.card, "不可被响应");
 						},
 					},
 				},
@@ -8402,15 +8403,12 @@ game.import("character", function () {
 					target.markAuto("jdfengtu_phase", [trigger.player]);
 				},
 				onRound(event) {
-					return (event.relatedEvent || event.getParent(2)).name != "jdfengtu_phase";
+					return event.getParent().skill != "jdfengtu_phase" && (event.relatedEvent || event.getParent(2)).name != "jdfengtu_phase";
 				},
 				check(source, player) {
 					const players = game.players
 						.slice()
 						.concat(game.dead)
-						.filter(target => {
-							return target.isAlive() || [source, player].includes(target);
-						})
 						.sort((a, b) => parseInt(a.dataset.position) - parseInt(b.dataset.position));
 					const num = players.indexOf(source),
 						num2 = players.indexOf(player);
@@ -8422,7 +8420,7 @@ game.import("character", function () {
 						trigger: { global: "phaseOver" },
 						filter(event, player) {
 							return player.getStorage("jdfengtu_phase").some(target => {
-								return lib.skill.jdfengtu.check(event.player, target);
+								return !game.players.includes(target) && lib.skill.jdfengtu.check(event.player, target);
 							});
 						},
 						forced: true,
@@ -13157,6 +13155,11 @@ game.import("character", function () {
 			},
 			//孙綝
 			zyshilu: {
+				init() {
+					if (!_status.characterlist) {
+						game.initCharacterList();
+					}
+				},
 				// 配音临时修改（by 棘手怀念摧毁）
 				audio: ["gzshilu", 2],
 				// audio: ["gzshilu1.mp3", "gzshilu2.mp3"],
@@ -17092,8 +17095,9 @@ game.import("character", function () {
 				filter: function (event, player) {
 					return (
 						player._mouduan_mark &&
-						player._mouduan_mark.name == "文" &&
-						player.countCards("h") > 2
+						player._mouduan_mark.name == "文"
+						// 村规
+						&& player.countCards("h") > 2
 					);
 				},
 				direct: true,
