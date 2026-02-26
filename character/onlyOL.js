@@ -121,7 +121,6 @@ game.import("character", function () {
 			xf_huangquan: ["male", "shu", 3, ["xinfu_dianhu", "xinfu_jianji"], []],
 			xf_sufei: ["male", "wu", 4, ["xinfu_lianpian"], []],
 			sp_dongzhuo: ["male", "qun", 5, ["hengzheng"]],
-			hanba: ["female", "qun", 4, ["fentian", "zhiri"]],
 			// 解放印卡蔡阳并魔改体力为4（但AI禁选）
 			caiyang: ["male", "qun", 4, ["yinka", "zhuishe"], ["forbidai"]],
 			// caiyang: ["male", "qun", 1, ["yinka", "zhuishe"], ["forbidai", "unseen"]],
@@ -154,10 +153,8 @@ game.import("character", function () {
 					"hanmeng",
 				],
 				sp2_longzhou: ["xf_tangzi", "xf_huangquan", "xf_sufei", "sp_liuqi"],
-				sp_guozhan2: ["sp_dongzhuo"],
 				onlyOL_qldq: ["caiyang"],
-				sp_others: ["hanba"],
-				
+				sp_guozhan2: ["sp_dongzhuo"],
 				onlyOL_waitingforsort: ["ol_tw_zhangji"],
 			},
 		},
@@ -6255,9 +6252,8 @@ game.import("character", function () {
 			sp_zhongdan: "活动场·忠胆英杰",
 			sp2_guandu: "活动场·官渡之战",
 			sp2_longzhou: "活动场·同舟共济",
-			sp_guozhan2: "国战移植",
 			onlyOL_qldq: "千里单骑移植",
-			sp_others: "其他",
+			sp_guozhan2: "国战移植",
 			
 			onlyOL_waitingforsort: "等待分包",
 		},

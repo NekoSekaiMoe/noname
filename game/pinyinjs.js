@@ -280,6 +280,7 @@ var pinyin_dict_polyphone = {
 	"忠相": " xiàng",
 	"良相": " xiàng",
 	"背剑": "bēi ",
+	"将星": "jiàng ",
 	"之将": " jiàng",
 	"为将": "wéi jiàng",
 	"豪将": " jiàng",

@@ -10940,7 +10940,7 @@ game.import("character", function () {
 							if (!types.length) return false;
 							return lib.skill.olbixin.getList(player, event).length > 0;
 						},
-						prompt: "你可以声明一种牌的类型（每种类型限三次），并选择一种你本轮未使用过且有合法目标的的基本牌。你摸一张牌，然后若你有此类型的手牌，你将所有此类型的手牌当此基本牌使用。",
+						prompt: "你可以声明一种牌的类型（每种类型限三次），并选择一种你本轮未使用过且有合法目标的基本牌。你摸一张牌，然后若你有此类型的手牌，你将所有此类型的手牌当此基本牌使用。",
 						chooseButton: {
 							dialog: function (event, player) {
 								var list = lib.skill.olbixin.getList(player, event);
@@ -31317,7 +31317,7 @@ game.import("character", function () {
 			olbixin: function (player) {
 				var count = player.countMark("olbixin");
 				if (count < 3) return lib.translate.olbixin_info.slice(count * 5);
-				return "你可以声明一种牌的类型（每种类型限[3]次），并选择一种你本轮未使用过且有合法目标的的基本牌。你摸[1]张牌，然后若你有此类型的手牌，你将所有此类型的手牌当此基本牌使用。";
+				return "你可以声明一种牌的类型（每种类型限[3]次），并选择一种你本轮未使用过且有合法目标的基本牌。你摸[1]张牌，然后若你有此类型的手牌，你将所有此类型的手牌当此基本牌使用。";
 			},
 			olfeibai: function (player) {
 				if (player.storage.olfeibai) return '转换技，锁定技。阴：当你因执行你使用的非黑色牌的效果而造成伤害时，此伤害值+1；<span class="bluetext">阳：当你因执行你使用的非红色牌的效果而回复体力时，此回复值+1。</span>';
@@ -32391,7 +32391,7 @@ game.import("character", function () {
 			olxiaosi_info: "出牌阶段限一次。你可以选择一名有手牌的其他角色并弃置一张基本牌。若其有可被弃置的基本牌，其弃置一张基本牌。然后你可以以任意顺序使用你与其以此法弃置的牌（无距离和次数限制）。最后若其未以此法弃置牌，你摸一张牌。",
 			zhangzhi: "张芝",
 			olbixin: "笔心",
-			olbixin_info: "一名角色的准备阶段或结束阶段，你可以声明一种牌的类型（每种类型限[1]次），并选择一种你本轮未使用过且有合法目标的的基本牌。你摸[3]张牌，然后若你有此类型的手牌，你将所有此类型的手牌当此基本牌使用。",
+			olbixin_info: "一名角色的准备阶段或结束阶段，你可以声明一种牌的类型（每种类型限[1]次），并选择一种你本轮未使用过且有合法目标的基本牌。你摸[3]张牌，然后若你有此类型的手牌，你将所有此类型的手牌当此基本牌使用。",
 			olximo: "洗墨",
 			olximo_info: "锁定技。当你发动〖笔心〗后，你移除其描述的前五个字符。若你已发动三次〖笔心〗，交换中括号中的两个数字，失去〖洗墨〗并获得〖飞白〗。",
 			olfeibai: "飞白",

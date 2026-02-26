@@ -7,7 +7,9 @@ game.import("character", function () {
 			
 		],
 		character: {
+			// 分离成体系/成系列的特殊武将到本包
 			// 武将顺序按自定义列表排（棘手懒人包）
+			
 			ol_zishu: [
 				"male",
 				"qun",

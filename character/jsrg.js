@@ -10486,6 +10486,10 @@ game.import("character", function () {
 				},
 				subSkill: {
 					blocker: {
+						// 临时修复（by 棘手怀念摧毁）
+						onremove(player, skill) {
+							player.removeGaintag("jsrgfendi_tag");
+						},
 						trigger: {
 							player: ["damageBefore", "damageCancelled", "damageZero"],
 							target: ["shaMiss", "useCardToExcluded", "useCardToEnd"],

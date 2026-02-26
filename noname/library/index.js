@@ -15357,6 +15357,13 @@ export class Library {
 				},
 			},
 		],
+		[
+			"集蜜",
+			{
+				color: "#e3d660",
+				nature: "metalmm",
+			}
+		],
 		
 		// 补充by棘手怀念摧毁
 		[
