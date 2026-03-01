@@ -4746,6 +4746,18 @@ content:function(config,pack){
 					if (lib.config['extension_搬运自用_byzy_ckkpzlkbztyx'] != true)
 					game.pause2();
 					
+				// 临时修复：菜单查看卡牌资料卡不添加样式
+				if(!node.classList.contains('noclick')){
+					// 查看卡牌资料卡样式
+					if(lib.config['extension_搬运自用_byzy_ckkpzlkys']=="1"){
+						// 添加transparent2样式
+						ui.arena.classList.add('transparent2');
+					} else if(lib.config['extension_搬运自用_byzy_ckkpzlkys']=="2"){
+						// 添加blur样式
+						ui.arena.classList.add('blur');
+					}
+				}
+					
 					if(_status.dragged) return;
 					if(lib.config.theme!='simple'){
 						ui.window.classList.add('shortcutpaused');
@@ -4769,6 +4781,10 @@ content:function(config,pack){
 						ui.menuContainer.classList.remove('forceopaque');
 						ui.menuContainer.classList.remove('transparent2');
 						ui.arena.classList.remove('blur');
+						
+						// 移除transparent2样式
+						ui.arena.classList.remove('transparent2');
+						
 						ui.system.classList.remove('blur');
 						ui.menuContainer.classList.remove('blur');
 						this.delete();
@@ -9349,6 +9365,15 @@ content:function(config,pack){
 			if (lib.config['extension_搬运自用_byzy_ckzlkbztyx'] != true)
 			game.pause2();
 			
+			// 查看资料卡样式
+			if(lib.config['extension_搬运自用_byzy_ckzlkys']=="1"){
+				// 添加transparent2样式
+				ui.arena.classList.add('transparent2');
+			} else if(lib.config['extension_搬运自用_byzy_ckzlkys']=="2"){
+				// 添加blur样式
+				ui.arena.classList.add('blur');
+			}
+			
 			// 资料卡查看多形态原画
 			if(lib.config['extension_搬运自用_byzy_zlkcksxtyh'] != false) {
 				var audioName=player.skin.name || player.name1 || player.name;
@@ -9380,6 +9405,15 @@ content:function(config,pack){
 			// 查看资料卡不暂停游戏
 			if (lib.config['extension_搬运自用_byzy_ckzlkbztyx'] != true)
 			game.pause2();
+			
+			// 查看资料卡样式
+			if(lib.config['extension_搬运自用_byzy_ckzlkys']=="1"){
+				// 添加transparent2样式
+				ui.arena.classList.add('transparent2');
+			} else if(lib.config['extension_搬运自用_byzy_ckzlkys']=="2"){
+				// 添加blur样式
+				ui.arena.classList.add('blur');
+			}
 			
 			// 资料卡查看多形态原画
 			if(lib.config['extension_搬运自用_byzy_zlkcksxtyh'] != false) {
@@ -17819,6 +17853,8 @@ config:{
 				'<br>'+
 				'<br>※ 资料卡样式<br>- 设置资料卡的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）'+
 				'<br>'+
+				'<br>※ 查看资料卡样式<br>- 设置双击查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 选将时查看资料卡样式<br>- 设置选将时查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）'+
 				'<br>'+
 				'<br>※ 资料卡显示武将简介<br>- 开启后显示武将介绍，关闭后不显示武将介绍，即时生效（要先打开资料卡修改开关才能生效）'+
@@ -19496,6 +19532,21 @@ config:{
 		},
 	},
 	
+	"byzy_ckzlkys":{
+		"name": "查看资料卡样式",
+		"intro": "设置双击查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）。",
+		"init":lib.config.byzy_ckzlkys === undefined ? "0" : lib.config.byzy_ckzlkys,
+		"item":{
+			"0":"无",
+			"1":"模糊效果1",
+			"2":"模糊效果2",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_ckzlkys',item);
+			game.saveConfig('byzy_ckzlkys',item);
+		},
+	},
+	
 	"byzy_xjsckzlkys":{
 		"name": "选将时查看资料卡样式",
 		"intro": "设置选将时查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）。",
@@ -19793,6 +19844,21 @@ config:{
 		onclick:function(item){
 			game.saveConfig('extension_搬运自用_byzy_kpzlkys',item);
 			game.saveConfig('byzy_kpzlkys',item);
+		},
+	},
+	
+	"byzy_ckkpzlkys":{
+		"name": "查看卡牌资料卡样式",
+		"intro": "设置查看卡牌资料卡背景的样式，关闭并重新打开卡牌资料卡生效（要先打开卡牌资料卡修改开关才能生效）。",
+		"init":lib.config.byzy_ckkpzlkys === undefined ? "0" : lib.config.byzy_ckkpzlkys,
+		"item":{
+			"0":"无",
+			"1":"模糊效果1",
+			"2":"模糊效果2",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_ckkpzlkys',item);
+			game.saveConfig('byzy_ckkpzlkys',item);
 		},
 	},
 	

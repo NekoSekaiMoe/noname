@@ -1124,6 +1124,30 @@
 	display: none !important;
 }
 
+/* 炉石模式随从标记 */
+#arena.stone >.player.minskin[data-position="4"]>.judges>.card>.judge-mark>.judge,
+#arena.stone >.player.minskin[data-position="5"]>.judges>.card>.judge-mark>.judge,
+#arena.stone >.player.minskin[data-position="6"]>.judges>.card>.judge-mark>.judge,
+#arena.stone >.player.minskin[data-position="7"]>.judges>.card>.judge-mark>.judge,
+#arena.stone >.player.minskin[data-position="8"]>.judges>.card>.judge-mark>.judge,
+#arena.stone >.player.minskin[data-position="9"]>.judges>.card>.judge-mark>.judge,
+#arena.stone >.player.minskin[data-position="10"]>.judges>.card>.judge-mark>.judge,
+#arena.stone >.player.minskin[data-position="11"]>.judges>.card>.judge-mark>.judge {
+	left: -5px;
+	top: -6px;
+}
+#arena.stone >.player.minskin[data-position="4"]>.judges>.card>.judge-mark>.back,
+#arena.stone >.player.minskin[data-position="5"]>.judges>.card>.judge-mark>.back,
+#arena.stone >.player.minskin[data-position="6"]>.judges>.card>.judge-mark>.back,
+#arena.stone >.player.minskin[data-position="7"]>.judges>.card>.judge-mark>.back,
+#arena.stone >.player.minskin[data-position="8"]>.judges>.card>.judge-mark>.back,
+#arena.stone >.player.minskin[data-position="9"]>.judges>.card>.judge-mark>.back,
+#arena.stone >.player.minskin[data-position="10"]>.judges>.card>.judge-mark>.back,
+#arena.stone >.player.minskin[data-position="11"]>.judges>.card>.judge-mark>.back {
+	left: 6.3px;
+	top: 4.9px;
+}
+
 /*玩家号位显示*/
 .player>.seat {
 	display: block;

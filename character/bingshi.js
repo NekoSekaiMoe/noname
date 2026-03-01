@@ -36,7 +36,7 @@ game.import("character", function () {
 				"male",
 				"wei",
 				4,
-				["pottuntian", "potjixi", "potzaoxian"],
+				["pottuntian", "potzaoxian", "potjixi"],
 			],
 			pot_huanjie: [
 				"male",
@@ -610,7 +610,7 @@ game.import("character", function () {
 					},
 				},
 			},
-			potjixi: {
+			potzaoxian: {
 				audio: 2,
 				forced: true,
 				trigger: { player: "removeMark" },
@@ -632,11 +632,11 @@ game.import("character", function () {
 					}
 				},
 			},
-			potzaoxian: {
+			potjixi: {
 				audio: 2,
 				trigger: { global: "phaseEnd" },
 				filter(event, player) {
-					return get.info("potzaoxian").getTargets(player).length && _status.currentPhase?.countDiscardableCards(player, "he") > 0;
+					return get.info("potjixi").getTargets(player).length && _status.currentPhase?.countDiscardableCards(player, "he") > 0;
 				},
 				getTargets(player) {
 					return player
@@ -648,7 +648,7 @@ game.import("character", function () {
 				logTarget: () => _status.currentPhase,
 				check(event, player) {
 					return get
-						.info("potzaoxian")
+						.info("potjixi")
 						.getTargets(player)
 						.some(target => get.effect(target, { name: "shunshou" }, player, player) > 0);
 				},
@@ -664,7 +664,7 @@ game.import("character", function () {
 						.filter(target => player.canUse(card, target, false));
 					if (targets.length) {
 						const result = await player
-							.chooseTarget(`凿险：视为对任意名其他角色使用一张无距离限制的【顺手牵羊】`, [1, Infinity], (card, player, target) => {
+							.chooseTarget(`急袭：视为对任意名其他角色使用一张无距离限制的【顺手牵羊】`, [1, Infinity], (card, player, target) => {
 								return get.event().targets.includes(target);
 							})
 							.set("_get_card", card)
@@ -6028,10 +6028,10 @@ game.import("character", function () {
 			pot_dengai_prefix: "势",
 			pottuntian: "屯田",
 			pottuntian_info: "蓄力技（0/0），当你失去非伤害牌后，你获得一点蓄力点；出牌阶段限一次，你可以消耗任意点蓄力点，令至多等量名角色从牌堆或弃牌堆中各获得一张红桃牌；一名角色的回合开始时，若你蓄力点已满，你摸一张牌且蓄力点上限+1。",
-			potjixi: "急袭",
-			potjixi_info: "锁定技，当你一次性消耗的蓄力点数量：不小于3，你从弃牌堆中获得一张【无中生有】；不小于5，你从弃牌堆中获得一张【无懈可击】；不小于7，你从弃牌堆中获得一张【五谷丰登】。",
 			potzaoxian: "凿险",
-			potzaoxian_info: "一名角色的回合结束时，若场上存在本回合你使用过牌指定为目标的其他角色，你可弃置当前回合角色一张牌，然后视为使用一张指定其中任意名角色为目标的无视距离的【顺手牵羊】。",
+			potzaoxian_info: "锁定技，当你一次性消耗的蓄力点数量：不小于3，你从弃牌堆中获得一张【无中生有】；不小于5，你从弃牌堆中获得一张【无懈可击】；不小于7，你从弃牌堆中获得一张【五谷丰登】。",
+			potjixi: "急袭",
+			potjixi_info: "一名角色的回合结束时，若场上存在本回合你使用过牌指定为目标的其他角色，你可弃置当前回合角色一张牌，然后视为使用一张指定其中任意名角色为目标的无视距离的【顺手牵羊】。",
 			pot_chenjiao: "势陈矫",
 			pot_chenjiao_prefix: "势",
 			potqingyan: "清严",

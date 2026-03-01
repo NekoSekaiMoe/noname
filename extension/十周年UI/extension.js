@@ -17902,9 +17902,17 @@ if(!(lib.config.extensions.contains("手杀ui")&&lib.config.extension_手杀ui_e
 									break;
 								case '友':
 									fileName = 'friend';
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'qianfeng_blue' : 'qianfeng';
+										checked = true;
+									}
 									break;
 								case '敌':
 									fileName = 'enemy';
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'qianfeng_blue' : 'qianfeng';
+										checked = true;
+									}
 									break;
 								case '民':
 									fileName = 'commoner';
@@ -17959,11 +17967,19 @@ if(!(lib.config.extensions.contains("手杀ui")&&lib.config.extension_手杀ui_e
 									break;
 								case '帅':
 									fileName = 'zhushuai';
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'zhushuai_blue' : 'zhushuai';
+										checked = true;
+									}
 									break;
 								case '将':
 									fileName = 'dajiang';
 									if (_status.mode == 'three' || get.translation(player.side + 'Color') == 'wei') {
 										fileName = 'zhushuai_blue';
+										checked = true;
+									}
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'zhushuai_blue' : 'zhushuai';
 										checked = true;
 									}
 									break;
@@ -17999,6 +18015,18 @@ if(!(lib.config.extensions.contains("手杀ui")&&lib.config.extension_手杀ui_e
 									break;
 								case '后':
 									fileName = 'houshou';
+									break;
+								case '仕':
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'fushuai_blue' : 'fushuai';
+										checked = true;
+									}
+									break;
+								case '士':
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'fushuai_blue' : 'fushuai';
+										checked = true;
+									}
 									break;
 								default:
 									this.innerText = value;
