@@ -7310,7 +7310,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					for (var i = 0; i < list.length; i++) {
 						list2.push(0);
 					}
-					for (var i = 0; i < 7; i++) {
+					for (var i = 0; i < 343; i++) {
 						list2[Math.floor(Math.random() * list2.length)]++;
 					}
 					event.list = list;
@@ -7324,7 +7324,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					}
 					"step 3";
 					if (player.storage.xiangxing == 0) {
-						player.maxHp = 3;
+						player.maxHp = 49;
 						player.update();
 					}
 				},
@@ -10183,7 +10183,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				"每当你受到一次伤害，你可以弃置任意张牌并令伤害来源选择一项：弃置等量的牌，或受到等量的伤害。",
 			xiangxing: "禳星",
 			xiangxing_info:
-				"锁定技，游戏开始时，你获得7枚星；每当你累计扣减7点体力，你失去一枚星，并造成7点雷属性伤害，随机分配给其他角色；当你失去全部星后，你的体力上限变为3。",
+				"锁定技，游戏开始时，你获得7枚星；每当你累计扣减49点体力，你失去一枚星，并造成343点雷属性伤害，随机分配给其他角色；当你失去全部星后，你的体力上限变为7。",
 			yueyin: "月隐",
 			yueyin_info: "锁定技，你的每一枚星对应的一个特定条件，当你失去星时，若满足此条件，则不造成伤害。",
 			xiangxing7_info: "你没有手牌",

@@ -1375,10 +1375,194 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					},
 				},
 			},
+            tianxiadatong: {
+                name: "天下大同",
+                mode: "identity",
+                intro: "测试",
+                showcase: function (init) {
+                    var node = this;
+                    var player1, player2;
+                    if (init) {
+                        player1 = ui.create.player(null, true).init("huangyueying");
+                        player2 = ui.create.player(null, true);
+                        if (lib.character.jsp_huangyueying) {
+                            player2.init("jsp_huangyueying");
+                        } else if (lib.character.re_huangyueying) {
+                            player2.init("re_huangyueying");
+                        } else {
+                            player2.init("huangyueying");
+                        }
+                        player1.style.left = "20px";
+                        player1.style.top = "20px";
+                        player1.style.transform = "scale(0.9)";
+                        player1.node.count.innerHTML = "2";
+                        player1.node.count.dataset.condition = "mid";
+                        player2.style.left = "auto";
+                        player2.style.right = "20px";
+                        player2.style.top = "20px";
+                        player2.style.transform = "scale(0.9)";
+                        player2.node.count.innerHTML = "2";
+                        player2.node.count.dataset.condition = "mid";
+                        this.appendChild(player1);
+                        this.appendChild(player2);
+                        this.player1 = player1;
+                        this.player2 = player2;
+                    } else {
+                        player1 = this.player1;
+                        player2 = this.player2;
+                    }
+
+                    var createCard = function (wuxie) {
+                        var card;
+                        if (wuxie) {
+                            card = game.createCard("wuxie", "noclick");
+                            card.style.transform = "scale(0.9)";
+                        } else {
+                            card = ui.create.card(null, "noclick", true);
+                        }
+                        card.style.opacity = 0;
+                        card.style.position = "absolute";
+                        card.style.zIndex = 2;
+                        card.style.margin = 0;
+                        return card;
+                    };
+
+                    var func = function () {
+                        game.linexy(
+                            [
+                                player1.getLeft() + player1.offsetWidth / 2,
+                                player1.getTop() + player1.offsetHeight / 2,
+                                player2.getLeft() + player2.offsetWidth / 2,
+                                player2.getTop() + player2.offsetHeight / 2,
+                            ],
+                            node
+                        );
+                        var card = createCard(true);
+                        card.style.left = "43px";
+                        card.style.top = "58px";
+                        node.appendChild(card);
+                        ui.refresh(card);
+                        card.style.opacity = 1;
+                        card.style.transform = "scale(0.9) translate(137px,152px)";
+                        setTimeout(function () {
+                            card.delete();
+                        }, 1000);
+                        player1.node.count.innerHTML = "1";
+
+                        setTimeout(function () {
+                            if (!node.showcaseinterval) return;
+                            player1.node.count.innerHTML = "2";
+                            var card = createCard();
+                            card.style.left = "43px";
+                            card.style.top = "58px";
+                            card.style.transform = "scale(0.9) translate(137px,152px)";
+                            node.appendChild(card);
+                            ui.refresh(card);
+                            card.style.opacity = 1;
+                            card.style.transform = "scale(0.9)";
+                            setTimeout(function () {
+                                card.delete();
+                            }, 1000);
+                        }, 300);
+
+                        setTimeout(function () {
+                            if (!node.showcaseinterval) return;
+                            player2.node.count.innerHTML = "1";
+                            game.linexy(
+                                [
+                                    player2.getLeft() + player2.offsetWidth / 2,
+                                    player2.getTop() + player2.offsetHeight / 2,
+                                    player1.getLeft() + player1.offsetWidth / 2,
+                                    player1.getTop() + player1.offsetHeight / 2,
+                                ],
+                                node
+                            );
+                            var card = createCard(true);
+                            card.style.left = "auto";
+                            card.style.right = "43px";
+                            card.style.top = "58px";
+                            node.appendChild(card);
+                            ui.refresh(card);
+                            card.style.opacity = 1;
+                            card.style.transform = "scale(0.9) translate(-137px,152px)";
+                            setTimeout(function () {
+                                card.delete();
+                            }, 700);
+
+                            setTimeout(function () {
+                                if (!node.showcaseinterval) return;
+                                player2.node.count.innerHTML = "2";
+                                var card = createCard();
+                                card.style.left = "auto";
+                                card.style.right = "43px";
+                                card.style.top = "58px";
+                                card.style.transform = "scale(0.9) translate(-137px,152px)";
+                                node.appendChild(card);
+                                ui.refresh(card);
+                                card.style.opacity = 1;
+                                card.style.transform = "scale(0.9)";
+                                setTimeout(function () {
+                                    card.delete();
+                                }, 700);
+                            }, 300);
+                        }, 1000);
+                    };
+                    node.showcaseinterval = setInterval(func, 2200);
+                    func();
+                },
+
+                init: function () {
+                    for (var i in lib.character) {
+                        var info = lib.character[i];
+                        var group = info[1];
+                        if (group !== 'key' && group !== 'shen') {
+                            delete lib.character[i];
+                        }
+                    }
+
+                    if (!lib.skill._daozhiyueying_attr_double) {
+                        lib.skill._daozhiyueying_attr_double = {
+                            trigger: { global: 'damageBegin2' },
+                            forced: true,
+                            silent: true,
+                            filter: function (event) {
+                                return event.nature === 'fire' || event.nature === 'thunder';
+                            },
+                            content: function () {
+                                trigger.num += 0;
+                            }
+                        };
+                        lib.skill._daozhiyueying_attr_double.global = 'damageBegin2';
+                    }
+                },
+
+                content: {
+                    cardPile: function (list) {
+                        game.identityVideoName = "导师月英";
+                        var newList = [];
+                        for (var i = 0; i < list.length; i++) {
+                            var card = list[i];
+                            var type = get.type(card[2]);
+                            var times = 1;
+                            if (type === 'basic') {
+                                times = 4;
+                            } else if (type === 'trick') {
+                                times = 3;
+                            } else if (type === 'equip') {
+                                times = 2;
+                            }
+                            for (var j = 0; j < times; j++) {
+                                newList.push(card);
+                            }
+                        }
+                        return newList;
+                    }
+                }
+            },
 			duzhansanguo: {
 				name: "毒战三国",
 				mode: "identity",
-				intro: "牌堆中额外添加10%的毒",
+				intro: "牌堆中额外添加50%的毒",
 				showcase: function (init) {
 					var node = this;
 					var func = function () {
@@ -1417,11 +1601,11 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						game.identityVideoName = "毒战三国杀";
 						lib.config.bannedcards.remove("du");
 						if (game.bannedcards) game.bannedcards.remove("du");
-						var num = Math.ceil(list.length / 10);
+						var num = Math.ceil(list.length / 2);
 						while (num--) {
 							list.push([
 								["heart", "diamond", "club", "spade"].randomGet(),
-								Math.ceil(Math.random() * 13),
+								Math.ceil(Math.random() * 9),
 								"du",
 							]);
 						}

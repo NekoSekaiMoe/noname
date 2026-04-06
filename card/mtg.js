@@ -758,6 +758,9 @@ game.import("card", function () {
 			["heart", 6, "mtg_shamolvzhou"],
 
 			["club", 12, "mtg_cangbaohaiwan"],
+			["heart", 12, "mtg_cangbaohaiwan"],
+			["spade", 12, "mtg_cangbaohaiwan"],
+			["diamond", 12, "mtg_cangbaohaiwan"],
 			["spade", 11, "mtg_lindixiliu"],
 			["diamond", 5, "mtg_bingheyaosai"],
 			["club", 10, "mtg_longlushanfeng"],
