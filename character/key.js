@@ -13152,28 +13152,8 @@ game.import("character", function () {
 						trigger.result = { bool: true };
 					}
 				},
-				group: ["yuri_buqu_draw", "yuri_buqu_use", "yuri_buqu_dying"],
+				group: ["yuri_buqu_draw"],
 				subSkill: {
-					dying: {
-						trigger: { global: "dying" },
-						forced: true,
-						filter(event, player) {
-							if (!player.hasZhuSkill("yuri_buqu")) return false;
-							if (event.player == player) return false;
-							var evt = event.getParent("damage");
-							if (!evt || !evt.card || !evt.cards) return false;
-							if (evt.source != player) return false;
-							// 检查是否是用创使用的杀
-							var useEvent = evt.getParent("useCard");
-							if (!useEvent || !useEvent.result) return false;
-							return useEvent.result._yuri_buqu_use == true;
-						},
-						content() {
-							// 玩家进入濒死状态，且标记不触发不屈
-							trigger.getParent()._yuri_buqu = true;
-							player.dying();
-						},
-					},
 					draw: {
 						trigger: { player: "phaseDrawBegin2" },
 						forced: true,
@@ -13185,68 +13165,6 @@ game.import("character", function () {
 							var count = player.getExpansions("yuri_buqu").length;
 							var extra = Math.ceil(count / 4);
 							trigger.num += extra;
-						},
-					},
-					use: {
-						enable: "chooseToUse",
-						filter(event, player) {
-							if (!player.hasZhuSkill("yuri_buqu")) return false;
-							return player.getExpansions("yuri_buqu").length > 0;
-						},
-						chooseButton: {
-							dialog(event, player) {
-								return ui.create.dialog("不屈：使用创", player.getExpansions("yuri_buqu"), "hidden");
-							},
-							filter(button, player) {
-								return true;
-							},
-							check(button) {
-								return 1;
-							},
-							backup(links, player) {
-								return {
-									filterCard: () => false,
-									selectCard: -1,
-									viewAs: { name: "sha" },
-									filterTarget: lib.filter.filterTarget,
-									selectTarget: 1,
-									card: links[0],
-									precontent() {
-										delete event.result.skill;
-										event.result.card = event.result.card || lib.skill.yuri_buqu_use_backup.card;
-										event.result.cards = [lib.skill.yuri_buqu_use_backup.card];
-										event.result._yuri_buqu_use = true;
-									},
-									onuse(result, player) {
-										var card = result.cards[0];
-										player.loseToDiscardpile(card);
-									},
-								};
-							},
-							prompt(links, player) {
-								return "将一张「创」当杀使用";
-							},
-						},
-						mod: {
-							targetInRange(card, player, target) {
-								if (card && card.isCard && card.cards && player.getExpansions("yuri_buqu").some(c => card.cards.includes(c))) {
-									return true;
-								}
-							},
-						},
-						ai: {
-							order: 5,
-							result: {
-								player(player) {
-									return 1;
-								},
-								target: -1.5,
-							},
-							respondSha: true,
-							skillTagFilter(player) {
-								if (!player.hasZhuSkill("yuri_buqu")) return false;
-								return player.getExpansions("yuri_buqu").length > 0;
-							},
 						},
 					},
 				},
@@ -13615,7 +13533,7 @@ game.import("character", function () {
 				"主公技，限定技，当有角色因你发动的【行动】而死亡后，若其身份不为【明忠】，则其可以将身份改为忠臣并重新加入游戏，然后将势力改为与你相同，将体力值回复至2点并摸一张牌。",
 			yuri_buqu: "不屈",
 			yuri_buqu_info:
-				"锁定技，当你处于濒死状态时，将牌堆顶的一张牌置于你的武将牌上，称为「创」。若此牌点数和花色与已有的「创」均不相同，则你将体力回复至2点，否则获得所有的「创」并回复体力至1点且本回合无法再使用「不屈」。当你武将牌上有「创」时，摸牌阶段额外摸X/4张（X为创数量，向上取整）。你可以将「创」当杀使用，无距离限制。当你使用「创」导致目标角色进入濒死状态时，你进入濒死状态且本次濒死无法触发〖不屈〗。",
+				"锁定技，当你处于濒死状态时，将牌堆顶的一张牌置于你的武将牌上，称为「创」。若此牌点数和花色与已有的「创」均不相同，则你将体力回复至2点，否则获得所有的「创」并回复体力至1点且本回合无法再使用「不屈」。当你武将牌上有「创」时，摸牌阶段额外摸X/4张（X为创数量，向上取整）。",
 			haruko_haofang: "豪放",
 			haruko_haofang_info:
 				"锁定技，你的延时锦囊牌视为【无中生有】。当你因执行【无中生有】的效果而摸牌时，你令摸牌数+2。",
