@@ -13106,7 +13106,7 @@ game.import("character", function () {
 						event.type == "dying" &&
 						player.isDying() &&
 						event.dying == player &&
-						!event.getParent()._yuri_buqu
+						!player.storage._yuri_buqu_banned
 					);
 				},
 				content() {
@@ -13139,8 +13139,8 @@ game.import("character", function () {
 						trigger.cancel();
 						trigger.result = { bool: true };
 					} else {
-						// 有重复，获得所有创并回复至1点，本回合无法再使用不屈
-						trigger.getParent()._yuri_buqu = true;
+						// 有重复，获得所有创并回复至1点，本轮无法再使用不屈
+						player.storage._yuri_buqu_banned = true;
 						var cards = player.getExpansions("yuri_buqu");
 						if (cards.length) {
 							player.gain(cards, "draw");
@@ -13153,8 +13153,18 @@ game.import("character", function () {
 						trigger.result = { bool: true };
 					}
 				},
-				group: ["yuri_buqu_draw"],
+				group: ["yuri_buqu_draw", "yuri_buqu_clear"],
 				subSkill: {
+					clear: {
+						trigger: { global: "roundStart" },
+						silent: true,
+						filter(event, player) {
+							return player.storage._yuri_buqu_banned;
+						},
+						content() {
+							delete player.storage._yuri_buqu_banned;
+						},
+					},
 					draw: {
 						trigger: { player: "phaseDrawBegin2" },
 						forced: true,
@@ -13534,7 +13544,7 @@ game.import("character", function () {
 				"主公技，限定技，当有角色因你发动的【行动】而死亡后，若其身份不为【明忠】，则其可以将身份改为忠臣并重新加入游戏，然后将势力改为与你相同，将体力值回复至2点并摸一张牌。",
 			yuri_buqu: "不屈",
 			yuri_buqu_info:
-				"锁定技，当你处于濒死状态时，将牌堆顶的一张牌置于你的武将牌上，称为「创」。若此牌点数和花色与已有的「创」均不相同，则你将体力回复至2点，否则获得所有的「创」并回复体力至1点且本回合无法再使用「不屈」。当你武将牌上有「创」时，摸牌阶段额外摸X/4张（X为创数量，向上取整）。",
+				"锁定技，当你处于濒死状态时，将牌堆顶的一张牌置于你的武将牌上，称为「创」。若此牌点数和花色与已有的「创」均不相同，则你将体力回复至2点，否则获得所有的「创」并回复体力至1点且本轮无法再使用「不屈」。当你武将牌上有「创」时，摸牌阶段额外摸X/4张（X为创数量，向上取整）。",
 			haruko_haofang: "豪放",
 			haruko_haofang_info:
 				"锁定技，你的延时锦囊牌视为【无中生有】。当你因执行【无中生有】的效果而摸牌时，你令摸牌数+2。",
