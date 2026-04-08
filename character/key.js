@@ -8114,7 +8114,7 @@ game.import("character", function () {
 					var target = event.targets[0];
 					player.logSkill("misuzu_zhongxing", target);
 					player.addTempSkill("misuzu_zhongxing_haruko");
-					target.chooseDrawRecover(4, true);
+					target.chooseDrawRecover(4, 2, true);
 				},
 			},
 			misuzu_zhongxing_haruko: { charlotte: true },
