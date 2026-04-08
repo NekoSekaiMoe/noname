@@ -7390,6 +7390,7 @@ game.import("character", function () {
 					player: ["die", "phaseZhunbeiBegin"],
 				},
 				forced: true,
+				forceDie: true,
 				skillAnimation: true,
 				animationColor: "fire",
 				filter(event, player, name) {
