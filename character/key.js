@@ -8633,12 +8633,12 @@ game.import("character", function () {
 						.forResult();
 					if (control != "cancel2") event.result = { bool: true, cost_data: index };
 				},
-				async content(event, trigger, player) {
-					let num = 1 + event.cost_data;
-					await player.draw(num).set("gaintag", ["shiorimiyuki_tingxian"]);
-					await player.recover();
-					player.addTempSkill("shiorimiyuki_tingxian2", "phaseUseAfter");
-				},
+			async content(event, trigger, player) {
+				let num = 1 + event.cost_data;
+				await player.draw(num).set("gaintag", ["shiorimiyuki_tingxian"]);
+				await player.recover(4);
+				player.addTempSkill("shiorimiyuki_tingxian2", "phaseUseAfter");
+			},
 				group: "shiorimiyuki_tingxian1",
 			},
 			shiorimiyuki_tingxian1: { audio: true },
@@ -8664,14 +8664,10 @@ game.import("character", function () {
 						}) > 0
 					);
 				},
-				content() {
-					player.loseHp(
-						player.countCards("h", function (card) {
-							return card.hasGaintag("shiorimiyuki_tingxian");
-						})
-					);
-					player.removeGaintag("shiorimiyuki_tingxian");
-				},
+			content() {
+				player.loseHp(1);
+				player.removeGaintag("shiorimiyuki_tingxian");
+			},
 			},
 			//中津静流
 			shizuru_nianli: {
@@ -13817,8 +13813,8 @@ game.import("character", function () {
 			shiorimiyuki_banyin: "伴音",
 			shiorimiyuki_banyin_info: "当你受到伤害或回复体力后，你可令一名其他角色回复1点体力。",
 			shiorimiyuki_tingxian: "铤险",
-			shiorimiyuki_tingxian_info:
-				"出牌阶段开始时，你可以摸至多四张牌。若如此做，你回复4点体力，且此阶段结束时你失去X点体力。（X为你得到的牌中仍在手牌区的牌的数量）",
+		shiorimiyuki_tingxian_info:
+			"出牌阶段开始时，你可以摸至多四张牌。若如此做，你回复4点体力，且此阶段结束时你失去1点体力。",
 			shiorimiyuki_tingxian2: "铤险",
 			miki_shenqiang: "神枪",
 			miki_shenqiang_info:
