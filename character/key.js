@@ -3026,7 +3026,8 @@ game.import("character", function () {
 					global: "phaseBefore",
 					player: "enterGame",
 				},
-			    forced: true,
+				forced: true,
+				locked: true,
 				init: (player) => {
 					player.addSkill("erika_yousheng_mamori");
 				},
@@ -3082,6 +3083,7 @@ game.import("character", function () {
 						content() {
 							"step 0";
 							player.awakenSkill("erika_yousheng");
+							player.addSkills("tomoyo_changshi");
 							game.log(player, "成功完成使命");
 							var list = [player];
 							list.addArray(player.storage.erika_yousheng);
@@ -3118,9 +3120,12 @@ game.import("character", function () {
 						},
 					},
 					mamori: {
-						trigger: { global: "roundStart" },
+						trigger: { global: "phaseBefore", player: "enterGame" },
 						skillAnimation: true,
 						animationColor: "wood",
+						filter(event, player) {
+							return event.name != "phase" || game.phaseNumber == 0;
+						},
 						async cost(event, trigger, player) {
 							event.result = await player
 								.chooseTarget(
@@ -3130,7 +3135,18 @@ game.import("character", function () {
 									"选择至多两名其他角色。你增加点体力上限，回复4点体力，摸4张牌并获得5点护甲。"
 								)
 								.set("ai", function (ruka) {
-									return -1;
+									var player = _status.event.player;
+									var att = get.attitude(player, ruka);
+									if (att < 0) return att * 4 - 6;
+									var num = att * 3;
+									var rank = get.rank(ruka.name, true);
+									var maxHp = Math.min(ruka.maxHp || ruka.hp, 6);
+									num += (8 - rank) * 0.9;
+									num += (5 - maxHp) * 0.8;
+									if (rank <= 4) num += 1.5;
+									if (maxHp <= 3) num += 1;
+									if (att == 0) num -= rank * 0.2;
+									return num;
 								})
 								.forResult();
 						},
@@ -3138,8 +3154,8 @@ game.import("character", function () {
 							player.awakenSkill("erika_yousheng_mamori");
 							player.markAuto("erika_yousheng", event.targets);
 							await player.gainMaxHp(4);
-						    player.draw(4);
-						    player.recover(4);
+							player.draw(4);
+							player.recover(4);
 							await player.changeHujia(16);
 						},
 					},
@@ -14130,7 +14146,7 @@ game.import("character", function () {
 				"锁定技。①你的手牌上限+X（X为你的护甲数）。②当你于回合内使用第Y张牌时，若此牌与你上回合使用的第Y张牌类型相同，则你摸一张牌。",
 			erika_yousheng: "佑生",
 			erika_yousheng_info:
-				"锁定技，使命技。①限定技。一轮游戏开始时，你可以选择至多两名其他角色。你增加4点体力上限，回复4点体力，摸4张牌并增加16点护甲。②当你〖佑生①〗选择的角色成为【杀】或伤害类锦囊牌的目标时，你可以弃置X张牌并将此目标转移给自己（X为你本轮内发动过〖佑生②〗的次数）。此牌结算结束后，你可令一名原目标角色获得此牌。③成功：当你失去最后的护甲后，若你已发动过〖佑生①〗，则你和所有〖佑生①〗选择的角色各摸四张牌。④失败：当一名〖佑生①〗选择的角色因【杀】或伤害类锦囊牌而受到伤害而进入濒死状态时，你失去所有护甲并弃置等量的牌。",
+				"锁定技，使命技。①限定技。游戏开始时，你可以选择至多两名其他角色。你增加4点体力上限，回复4点体力，摸4张牌并增加16点护甲。②当你〖佑生①〗选择的角色成为【杀】或伤害类锦囊牌的目标时，你可以弃置X张牌并将此目标转移给自己（X为你本轮内发动过〖佑生②〗的次数）。此牌结算结束后，你可令一名原目标角色获得此牌。③成功：当你失去最后的护甲后，若你已发动过〖佑生①〗，则你和所有〖佑生①〗选择的角色各摸四张牌，然后你获得〖长誓〗。④失败：当一名〖佑生①〗选择的角色因【杀】或伤害类锦囊牌而受到伤害而进入濒死状态时，你失去所有护甲并弃置等量的牌。",
 			erika_yousheng_append:
 				'<span style="font-family: yuanli">Death is not the end of life, but the completion of life.</span>',
 			satomi_luodao: "落刀",
