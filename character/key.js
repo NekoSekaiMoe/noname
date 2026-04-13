@@ -97,7 +97,7 @@ game.import("character", function () {
 
 			key_kud: ["female", "key", 5, ["kud_qiaoshou", "kud_buhui"]],
 			key_misuzu: ["female", "key", 5, ["misuzu_hengzhou", "misuzu_nongyin", "misuzu_zhongxing"]],
-			key_kamome: ["female", "key", 5, ["kamome_yangfan", "kamome_huanmeng", "kamome_jieban"]],
+			key_kamome: ["female", "key", 5, ["kamome_yangfan", "kamome_huanmeng", "kamome_jieban", "kamome_yangfan2"]],
 			key_nao: ["female", "key", 5, ["nao_duyin", "nao_wanxin", "nao_shouqing", "nao_diandeng"]],
 			key_yuuki: ["female", "key", 5, ["yuuki_yicha", "yuuki_wuxin"]],
 			key_kotarou: ["male", "key", 5, ["kotarou_rewrite", "kotarou_aurora"]],
@@ -8150,7 +8150,7 @@ game.import("character", function () {
 					return evt && evt.player == player && evt.es && evt.es.length;
 				},
 				content() {
-					if (trigger.getl) player.draw(4 * trigger.getl(player).es.length);
+					if (trigger.getl) player.draw(4 * trigger.getl(player).es.length); player.recover(2);
 					else player.equip(game.createCard2("kamome_suitcase", "spade", 2));
 				},
 				ai: {
@@ -8163,7 +8163,40 @@ game.import("character", function () {
 					},
 				},
 			},
-			kamome_huanmeng: {
+			kamome_yangfan2: {
+			trigger: { global: "roundStart" },
+			forced: true,
+			filter(event, player) {
+				var slots = ["equip1", "equip2", "equip3", "equip4", "equip5"];
+				for (var i = 0; i < slots.length; i++) {
+					if (!player.getEquip(slots[i])) return true;
+				}
+				return false;
+			},
+			content() {
+				"step 0";
+				var slots = ["equip1", "equip2", "equip3", "equip4", "equip5"];
+				var empty = [];
+				for (var i = 0; i < slots.length; i++) {
+					if (!player.getEquip(slots[i])) empty.push(slots[i]);
+				}
+				event.empty = empty;
+				event.num = 0;
+				"step 1";
+				if (event.num >= event.empty.length) return;
+				var subtype = event.empty[event.num];
+				var card = get.cardPile2(function (c) {
+					return get.subtype(c, false) == subtype;
+				});
+				if (card) {
+					player.equip(card);
+					player.popup(subtype);
+				}
+				event.num++;
+				event.redo();
+			},
+		},
+		kamome_huanmeng: {
 				trigger: { player: "phaseZhunbeiBegin" },
 				frequent: true,
 				content() {
@@ -14079,7 +14112,8 @@ game.import("character", function () {
 			key_kamome: "久岛鸥",
 			kamome_yangfan: "扬帆",
 			kamome_yangfan_info:
-				"锁定技，游戏开始时，你将一张【旅行箱】置入你的装备区。当你失去装备区内的一张牌后，你摸四张牌。",
+				"锁定技，游戏开始时，你将一张【旅行箱】置入你的装备区。当你失去装备区内的一张牌后，你摸四张牌。一轮游戏开始时，若你的武器栏、防具栏、进攻马栏、防御马栏或宝物栏为空，你从牌堆中随机获得一张对应装备类别的牌并装备之。",
+			kamome_yangfan2: "扬帆",
 			kamome_huanmeng: "幻梦",
 			kamome_huanmeng_info:
 				"准备阶段开始时，你可以观看牌堆顶的X+1张牌并可以按任意顺序置于牌堆顶或牌堆底。（X为你装备区内的牌数）",
