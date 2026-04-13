@@ -8787,7 +8787,7 @@ game.import("character", function () {
 				},
 				precontent() {
 					player.logSkill("shizuru_nianli");
-					player.addTempSkill("shizuru_nianli_round", "roundStart");
+					player.addTempSkill("shizuru_nianli_round", "phaseAfter");
 					player.showCards(get.translation(player) + "发动了【念力】", event.result.cards.slice(0));
 					event.result.card.cards = [];
 					event.result.cards = [];
@@ -8863,7 +8863,7 @@ game.import("character", function () {
 				subSkill: {
 					round: {
 						mark: true,
-						intro: { content: "本轮已发动" },
+						intro: { content: "本回合已发动" },
 					},
 					clear: {
 						trigger: { player: "useCardAfter" },
@@ -13835,7 +13835,7 @@ game.import("character", function () {
 			kyoko_zhiheng: "制衡",
 			shizuru_nianli: "念力",
 			shizuru_nianli_info:
-				"你可以展示一张♦/♣/♥/♠手牌，然后视为使用一张不计入次数限制和记录的雷【杀】/【闪】/【桃】/【无懈可击】。",
+				"你可以展示一张♦/♣/♥/♠手牌，然后视为使用一张不计入次数限制和记录的雷【杀】/【闪】/【桃】/【无懈可击】。每回合限一次。",
 			shizuru_benzhan: "奔战",
 			shizuru_benzhan_info:
 				"当你使用或打出牌响应其他角色，或其他角色使用或打出牌响应你后，若此牌为：基本牌，你可令一名角色弃置四张牌或令一名角色摸四张牌；非基本牌，你可对一名角色造成2点伤害或令一名其他角色回复2点体力。",

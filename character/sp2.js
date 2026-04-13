@@ -10799,7 +10799,9 @@ game.import("character", function () {
 					player.awakenSkill("diaoling");
 					player.storage.mubing2 = true;
 					player.markSkill("mubing_rewrite");
-					player.chooseDrawRecover(2, true);
+					player.gainMaxHp();
+					player.draw(4);
+					player.recover(2);
 				},
 				ai: {
 					combo: "mubing"
@@ -14902,7 +14904,7 @@ game.import("character", function () {
 				"每名角色限一次，当你对有牌的其他角色造成伤害后，你可以防止此伤害。然后其将其点数最大的牌交给你。",
 			diaoling: "调令",
 			diaoling_info:
-				"觉醒技，准备阶段，若你已因〖募兵〗获得了6张或更多的【杀】或武器牌或伤害锦囊牌，则你回复1点体力或摸两张牌，然后修改〖募兵〗。",
+				"觉醒技，准备阶段，若你已因〖募兵〗获得了6张或更多的【杀】或武器牌或伤害锦囊牌，则你回复1点体力上限，摸四张牌，回复2点体力，然后修改〖募兵〗。",
 			mubing_rewrite: "募兵·改",
 			mubing_rewrite_info:
 				"出牌阶段开始时，你可以亮出牌堆顶的四张牌。你可弃置任意张手牌，并可获得任意张点数之和不大于你弃置的牌点数之和的牌。然后你可将以此法得到的牌以任意方式交给其他角色。",
