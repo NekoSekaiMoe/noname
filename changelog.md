@@ -16,6 +16,8 @@ Magic系列卡牌调整。
 
 ## 其他更改
 
+十周年UI Spine动画播放器池改为动态扩容，修复同时播放动画超过4个时报错的问题。
+
 新增 .githooks/commit-msg 钩子脚本，自动生成 Change-Id。
 
 Makefile 拆分优化，新增 serve、push 等快捷命令。

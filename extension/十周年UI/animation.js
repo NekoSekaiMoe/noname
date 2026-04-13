@@ -1001,8 +1001,9 @@ var duilib;
 		function AnimationPlayerPool(size, pathPrefix, thisName){
 			if (!self.spine) return console.error('spine 未定义.');
 			
-			this.name = thisName;
-			this.animations = new Array(size ? size : 1);
+		this.name = thisName;
+		this.pathPrefix = pathPrefix;
+		this.animations = new Array(size ? size : 1);
 			for (var i = 0; i < this.animations.length; i++) this.animations[i] = new duilib.AnimationPlayer(pathPrefix);
 			
 		};
@@ -1050,8 +1051,12 @@ var duilib;
 				}
 			}
 			
-			console.error('spine:' + (this.name != null ? this.name : '' + '可用动画播放组件不足'));
-			
+		var newPlayer = new duilib.AnimationPlayer(this.pathPrefix);
+		this.animations.push(newPlayer);
+		element._ap = newPlayer;
+		element.appendChild(newPlayer.canvas);
+		newPlayer.playSpine(animation, position);
+		
 		};
 		
 		return AnimationPlayerPool;
