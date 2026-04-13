@@ -3047,6 +3047,8 @@ game.import("character", function () {
 				},
 				async cost(event, trigger, player) {
 					const num = player.countMark("erika_yousheng_ruka") + 1;
+					var target = trigger.target;
+					var card = trigger.card;
 					event.result = await player
 						.chooseToDiscard(
 							"he",
@@ -3054,6 +3056,24 @@ game.import("character", function () {
 							get.prompt("erika_yousheng", trigger.target),
 							"弃置" + num + "张牌，并转移" + get.translation(trigger.card)
 						)
+						.set("ai", function (cardx) {
+							var player = _status.event.player;
+							var target = _status.event.getTrigger().target;
+							var trigger = _status.event.getTrigger();
+							var att = get.attitude(player, target);
+							if (att <= 0) return 0;
+							var dmg = get.tag(trigger.card, "damage") || 1;
+							var targetDanger = target.hp <= dmg;
+							var mySafety = player.hp + player.hujia - dmg;
+							var handCount = player.countCards("he");
+							var rukaCount = player.countMark("erika_yousheng_ruka") + 1;
+							if (rukaCount > handCount - 2) return 0;
+							if (targetDanger && mySafety > 0) return 10 - get.value(cardx);
+							if (target.hp <= 2 && mySafety > 0) return 8 - get.value(cardx);
+							if (mySafety > 2) return 6 - get.value(cardx);
+							if (mySafety > 0) return 3 - get.value(cardx);
+							return 0;
+						})
 						.forResult();
 				},
 				async content(event, trigger, player) {
@@ -3194,6 +3214,15 @@ game.import("character", function () {
 									}
 								)
 								.set("targets", trigger["erika_yousheng_" + player.playerid])
+								.set("ai", function (target) {
+									var player = _status.event.player;
+									var att = get.attitude(player, target);
+									if (att <= 0) return 0;
+									var val = att;
+									if (target.countCards("h") < 2) val += 3;
+									if (target.hp <= 2) val += 2;
+									return val;
+								})
 								.forResult();
 						},
 						async content(event, trigger, player) {
