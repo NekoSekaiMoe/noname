@@ -61,7 +61,7 @@ game.import("character", function () {
 			key_shizuru: ["female", "key", 5, ["shizuru_nianli", "shizuru_benzhan"]],
 			key_shiorimiyuki: ["female", "key", 5, ["shiorimiyuki_banyin", "shiorimiyuki_tingxian"]],
 			key_miki: ["female", "key", 5, ["miki_shenqiang", "miki_huanmeng", "miki_zhiluo"]],
-			key_shiori: ["female", "key", "2/3", ["shiori_huijuan"]],
+			key_shiori: ["female", "key", "2/3", ["shiori_huijuan", "shiori_huahuo"]],
 			key_kaori: ["female", "key", "3/4", ["kaori_siyuan", "kaori_zhishi", "kaori_dongfeng"]],
 			key_akiko: ["female", "key", 5, ["akiko_dongcha"]],
 			key_abyusa: ["female", "key", 5, ["abyusa_jueqing", "abyusa_dunying"]],
@@ -7544,6 +7544,44 @@ game.import("character", function () {
 				},
 			},
 			//野村美希
+			shiori_huahuo: {
+				trigger: { global: "roundStart" },
+				forced: true,
+				filter(event, player) {
+					return player.isAlive();
+				},
+				content() {
+					player.addMark("shiori_huahuo", 1);
+				},
+				mark: true,
+				marktext: "花",
+				intro: { content: "花火标记数: #" },
+				group: "shiori_huahuo_save",
+				subSkill: {
+					save: {
+						trigger: { player: "dyingBefore" },
+						forced: true,
+						filter(event, player) {
+							return player.countMark("shiori_huahuo") > 0;
+						},
+						content() {
+							trigger.cancel();
+							var dmg = 1;
+							var evt = trigger.getParent();
+							while (evt) {
+								if (evt.name == "damage" && evt.num) {
+									dmg = evt.num;
+									break;
+								}
+								evt = evt.getParent ? evt.getParent() : null;
+							}
+							player.removeMark("shiori_huahuo", 1);
+							player.recover(dmg);
+							player.draw(dmg);
+						},
+					},
+				},
+			},
 			miki_shenqiang: {
 				trigger: {
 					global: "phaseBefore",
@@ -13822,6 +13860,10 @@ game.import("character", function () {
 				"出牌阶段限X次（X为你的体力值），你可以获得一名本阶段内未选择过的其他角色的区域内的一张牌。你摸一张牌，然后将一张牌交给该角色。然后你清除此技能结算过程中所有卡牌移动事件的移动记录。",
 			//即技能结算完成后，所有涉及到的牌移动事件不会再被getHistory获取
 			midori_tishen: "替身",
+			shiori_huahuo: "花火",
+			shiori_huahuo_save: "花火",
+			shiori_huahuo_info:
+				"锁定技。一轮游戏开始时，你获得一个花火标记。当你受到致命伤害时，你可以移除一个花火标记并回复等量的体力，然后摸等量的牌。",
 			midori_tishen_info:
 				"限定技，准备阶段，你可以将体力值回复至体力上限并摸等同于回复量的牌，然后将武将牌替换为【西园美鱼】。",
 			kyoko_juwu: "聚物",
