@@ -7151,54 +7151,46 @@ game.import("character", function () {
 						"点体力"
 					);
 				},
-				check(event, player) {
-					// 已经修改过的绝情不再触发
-					if (player.storage.abyusa_jueqing_rewrite) return false;
-					// 目标是友方则不使用
-					if (get.attitude(player, event.player) >= 0) return false;
-					// 自身血量不足以支付代价则不使用
-					if (player.hp <= event.num) return false;
-					// 目标有过滤伤害技能则不使用
-					if (event.player.hasSkillTag("filterDamage", null, {
-						player: player,
-						card: event.card,
-					})) return false;
+		check(event, player) {
+			if (player.storage.abyusa_jueqing_rewrite) return false;
+			if (get.attitude(player, event.player) >= 0) return false;
+			if (player.hp <= event.num) return false;
+			if (event.player.hasSkillTag("filterDamage", null, {
+				player: player,
+				card: event.card,
+			})) return false;
 
-					var damage = event.num * 2; // 翻倍后的伤害
-					var cost = event.num; // 需要失去的体力
+			var damage = event.num * 2;
+			var cost = event.num;
+			var score = 0;
 
-					// 伤害能够击杀敌人 - 高优先级
-					if (event.player.hp <= damage) {
-						// 确保自己不会因失去体力而死
-						if (player.hp > cost) return 10;
-					}
+			// 1. 击杀判断
+			if (event.player.hp <= damage && event.player.hp > event.num) {
+				score += 8;
+			} else if (event.player.hp <= damage) {
+				score += 5;
+			}
 
-					// 计算性价比：伤害收益 vs 自身损失
-					// 敌人失去的体力价值
-					var enemyLoss = damage;
-					if (event.player.hp <= damage) {
-						enemyLoss = event.player.hp + 1; // 击杀额外价值
-					}
+			// 2. 修改后收益 - 场上有高防敌人
+			var hasHighDefenseEnemy = game.hasPlayer(current => {
+				return current != player && get.attitude(player, current) < 0
+					&& (current.getEquip('equip2') || current.hujia > 1 || current.hasSkillTag('filterDamage'));
+			});
+			if (hasHighDefenseEnemy) score += 3;
 
-					// 自身损失的价值
-					var selfLoss = cost;
-					if (player.hp <= cost + 1) {
-						selfLoss *= 2; // 濒危时损失更大
-					}
+			// 3. 代价计算
+			var actualCost = cost;
+			if (player.hujia > 0) actualCost = Math.max(0, cost - player.hujia);
+			score -= actualCost * 0.5;
 
-					// 性价比评估
-					var ratio = enemyLoss / selfLoss;
+			// 4. 低伤害不浪费一次性技能
+			if (event.num <= 1 && event.player.hp > 2) score -= 3;
 
-					// 只有当性价比足够高（伤害收益至少是自身损失的1.5倍）才使用
-					if (ratio >= 1.5) {
-						// 基础分数 + 性价比加成
-						var baseScore = 1;
-						var ratioBonus = Math.min(ratio - 1, 3); // 最多加3分
-						return baseScore + ratioBonus;
-					}
+			// 5. 濒危时更倾向使用
+			if (player.hp <= 2) score += 2;
 
-					return false;
-				},
+			return score >= 3 ? score : false;
+		},
 				locked(skill, player) {
 					return player && player.storage.abyusa_jueqing_rewrite;
 				},
