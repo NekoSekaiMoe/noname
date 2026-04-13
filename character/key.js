@@ -40,7 +40,7 @@ game.import("character", function () {
 				"6/6/5",
 				["sunohara_chengshuang", "sunohara_tiaoyin", "sunohara_jianren"],
 			],
-			key_rin: ["female", "key", 5, ["rin_baoqiu"]],
+			key_rin: ["female", "key", 5, ["rin_baoqiu", "rin_mengmiao"]],
 			key_sasami: ["female", "key", 5, ["sasami_miaobian"]],
 			key_akane: ["female", "key", 5, ["akane_jugu", "akane_quanqing", "akane_yifu"], ["zhu"]],
 			key_doruji: ["female", "key", 16, ["doruji_feiqu"]],
@@ -10928,6 +10928,42 @@ game.import("character", function () {
 					}
 				},
 			},
+			rin_mengmiao: {
+				audio: 2,
+				trigger: { player: "phaseZhunbeiBegin" },
+				direct: true,
+				content() {
+					"step 0";
+					event.num = 0;
+					"step 1";
+					player
+						.chooseControl(Array.from({ length: 13 }, (_, i) => get.strNumber(i + 1)))
+						.set("prompt", "萌喵：请声明一个点数")
+						.set("ai", () => _status.event.controls.randomGet());
+					"step 2";
+					var guess = result.index + 1;
+					player.popup(get.strNumber(guess));
+					game.log(player, "声明了点数", "#g" + get.strNumber(guess));
+					var card = get.cards()[0];
+					event.card = card;
+					game.cardsGotoOrdering(card);
+					player.showCards(card);
+					var num = get.number(card, false);
+					if (num != guess) {
+						player.gain(card, "gain2");
+						game.log(player, "获得了该牌");
+						event.num++;
+						event.redo();
+					} else {
+						game.log(player, "点数相同，流程结束");
+						game.cardsDiscard(card);
+						if (event.num > 0) {
+							game.log(player, "本次【萌喵】共获得了", "#g" + event.num + "#张牌");
+						}
+						event.finish();
+					}
+				},
+			},
 			//春原阳平&春原芽衣
 			sunohara_chengshuang: {
 				trigger: {
@@ -13864,6 +13900,9 @@ game.import("character", function () {
 			shiori_huahuo_save: "花火",
 			shiori_huahuo_info:
 				"锁定技。一轮游戏开始时，你获得一个花火标记。当你受到致命伤害时，你可以移除一个花火标记并回复等量的体力，然后摸等量的牌。",
+			rin_mengmiao: "萌喵",
+			rin_mengmiao_info:
+				"准备阶段，你可以声明一个扑克牌的点数，然后翻开牌堆顶的一张牌，若点数与你声明的不同，你获得之，并重复此流程。",
 			midori_tishen_info:
 				"限定技，准备阶段，你可以将体力值回复至体力上限并摸等同于回复量的牌，然后将武将牌替换为【西园美鱼】。",
 			kyoko_juwu: "聚物",
