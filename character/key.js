@@ -6323,7 +6323,7 @@ game.import("character", function () {
 						player.addSkill('ao_xishi');
 						player.addSkill('tsumugi_mugyu');
 						player.addSkill('kamome_jieban');
-						player.addSkill('mia_shihui');
+						player.addSkill('chihaya_huairou');
 					}
 				},
 				ai: {
@@ -13961,7 +13961,7 @@ game.import("character", function () {
 				"当你受到伤害/对其他角色造成伤害时，你可进行判定。若结果为红色/黑色，此伤害-1/+1。",
 			shiroha_jiezhao: "解兆",
 			shiroha_jiezhao_info:
-				"一名角色的判定牌生效前，你可打出一张「兆」代替之。当你以此法移去最后一张「兆」后，你加1点体力上限并回复1点体力，然后修改〖孤影〗并获得以下技能：〖炒饭〗/〖习事〗/〖呣啾〗/〖结伴〗/〖时迴〗。",
+				"一名角色的判定牌生效前，你可打出一张「兆」代替之。当你以此法移去最后一张「兆」后，你加1点体力上限并回复1点体力，然后修改〖孤影〗并获得以下技能：〖炒饭〗/〖习事〗/〖呣啾〗/〖结伴〗/〖怀柔〗。",
 			//猴年马月爆料再利用
 			shizuku_sizhi: "思智",
 			shizuku_sizhi2: "思智",
