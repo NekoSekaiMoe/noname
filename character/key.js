@@ -61,7 +61,7 @@ game.import("character", function () {
 			key_shizuru: ["female", "key", 5, ["shizuru_nianli", "shizuru_benzhan"]],
 			key_shiorimiyuki: ["female", "key", 5, ["shiorimiyuki_banyin", "shiorimiyuki_tingxian"]],
 			key_miki: ["female", "key", 5, ["miki_shenqiang", "miki_huanmeng", "miki_zhiluo"]],
-			key_shiori: ["female", "key", "2/3", ["shiori_huijuan", "shiori_huahuo"]],
+			key_shiori: ["female", "key", "5/6", ["shiori_huijuan", "shiori_huahuo"]],
 			key_kaori: ["female", "key", "3/4", ["kaori_siyuan", "kaori_zhishi", "kaori_dongfeng"]],
 			key_akiko: ["female", "key", 5, ["akiko_dongcha"]],
 			key_abyusa: ["female", "key", 5, ["abyusa_jueqing", "abyusa_dunying"]],
@@ -7600,7 +7600,7 @@ game.import("character", function () {
 							return 4 + player.needsToDiscard() - get.value(card);
 						});
 					"step 1";
-					if (!result.bool) player.skip("phaseUse");
+					if (!result.bool) player.skip("phaseDiscard");
 				},
 			},
 			//野村美希
