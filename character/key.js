@@ -8142,27 +8142,31 @@ game.import("character", function () {
 						"addToExpansionAfter",
 					],
 				},
-				forced: true,
-				filter(event, player) {
-					if (typeof event.getl != "function")
-						return event.name != "phase" || game.phaseNumber == 0;
-					var evt = event.getl(player);
-					return evt && evt.player == player && evt.es && evt.es.length;
-				},
-				content() {
-					if (trigger.getl) player.draw(4 * trigger.getl(player).es.length); player.recover(2);
-					else player.equip(game.createCard2("kamome_suitcase", "spade", 2));
-				},
-				ai: {
-					noe: true,
-					reverseEquip: true,
-					effect: {
-						target(card, player, target, current) {
-							if (get.type(card) == "equip" && !get.cardtag(card, "gifts")) return [1, 3];
-						},
+			forced: true,
+			filter(event, player) {
+				if (typeof event.getl != "function")
+					return event.name != "phase" || game.phaseNumber == 0;
+				var evt = event.getl(player);
+				return evt && evt.player == player && evt.es && evt.es.length;
+			},
+			content() {
+				if (trigger.getl) {
+					player.draw(4 * trigger.getl(player).es.length);
+					player.recover(2);
+				} else {
+					player.equip(game.createCard2("kamome_suitcase", "spade", 2));
+				}
+			},
+			ai: {
+				noe: true,
+				reverseEquip: true,
+				effect: {
+					target(card, player, target, current) {
+						if (get.type(card) == "equip" && !get.cardtag(card, "gifts")) return [1, 3];
 					},
 				},
 			},
+		},
 			kamome_yangfan2: {
 			trigger: { global: "roundStart" },
 			forced: true,
