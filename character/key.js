@@ -9253,7 +9253,7 @@ game.import("character", function () {
 					var num = player.maxHp - player.hp;
 					player.recover(num);
 					player.draw(num);
-					if (_status.characterlist && _status.characterlist.includes("key_midori")) {
+					if (lib.character["key_midori"]) {
 						player.reinitCharacter("key_mio", "key_midori", false);
 					}
 				},
@@ -9334,7 +9334,7 @@ game.import("character", function () {
 					var num = player.maxHp - player.hp;
 					player.recover(num);
 					player.draw(num);
-					if (_status.characterlist && _status.characterlist.includes("key_mio")) {
+					if (lib.character["key_mio"]) {
 						player.reinitCharacter("key_midori", "key_mio", false);
 					}
 				},
