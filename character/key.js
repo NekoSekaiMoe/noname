@@ -13274,13 +13274,12 @@ game.import("character", function () {
 				group: "yuri_xingdong_gain",
 				subSkill: {
 					mark: {
-						mark: true,
-						marktext: "令",
-						intro: {
-							content: "跳过下个回合的判定阶段和摸牌阶段",
-						},
-					},
-					gain: {
+							mark: true,
+							marktext: "令",
+							intro: {
+								content: "跳过下个回合的摸牌阶段和出牌阶段",
+							},
+						},					gain: {
 						audio: 2,
 						trigger: { player: "phaseUseBegin" },
 						forced: true,
@@ -13322,15 +13321,14 @@ game.import("character", function () {
 							game.filterPlayer(function (current) {
 								return current != player;
 							}),
-							"请使用得到的牌，或者跳过下回合的判定阶段和摸牌阶段"
+							"请使用得到的牌，或者跳过下回合的摸牌阶段和出牌阶段"
 						);
 					"step 2";
 					if (result.bool) game.asyncDraw([player, target]);
 					else {
-						target.addTempSkill("yuri_xingdong_mark", "phaseJudgeSkipped");
-						target.skip("phaseJudge");
-						target.skip("phaseDraw");
-						target.addTempSkill("zhengjing3", {
+						target.addTempSkill("yuri_xingdong_mark", "phaseUseSkipped");
+								target.skip("phaseDraw");
+								target.skip("phaseUse");						target.addTempSkill("zhengjing3", {
 							player: "phaseAfter",
 						});
 						event.finish();

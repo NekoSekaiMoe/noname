@@ -1378,19 +1378,19 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
             tianxiadatong: {
                 name: "天下大同",
                 mode: "identity",
-                intro: "测试",
+                intro: "三国杀？键杀！",
                 showcase: function (init) {
                     var node = this;
                     var player1, player2;
                     if (init) {
-                        player1 = ui.create.player(null, true).init("huangyueying");
+                        player1 = ui.create.player(null, true).init("key_rin");
                         player2 = ui.create.player(null, true);
                         if (lib.character.jsp_huangyueying) {
-                            player2.init("jsp_huangyueying");
-                        } else if (lib.character.re_huangyueying) {
-                            player2.init("re_huangyueying");
+                            player2.init("key_mio");
+                        } else if (lib.character.key_rin) {
+                            player2.init("key_rin");
                         } else {
-                            player2.init("huangyueying");
+                            player2.init("key_mio");
                         }
                         player1.style.left = "20px";
                         player1.style.top = "20px";
@@ -1515,7 +1515,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
                     for (var i in lib.character) {
                         var info = lib.character[i];
                         var group = info[1];
-                        if (group !== 'key' && group !== 'shen') {
+                        if (group !== 'key') {
                             delete lib.character[i];
                         }
                     }
