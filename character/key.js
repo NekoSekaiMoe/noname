@@ -43,7 +43,7 @@ game.import("character", function () {
 			key_rin: ["female", "key", 5, ["rin_baoqiu", "rin_mengmiao"]],
 			key_sasami: ["female", "key", 5, ["sasami_miaobian"]],
 			key_akane: ["female", "key", 5, ["akane_jugu", "akane_quanqing", "akane_yifu"], ["zhu"]],
-			key_doruji: ["female", "key", 16, ["doruji_feiqu"]],
+			key_doruji: ["female", "key", 16, ["doruji_feiqu", "doruji_wuwu", "doruji_mengbian"]],
 			key_yuiko: ["female", "key", 5, ["yuiko_fenglun", "yuiko_dilve"]],
 			key_riki: ["double", "key", 5, ["riki_spwenji", "riki_nvzhuang", "riki_mengzhong"]],
 			key_hisako: ["female", "key", 5, ["hisako_yinbao", "hisako_zhuanyun"]],
@@ -10662,6 +10662,188 @@ game.import("character", function () {
 				},
 				global: "doruji_feiqu_ai",
 			},
+			doruji_wuwu: {
+				locked: true,
+				group: "doruji_wuwu_start",
+				enable: ["chooseToUse", "chooseToRespond"],
+				hiddenCard(player, name) {
+					if (name != "wuxie" && get.type(name) == "equip") return false;
+					return player.countCards("hes", function (card) {
+						return get.subtype(card) == "equip1" && game.hasPlayer((current) => current != player && current.canEquip(card, true));
+					}) > 0;
+				},
+				filter(event, player) {
+					return (
+						player.countCards("hes", function (card) {
+							return get.subtype(card) == "equip1" && game.hasPlayer((current) => current != player && current.canEquip(card, true));
+						}) > 0 &&
+						lib.inpile.some(function (name) {
+							if (name != "wuxie" && get.type(name) == "equip") return false;
+							if (name == "sha") {
+								if (event.filterCard({ name: name }, player, event)) return true;
+								return lib.inpile_nature.some(function (nature) {
+									return event.filterCard({ name: name, nature: nature }, player, event);
+								});
+							}
+							return event.filterCard({ name: name }, player, event);
+						})
+					);
+				},
+				chooseButton: {
+					dialog(event, player) {
+						var list = [];
+						for (var i = 0; i < lib.inpile.length; i++) {
+							var name = lib.inpile[i];
+							if (name != "wuxie" && get.type(name) == "equip") continue;
+							if (name == "sha") {
+								if (event.filterCard({ name: name }, player, event)) list.push(["基本", "", name]);
+								for (var j of lib.inpile_nature) {
+									if (event.filterCard({ name: name, nature: j }, player, event)) list.push(["基本", "", name, j]);
+								}
+							} else if (event.filterCard({ name: name }, player, event)) {
+								list.push([get.type(name) == "trick" ? "锦囊" : "基本", "", name]);
+							}
+						}
+						return ui.create.dialog("无武", [list, "vcard"], "hidden");
+					},
+					check(button) {
+						var player = _status.event.player;
+						var card = { name: button.link[2], nature: button.link[3] };
+						if (_status.event.getParent().type == "phase") return player.getUseValue(card, null, true);
+						return 1;
+					},
+					backup(links, player) {
+						return {
+							viewAs: {
+								name: links[0][2],
+								nature: links[0][3],
+								isCard: true,
+							},
+							position: "hes",
+							filterCard(card, player) {
+								return get.subtype(card) == "equip1" && game.hasPlayer((current) => current != player && current.canEquip(card, true));
+							},
+							check(card) {
+								return 7 - get.value(card);
+							},
+							selectCard: 1,
+							async precontent(event, trigger, player) {
+								var card = event.result.cards[0];
+								const result = await player
+									.chooseTarget(
+										true,
+										"无武：将" + get.translation(card) + "装备到一名其他角色上并摸一张牌",
+										function (cardx, player, target) {
+											return target != player && target.canEquip(_status.event.card, true);
+										}
+									)
+									.set("card", card)
+									.set("ai", function (target) {
+										var player = _status.event.player;
+										var card = _status.event.card;
+										var att = get.attitude(player, target);
+										if (get.type(_status.event.getParent().getParent().card) == "equip") return att;
+										return att - get.value(card, target) / 10;
+									})
+									.forResult();
+								if (!result.bool || !result.targets?.length) {
+									event.result = { bool: false };
+									return;
+								}
+								var target = result.targets[0];
+								player.logSkill("doruji_wuwu", target);
+								player.$give(card, target, false);
+								await target.equip(card);
+								await player.draw();
+								event.result.cards = [];
+								event.result.card.cards = [];
+								delete event.result.card.suit;
+								delete event.result.card.number;
+							},
+						};
+					},
+					prompt(links, player) {
+						return (
+							"将一张武器牌装备到一名其他角色上并摸一张牌，视为使用或打出" +
+							(get.translation(links[0][3]) || "") +
+							get.translation(links[0][2])
+						);
+					},
+				},
+				ai: {
+					respondSha: true,
+					respondShan: true,
+					save: true,
+					skillTagFilter(player, tag) {
+						var name;
+						switch (tag) {
+							case "respondSha":
+								name = "sha";
+								break;
+							case "respondShan":
+								name = "shan";
+								break;
+							case "save":
+								name = "tao";
+								break;
+						}
+						if (!name) return false;
+						return lib.skill.doruji_wuwu.hiddenCard(player, name);
+					},
+					order(item, player) {
+						if (player && _status.event.type == "phase") {
+							var max = 0;
+							for (var i = 0; i < lib.inpile.length; i++) {
+								var name = lib.inpile[i];
+								if (name != "wuxie" && get.type(name) == "equip") continue;
+								var temp = player.getUseValue({ name: name }, null, true);
+								if (temp > 0) max = Math.max(max, get.order({ name: name }));
+							}
+							return max > 0 ? max + 0.2 : 0;
+						}
+						return 2;
+					},
+					result: {
+						player: 1,
+					},
+				},
+				subSkill: {
+					start: {
+						trigger: { global: "phaseBefore", player: "enterGame" },
+						forced: true,
+						filter(event, player) {
+							return event.name != "phase" || game.phaseNumber == 0;
+						},
+						async content(event, trigger, player) {
+							await player.disableEquip(1);
+							await player.expandEquip(2);
+						},
+					},
+				},
+			},
+			doruji_mengbian: {
+				locked: true,
+				trigger: { player: "changeHp" },
+				forced: true,
+				filter(event, player) {
+					return event.num != 0 && game.hasPlayer((current) => current.isIn());
+				},
+				async content(event, trigger, player) {
+					const result = await player
+						.chooseTarget(true, "萌变：选择一名角色，对其造成" + get.cnNumber(Math.abs(trigger.num)) + "点伤害")
+						.set("num", Math.abs(trigger.num))
+						.set("ai", function (target) {
+							var player = _status.event.player;
+							var num = _status.event.num;
+							return get.damageEffect(target, player, player) * num;
+						})
+						.forResult();
+					if (!result.bool || !result.targets?.length) return;
+					const target = result.targets[0];
+					player.logSkill("doruji_mengbian", target);
+					await target.damage(Math.abs(trigger.num), player);
+				},
+			},
 			doruji_feiqu_ai: {
 				ai: {
 					directHit_ai: true,
@@ -13858,6 +14040,10 @@ game.import("character", function () {
 				"主公技，其他键势力角色的出牌阶段限一次，其可交给你一张手牌。然后你摸一张牌，并将一张手牌交给该角色。",
 			doruji_feiqu: "肥躯",
 			doruji_feiqu_info: "锁定技，当你使用【杀】时，或你成为【杀】的目标后，你令此【杀】不可被响应。",
+			doruji_wuwu: "无武",
+			doruji_wuwu_info: "锁定技，游戏开始时，你废除你的武器栏，然后获得一个额外的防具栏。当你需要使用或打出牌时，你可以将一张武器牌装备到除你之外一名角色上并摸一张牌。若如此做，视为使用或打出了你需要使用或打出的牌。",
+			doruji_mengbian: "萌变",
+			doruji_mengbian_info: "锁定技，当你的体力值变化时，你选择一名角色，对其造成等同于此次体力值变化值的伤害。",
 			yuiko_fenglun: "锋论",
 			yuiko_fenglun_info:
 				"出牌阶段限一次，你可以和一名其他角色拼点。若你赢，你本阶段内使用牌没有次数和距离限制。",
