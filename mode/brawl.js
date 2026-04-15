@@ -1511,14 +1511,14 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
                     func();
                 },
 
-                init: function () {
-                    for (var i in lib.character) {
-                        var info = lib.character[i];
-                        var group = info[1];
-                        if (group !== 'key') {
-                            delete lib.character[i];
-                        }
-                    }
+				init: function () {
+					for (var i in lib.character) {
+						var info = lib.character[i];
+						var group = info[1];
+						if (group !== 'key') {
+							delete lib.character[i];
+						}
+					}
 
                     if (!lib.skill._daozhiyueying_attr_double) {
                         lib.skill._daozhiyueying_attr_double = {
@@ -1532,12 +1532,21 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
                                 trigger.num += 0;
                             }
                         };
-                        lib.skill._daozhiyueying_attr_double.global = 'damageBegin2';
-                    }
-                },
+						lib.skill._daozhiyueying_attr_double.global = 'damageBegin2';
+					}
+				},
+				chooseCharacter: function (list, list2, num) {
+					if (Array.isArray(list2)) {
+						var result = [];
+						if (list.length) result.addArray(list.randomGets(Math.min(2, list.length)));
+						if (num > 0) result.addArray(list2.randomGets(num));
+						return result.randomSort();
+					}
+					return list.randomGets(list2);
+				},
 
-                content: {
-                    cardPile: function (list) {
+				content: {
+					cardPile: function (list) {
                         game.identityVideoName = "导师月英";
                         var newList = [];
                         for (var i = 0; i < list.length; i++) {

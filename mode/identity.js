@@ -1635,7 +1635,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					}
 					var stratagemMode = _status.event.stratagemMode;
 					if (_status.event.zhongmode) {
-						var listc = list.slice(0, 2);
+						var listc = list.slice(0).randomSort().slice(0, 2);
 						for (var i = 0; i < listc.length; i++) {
 							var listx = lib.characterReplace[listc[i]];
 							if (listx && listx.length) listc[i] = listx.randomGet();
@@ -1657,13 +1657,14 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						var choice, choice2;
 						if (!_status.event.zhongmode && Math.random() - 0.8 < 0 && list2.length) {
 							choice = list2[0];
-							choice2 = list[0];
+							choice2 = list.randomGet();
 							if (choice2 == choice) {
-								choice2 = list[1];
+								choice2 = list.slice(0).remove(choice).randomGet();
 							}
 						} else {
-							choice = list[0];
-							choice2 = list[1];
+							var listc = list.slice(0).randomSort().slice(0, 2);
+							choice = listc[0];
+							choice2 = listc[1];
 						}
 						if (lib.characterReplace[choice] && lib.characterReplace[choice].length)
 							choice = lib.characterReplace[choice].randomGet();
@@ -1686,7 +1687,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						(Math.random() < 0.5 || ["sunliang", "key_akane"].includes(game.zhu.name)) &&
 						!stratagemMode
 					) {
-						var listc = list.slice(0);
+						var listc = list.slice(0).randomSort();
 						for (var i = 0; i < listc.length; i++) {
 							var listx = lib.characterReplace[listc[i]];
 							if (listx && listx.length) listc[i] = listx.randomGet();
@@ -1704,7 +1705,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							player.init(listc[choice]);
 						}
 					} else {
-						var listc = list.slice(0, 2);
+						var listc = list.slice(0).randomSort().slice(0, 2);
 						for (var i = 0; i < listc.length; i++) {
 							var listx = lib.characterReplace[listc[i]];
 							if (listx && listx.length) listc[i] = listx.randomGet();
@@ -2218,10 +2219,11 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							} else {
 								list = getZhuList().concat(list3.slice(0, num));
 							}
+							}
 						}
-					}
-					delete event.swapnochoose;
-					var dialog;
+						if (Array.isArray(list)) list.randomSort();
+						delete event.swapnochoose;
+						var dialog;
 					if (event.swapnodialog) {
 						dialog = ui.dialog;
 						event.swapnodialog(dialog, list);
@@ -2303,10 +2305,11 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 									} else {
 										list = getZhuList().concat(list3.slice(0, num));
 									}
+									}
 								}
-							}
-							var buttons = ui.create.div(".buttons");
-							var node = _status.event.dialog.buttons[0].parentNode;
+								if (Array.isArray(list)) list.randomSort();
+								var buttons = ui.create.div(".buttons");
+								var node = _status.event.dialog.buttons[0].parentNode;
 							_status.event.dialog.buttons = ui.create.buttons(list, "characterx", buttons);
 							_status.event.dialog.content.insertBefore(buttons, node);
 							buttons.addTempClass("start");
@@ -2681,9 +2684,10 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							list2x.sort(lib.sort.character);
 							return list2x;
 						};
-						list = getZhuList(list2).concat(list3.randomGets(5));
-					}
-					var next = game.zhu.chooseButton(true);
+							list = getZhuList(list2).concat(list3.randomGets(5));
+						}
+						if (Array.isArray(list)) list.randomSort();
+						var next = game.zhu.chooseButton(true);
 					next.set("selectButton", lib.configOL.double_character ? 2 : 1);
 					next.set("createDialog", ["选择角色", [list, "characterx"]]);
 					next.set("ai", function (button) {
