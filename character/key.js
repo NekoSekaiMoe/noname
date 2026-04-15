@@ -8071,10 +8071,15 @@ game.import("character", function () {
 				content() {
 					"step 0";
 					player.awakenSkill("kud_buhui");
+					var hadQiao = player.getExpansions("kud_qiaoshou_equip").length > 0;
 					var cards = player.getCards("e").concat(player.getExpansions("kud_qiaoshou_equip"));
 					if (cards.length) player.discard(cards);
 					player.draw(cards);
 					player.removeSkill("kud_qiaoshou_equip");
+					if (hadQiao) {
+						player.draw(4);
+						player.recover(2);
+					}
 					player.draw(cards.length);
 					player.addSkills("kud_chongzhen");
 					"step 1";
