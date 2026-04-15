@@ -2880,14 +2880,40 @@ game.import("card", function () {
 								let evt = _status.event.getParent("phase");
 								if (evt && evt.phaseList.indexOf("phaseJudge") <= evt.num) return 0;
 							}
-							let num = target.needsToDiscard(3),
-								cf = Math.pow(get.threaten(target, player), 2);
+							let att = get.attitude(player, target);
+							if (att > 0) return 1;
+							let seatFactor = 1;
+							if (_status.seatNumSettled && _status.lastPhasedPlayer && player.getSeatNum() != 0) {
+								let seatP = player.getSeatNum();
+								let seatT = target.getSeatNum();
+								let seatL = _status.lastPhasedPlayer.getSeatNum();
+								if (seatL >= seatP) {
+									seatFactor = (seatT > seatL || seatT < seatP) ? 1.8 : 0.4;
+								} else {
+									seatFactor = (seatT > seatL && seatT < seatP) ? 1.8 : 0.4;
+								}
+							}
+							let cf = get.threaten(target, player);
+							cf = Math.pow(cf, 2);
+							let num = target.needsToDiscard(3);
 							if (!num) return -0.01 * cf;
 							if (target.hp > 2) num--;
+							let hpFactor = target.hp <= 1 ? 1.5 : (target.hp === 2 ? 1.2 : 1);
+							let handFactor = 1 + Math.max(0, 3 - target.countCards("h")) * 0.15;
+							let equipFactor = 1;
+							let armor = target.getEquip(2);
+							if (armor) {
+								let armorInfo = get.info(armor);
+								if (armorInfo && armorInfo.ai) {
+									let ev = armorInfo.ai.equipValue || (armorInfo.ai.basic && armorInfo.ai.basic.equipValue);
+									if (ev) equipFactor = 0.7;
+								}
+							}
+							let hujiaFactor = target.hujia ? 1.3 : 1;
 							let dist = Math.sqrt(1 + get.distance(player, target, "absolute"));
 							if (dist < 1) dist = 1;
 							if (target.isTurnedOver()) dist++;
-							return (Math.min(-0.1, -num) * cf) / dist;
+							return (Math.min(-0.1, -num) * cf * seatFactor * hpFactor * handFactor * equipFactor * hujiaFactor) / dist;
 						},
 					},
 					tag: {
