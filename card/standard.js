@@ -2910,10 +2910,41 @@ game.import("card", function () {
 								}
 							}
 							let hujiaFactor = target.hujia ? 1.3 : 1;
+							let rejudgeFactor = 1;
+							game.countPlayer(current => {
+								if (current === target || !current.isIn()) return;
+								let skills = current.getSkills(null, false, false);
+								let rejudgeSkill = skills.find(skill => {
+									let info = lib.skill[skill];
+									return info && info.ai && info.ai.rejudge;
+								});
+								if (!rejudgeSkill) return;
+								let support = 0;
+								let info = lib.skill[rejudgeSkill];
+								let trigger = info && info.trigger;
+								if (trigger && (trigger.global === "judge" || (Array.isArray(trigger.global) && trigger.global.includes("judge")))) {
+									support += Math.min(0.35, current.countCards("h") * 0.07);
+									support += Math.min(0.2, current.countCards("e") * 0.04);
+									support += Math.min(0.25, current.getExpansions().length * 0.08);
+									if (current.hasSkillTag("viewHandcard", null, target, true)) support += 0.05;
+								} else {
+									support += Math.min(0.25, current.countCards("h") * 0.05);
+									support += Math.min(0.15, current.getExpansions().length * 0.05);
+								}
+								if (!support) return;
+								let supportAtt = get.attitude(current, target);
+								if (supportAtt > 0) {
+									rejudgeFactor -= Math.min(0.45, support * (supportAtt > 3 ? 1.2 : 1));
+								} else if (supportAtt < 0) {
+									rejudgeFactor += Math.min(0.18, support * 0.4);
+								}
+							});
+							if (rejudgeFactor < 0.45) rejudgeFactor = 0.45;
+							if (rejudgeFactor > 1.2) rejudgeFactor = 1.2;
 							let dist = Math.sqrt(1 + get.distance(player, target, "absolute"));
 							if (dist < 1) dist = 1;
 							if (target.isTurnedOver()) dist++;
-							return (Math.min(-0.1, -num) * cf * seatFactor * hpFactor * handFactor * equipFactor * hujiaFactor) / dist;
+							return (Math.min(-0.1, -num) * cf * seatFactor * hpFactor * handFactor * equipFactor * hujiaFactor * rejudgeFactor) / dist;
 						},
 					},
 					tag: {
