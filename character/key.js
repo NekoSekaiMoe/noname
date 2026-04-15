@@ -13432,7 +13432,6 @@ game.import("character", function () {
 			yuri_buqu: {
 				audio: 2,
 				marktext: "创",
-				zhuSkill: true,
 				intro: {
 					markcount: "expansion",
 					content: "expansion",
