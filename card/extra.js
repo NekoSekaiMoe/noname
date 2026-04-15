@@ -478,50 +478,25 @@ game.import("card", function () {
 							if (target.hasJudge("caomu")) return 0;
 							let att = get.attitude(player, target);
 							if (att > 0) return 1;
-							let seatFactor = 1;
-							if (_status.seatNumSettled && _status.lastPhasedPlayer && player.getSeatNum() != 0) {
-								let seatP = player.getSeatNum();
-								let seatT = target.getSeatNum();
-								let seatL = _status.lastPhasedPlayer.getSeatNum();
-								if (seatL >= seatP) {
-									seatFactor = (seatT > seatL || seatT < seatP) ? 1.15 : 0.85;
-								} else {
-									seatFactor = (seatT > seatL && seatT < seatP) ? 1.15 : 0.85;
-								}
-							}
+							let seatFactor = get.delaySeatFactor(player, target, 1.15, 0.85);
 							let base = -2.7 / Math.sqrt(target.countCards("h") + 1);
 							let hpFactor = target.hp <= 1 ? 1.35 : target.hp === 2 ? 1.15 : 1;
 							let handFactor = 1 + Math.max(0, 4 - target.countCards("h")) * 0.12;
-							let rejudgeFactor = 1;
-							game.countPlayer(current => {
-								if (current === target || !current.isIn()) return;
-								let skills = current.getSkills(null, false, false);
-								let rejudgeSkill = skills.find(skill => {
-									let info = lib.skill[skill];
-									return info && info.ai && info.ai.rejudge;
-								});
-								if (!rejudgeSkill) return;
-								let support = 0;
-								let info = lib.skill[rejudgeSkill];
-								let trigger = info && info.trigger;
-								if (trigger && (trigger.global === "judge" || (Array.isArray(trigger.global) && trigger.global.includes("judge")))) {
-									support += Math.min(0.3, current.countCards("h") * 0.06);
-									support += Math.min(0.16, current.countCards("e") * 0.03);
-									support += Math.min(0.2, current.getExpansions().length * 0.07);
-								} else {
-									support += Math.min(0.2, current.countCards("h") * 0.04);
-									support += Math.min(0.12, current.getExpansions().length * 0.04);
-								}
-								if (!support) return;
-								let supportAtt = get.attitude(current, target);
-								if (supportAtt > 0) {
-									rejudgeFactor -= Math.min(0.35, support * (supportAtt > 3 ? 1.2 : 1));
-								} else if (supportAtt < 0) {
-									rejudgeFactor += Math.min(0.12, support * 0.35);
-								}
+							let rejudgeFactor = get.delayRejudgeFactor(target, 1.15, 0.5, {
+								globalHandScale: 0.06,
+								globalHandCap: 0.3,
+								equipScale: 0.03,
+								equipCap: 0.16,
+								expansionScale: 0.07,
+								expansionCap: 0.2,
+								otherHandScale: 0.04,
+								otherHandCap: 0.2,
+								otherExpansionScale: 0.04,
+								otherExpansionCap: 0.12,
+								positiveShiftCap: 0.35,
+								negativeScale: 0.35,
+								negativeShiftCap: 0.12,
 							});
-							if (rejudgeFactor < 0.5) rejudgeFactor = 0.5;
-							if (rejudgeFactor > 1.15) rejudgeFactor = 1.15;
 							return base * seatFactor * hpFactor * handFactor * rejudgeFactor;
 						},
 					},

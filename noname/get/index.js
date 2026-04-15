@@ -5198,6 +5198,78 @@ export class Get {
 		}
 		return threaten;
 	}
+	delaySeatFactor(player, target, ahead = 1, behind = 1) {
+		if (!_status.seatNumSettled || !_status.lastPhasedPlayer || !player || !target) return 1;
+		if (player.getSeatNum() == 0 || target.getSeatNum() == 0) return 1;
+		let seatP = player.getSeatNum();
+		let seatT = target.getSeatNum();
+		let seatL = _status.lastPhasedPlayer.getSeatNum();
+		if (seatL >= seatP) {
+			return seatT > seatL || seatT < seatP ? ahead : behind;
+		}
+		return seatT > seatL && seatT < seatP ? ahead : behind;
+	}
+	delayRejudgeFactor(target, positiveCap = 1.2, negativeCap = 0.45, options) {
+		if (!target) return 1;
+		let factor = 1;
+		let settings = Object.assign(
+			{
+				globalHandScale: 0.07,
+				globalHandCap: 0.35,
+				equipScale: 0.04,
+				equipCap: 0.2,
+				expansionScale: 0.08,
+				expansionCap: 0.25,
+				otherHandScale: 0.05,
+				otherHandCap: 0.25,
+				otherExpansionScale: 0.05,
+				otherExpansionCap: 0.15,
+				viewHandBonus: 0,
+				positiveScale: 1,
+				positiveStrongScale: 1.2,
+				positiveShiftCap: 0.45,
+				negativeScale: 0.4,
+				negativeShiftCap: 0.18,
+			},
+			options
+		);
+		game.countPlayer(current => {
+			if (current === target || !current.isIn()) return;
+			let skills = current.getSkills(null, false, false);
+			let rejudgeSkill = skills.find(skill => {
+				let info = lib.skill[skill];
+				return info && info.ai && info.ai.rejudge;
+			});
+			if (!rejudgeSkill) return;
+			let support = 0;
+			let info = lib.skill[rejudgeSkill];
+			let trigger = info && info.trigger;
+			if (trigger && (trigger.global === "judge" || (Array.isArray(trigger.global) && trigger.global.includes("judge")))) {
+				support += Math.min(settings.globalHandCap, current.countCards("h") * settings.globalHandScale);
+				support += Math.min(settings.equipCap, current.countCards("e") * settings.equipScale);
+				support += Math.min(settings.expansionCap, current.getExpansions().length * settings.expansionScale);
+				if (settings.viewHandBonus && current.hasSkillTag("viewHandcard", null, target, true)) {
+					support += settings.viewHandBonus;
+				}
+			} else {
+				support += Math.min(settings.otherHandCap, current.countCards("h") * settings.otherHandScale);
+				support += Math.min(settings.otherExpansionCap, current.getExpansions().length * settings.otherExpansionScale);
+			}
+			if (!support) return;
+			let supportAtt = get.attitude(current, target);
+			if (supportAtt > 0) {
+				factor -= Math.min(
+					settings.positiveShiftCap,
+					support * (supportAtt > 3 ? settings.positiveStrongScale : settings.positiveScale)
+				);
+			} else if (supportAtt < 0) {
+				factor += Math.min(settings.negativeShiftCap, support * settings.negativeScale);
+			}
+		});
+		if (factor < negativeCap) factor = negativeCap;
+		if (factor > positiveCap) factor = positiveCap;
+		return factor;
+	}
 	condition(player) {
 		var num = player.hp;
 		if (num > 4) {
