@@ -42,7 +42,7 @@ game.import("character", function () {
 			sp_mushun: ["male", "qun", 4, ["moukui"]],
 			dc_wuyi: ["male", "shu", 4, ["dcbenxi"], ["clan:陈留吴氏"]],
 			quyuan: ["male", "qun", 3, ["dcqiusuo", "dclisao"]],
-			xin_sunquan: ["male", "wu", 3, ["dchuiwan", "dchuanli"]],
+			xin_sunquan: ["male", "wu", 3, ["dchuiwan", "dchuanli"], ["character:zhangzhang:re_zhouyu"]],
 			wuhujiang: ["male", "shu", 4, ["olhuyi"], ["die_audio:wuhujiang:wuhujiang2:wuhujiang3:wuhujiang4:wuhujiang5"]],
 			dc_noname: ["male", "qun", 3, ["dcchushan"]],
 			xunyuxunyou: ["male", "wei", 3, ["zhinang", "gouzhu"]],
