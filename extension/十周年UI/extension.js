@@ -14266,6 +14266,7 @@ content:function(config, pack){
 										content: content,
 										id: id
 									});
+									if (!player.marks[id]) return;
 									player.marks[id]._name = target;
 									game.addVideo('markCharacter', player, {
 										name: name,
