@@ -400,7 +400,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							skill = "hengzheng";
 							break;
 						case "sunquan":
-							skill = "batu";
+							skill = "batu"; // 英雄杀技能
 							break;
 						case "sp_zhangjiao":
 							skill = "tiangong";
@@ -408,6 +408,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						case "liushan":
 							skill = "shengxi";
 							break;
+						/** 玩点论杀技能 */
 						case "sunce":
 							skill = "ciqiu";
 							break;
@@ -418,7 +419,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							skill = "geju";
 							break;
 						case "re_caocao":
-							skill = "dangping";
+							skill = "dangping"; // 古剑奇谭技能
 							break;
 						case "caopi":
 							skill = "junxing";
@@ -438,6 +439,21 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						game.zhu,
 						skill
 					);
+				}
+				
+				// 启用明察
+				let enable_mingcha;
+				if (_status.connectMode) {
+					enable_mingcha = lib.configOL.enable_mingcha;
+				} else {
+					enable_mingcha = get.config("enable_mingcha");
+				}
+				// 临时修改（by 棘手怀念摧毁）
+				if (["zhong", "stratagem", "purple"].includes(_status.mode)) enable_mingcha = false;
+				if (enable_mingcha) {
+					game.broadcastAll(player => {
+						player.addSkill("identity_mingcha");
+					}, game.zhu);
 				}
 			}
 			game.syncState();
@@ -4972,13 +4988,14 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 		},
 		help: {
 			身份模式:
-				'<div style="margin:10px">选项</div><ul style="margin-top:0"><li>加强主公<br>反贼人数多于2时主公会额外增加一个技能（每个主公的额外技能固定，非常备主公增加天命）' +
-				'<li>特殊身份<br><ul style="padding-left:20px;padding-top:5px"><li>军师：忠臣身份。只要军师存活，主公在准备阶段开始时，可以观看牌堆顶的三张牌，然后将这些牌以任意顺序置于牌堆顶或牌堆底<li>大将：忠臣身份。只要大将存活，主公手牌上限+1<li>贼首：反贼身份，只要贼首存活，主公手牌上限-1</ul></ul>' +
+				'<div style="margin:10px">选项</div><ul style="margin-top:0"><li>加强主公<br>反贼人数多于2时主公会额外增加一个技能（每个主公的额外技能固定，非常备主公增加〖天命〗）' +
+				'<li>特殊身份<br><ul style="padding-left:20px;padding-top:5px"><li>军师：忠臣身份。只要军师存活，主公在准备阶段开始时，可以观看牌堆顶的三张牌，然后将这些牌以任意顺序置于牌堆顶或牌堆底<li>大将：忠臣身份。只要大将存活，主公手牌上限+1<li>贼首：反贼身份，只要贼首存活，主公手牌上限-1</ul>' +
+				'<li>启用明察<br>开启后主公将获得技能〖明察〗：游戏开始时，你可以查看一名角色的身份是否为反贼（对所有玩家可见）</ul>' +
 				"<li>平民身份<br>英盗版三国杀于2017标准版中提出的新概念。平民的获胜条件为：当其他身份的角色达成了其获胜条件，且你存活，你也获胜；同时内奸的获胜条件改为：主公死亡时，场上所有忠臣和反贼均已死亡。即内奸可以和与平民共同胜利。杀死平民的角色的奖惩为：摸两张牌。" +
 				"<li>年机制<br>英盗版三国杀于2019标准版中提出的新概念。“年”是一个全局概念，游戏开始时为第一年，当牌堆洗牌时，年数+1。一局游戏的限定年数为本局游戏开始时玩家总数。当年数增加后，若当前年数已超过限定年数，则主忠方直接获胜，若平民存活则平民也获胜。",
 			明忠模式:
 				'<div style="margin:10px">明忠模式（忠胆英杰）</div><ul style="margin-top:0"><li>本模式需要8名玩家进行游戏，使用的身份牌为：1主公、2忠臣、4反贼和1内奸。游戏开始时，每名玩家随机获得一个身份，由系统随机选择一名忠臣身份的玩家亮出身份（将忠臣牌正面朝上放在面前），其他身份（包括主公）的玩家不亮出身份。<li>' +
-				"首先由亮出身份的忠臣玩家随机获得六张武将牌，挑选一名角色，并将选好的武将牌展示给其他玩家。之后其余每名玩家随机获得三张武将牌，各自从其中挑选一张同时亮出<li>" +
+				"首先由亮出身份的忠臣玩家随机获得六张武将牌，挑选一名角色，并将选好的武将牌展示给其他玩家。之后其余每名玩家随机获得三张武将牌，各自从其中挑选一张同时亮出。<li>" +
 				"亮出身份牌的忠臣增加1点体力上限。角色濒死和死亡的结算及胜利条件与普通身份局相同。",
 			谋攻模式:
 				'<div style="margin:10px">模式命名由来</div><ul style="margin-top:0"><li>《谋攻篇》一词出自《孙子兵法·谋攻篇》，是春秋时期兵法家孙武创作的一篇散文。《谋攻篇》故知胜有五：知可以战与不可以战者胜，识众寡之用者胜，上下同欲者胜，以虞待不虞者胜，将能而君不御者胜。</ul>' +

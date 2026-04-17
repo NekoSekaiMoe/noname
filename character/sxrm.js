@@ -201,8 +201,8 @@ game.import("character", function () {
 						// target.addTip(`${skill}_${current.playerid}`, `撼国 ${get.translation(current)}`);
 					});
 					// 临时修改（by 棘手怀念摧毁）
-					target.addTempSkill(skill, "roundStart");
-					// target.addTempSkill(skill, "roundEnd");
+					// target.addTempSkill(skill, "roundStart");
+					target.addTempSkill(skill, "roundEnd");
 					const cards = target.getCards("he");
 					if (!cards.length) {
 						return;
@@ -2339,13 +2339,13 @@ game.import("character", function () {
 			sxrmqingjun: {
 				trigger: {
 					// 临时修改（by 棘手怀念摧毁）
-					global: "roundStart",
-					// global: "roundEnd",
+					// global: "roundStart",
+					global: "roundEnd",
 				},
 				filter(event, player) {
 					// 临时修改（by 棘手怀念摧毁）
-					const curLen = player.actionHistory.length;
-					if (curLen <= 2) return false;
+					// const curLen = player.actionHistory.length;
+					// if (curLen <= 2) return false;
 					
 					return game.hasPlayer(current => current != player);
 				},
@@ -3452,7 +3452,7 @@ game.import("character", function () {
 				} else {
 					yang = `<span class='firetext'>${yang}</span>`;
 				}
-				let start = "转换技，你使用牌或成为牌的目标后，你可以",
+				let start = "转换技，你使用牌或成为牌的目标后，你可以：",
 					end = "。";
 				return `${start}阳：${yang}；阴：${yin}${end}`;
 			},
@@ -3618,7 +3618,7 @@ game.import("character", function () {
 			sxrmchanyu_info: "出牌阶段限一次，你可以令一名其他角色摸其体力值张牌并与其用各自点数最小的牌拼点，然后双方展示手牌：赢的角色可以交换双方一种颜色或类别的所有手牌。",
 			sxrmchanyu_tag: "invisible",
 			sxrmcongfeng: "从风",
-			sxrmcongfeng_info: "转换技，你使用牌或成为牌的目标后，你可以阳：与使用者各摸一张牌；阴：弃置使用者两张牌。",
+			sxrmcongfeng_info: "转换技，你使用牌或成为牌的目标后，你可以：阳：与使用者各摸一张牌；阴：弃置使用者两张牌。",
 			sxrm_lvmeng: "慢吕蒙",
 			sxrm_lvmeng_prefix: "慢",
 			sxrmkongzhi: "空志",

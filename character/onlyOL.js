@@ -121,10 +121,9 @@ game.import("character", function () {
 			xf_huangquan: ["male", "shu", 3, ["xinfu_dianhu", "xinfu_jianji"], []],
 			xf_sufei: ["male", "wu", 4, ["xinfu_lianpian"], []],
 			sp_dongzhuo: ["male", "qun", 5, ["hengzheng"]],
-			hanba: ["female", "qun", 4, ["fentian", "zhiri"]],
 			// 解放印卡蔡阳并魔改体力为4（但AI禁选）
-			caiyang: ["male", "qun", 4, ["yinka", "zhuixi"], ["forbidai"]],
-			// caiyang: ["male", "qun", 1, ["yinka", "zhuixi"], ["forbidai", "unseen"]],
+			caiyang: ["male", "qun", 4, ["yinka", "zhuishe"], ["forbidai"]],
+			// caiyang: ["male", "qun", 1, ["yinka", "zhuishe"], ["forbidai", "unseen"]],
 			ol_tw_zhangji: ["male", "wei", 3, ["skill_zhangji_A", "skill_zhangji_B"]],
 		},
 		characterSort: {
@@ -154,10 +153,8 @@ game.import("character", function () {
 					"hanmeng",
 				],
 				sp2_longzhou: ["xf_tangzi", "xf_huangquan", "xf_sufei", "sp_liuqi"],
-				sp_guozhan2: ["sp_dongzhuo"],
 				onlyOL_qldq: ["caiyang"],
-				sp_others: ["hanba"],
-				
+				sp_guozhan2: ["sp_dongzhuo"],
 				onlyOL_waitingforsort: ["ol_tw_zhangji"],
 			},
 		},
@@ -174,10 +171,10 @@ game.import("character", function () {
 			sp_xuyou: "#g4v4限定武将",
 		},
 		characterFilter: {
-			chunyuqiong: function (mode) {
+			chunyuqiong(mode) {
 				return mode != "identity" && mode != "guozhan";
 			},
-			sp_xuyou: function (mode) {
+			sp_xuyou(mode) {
 				return mode == "versus" && ["guandu", "4v4", "four"].includes(_status.mode);
 			},
 		},
@@ -1117,7 +1114,7 @@ game.import("character", function () {
 							return (event.name != "phase" || game.phaseNumber == 0) && game.hasPlayer(target => target._start_cards?.length);
 						},
 						async content(event, trigger, player) {
-							game.filterPlayer().forEach(target => target.addGaintag(target._start_cards, "eternal_olduoqi_tag"));
+							game.filterPlayer().forEach(target => target.addGaintag(target._start_cards || [], "eternal_olduoqi_tag"));
 						},
 					},
 					tag: {},
@@ -1449,12 +1446,29 @@ game.import("character", function () {
 								return ui.selected.cards.length == ui.selected.targets.length;
 							},
 							ai1(card) {
-								return 7.5 - get.value(card);
+								return get.event().resultAI.cards.includes(card);
 							},
 							ai2(target) {
-								return -get.attitude(get.player(), target) * target.countCards("hs");
+								return get.event().resultAI.targets.includes(target);
 							},
 						})
+						.set(
+							"resultAI",
+							(function () {
+								let cards = player.getDiscardableCards(player, "he", card => get.value(card) < 7.5).sort((a, b) => get.value(a) - get.value(b)),
+									targets = game
+										.filterPlayer(current => current != player && -get.attitude(player, current) * current.countCards("hs") > 0)
+										.sort((a, b) => {
+											let num1 = -get.attitude(get.player(), a) * a.countCards("hs"),
+												num2 = -get.attitude(get.player(), b) * b.countCards("hs");
+											return num2 - num1;
+										});
+								const num2 = Math.min(cards.length, targets.length, num);
+								cards = cards.slice(0, num2);
+								targets = targets.slice(0, num2);
+								return { cards, targets };
+							})()
+						)
 						.forResult();
 					if (result?.cards?.length && result.targets?.length) {
 						const { cards, targets } = result;
@@ -2089,25 +2103,25 @@ game.import("character", function () {
 					tiaoxin: {
 						audio: "olzhouxi",
 						// 临时修改（by 棘手怀念摧毁）
-						// trigger: { global: "roundEnd" },
-						trigger: { global: "roundStart" },
+						trigger: { global: "roundEnd" },
+						// trigger: { global: "roundStart" },
 						filter(event, player) {
 							// 临时修改（by 棘手怀念摧毁）
-							const curLen = player.actionHistory.length;
-							if (curLen <= 2) return false;
+							// const curLen = player.actionHistory.length;
+							// if (curLen <= 2) return false;
 							
 							return lib.skill.olzhouxi_tiaoxin.logTarget(event, player).length > 0;
 						},
 						
 						// 临时修改
-						firstDo: true,
+						// firstDo: true,
 						
 						forced: true,
 						logTarget(event, player) {
 							return player
 								// 临时修改
-								// .getRoundHistory("sourceDamage", evt => evt.num > 0)
-								.getRoundHistory("sourceDamage", evt => evt.num > 0, 1)
+								.getRoundHistory("sourceDamage", evt => evt.num > 0)
+								// .getRoundHistory("sourceDamage", evt => evt.num > 0, 1)
 								?.map(evt => evt.player)
 								// 临时修改
 								// .unique()
@@ -2139,24 +2153,24 @@ game.import("character", function () {
 				charlotte: true,
 				
 				// 临时修改（by 棘手怀念摧毁）
-				firstDo: true,
+				// firstDo: true,
 				
-				// trigger: { global: "roundEnd" },
-				trigger: { global: "roundStart" },
-				/*
+				trigger: { global: "roundEnd" },
+				// trigger: { global: "roundStart" },
+				// /*
 				filter(event, player) {
 					return !player.getRoundHistory("sourceDamage", evt => evt.num > 0).length;
 				},
-				*/
+				// */
 				forced: true,
 				popup: false,
 				content() {
 					// 临时修改（by 棘手怀念摧毁）
-					if (!player.getRoundHistory("sourceDamage", evt => evt.num > 0, 1)?.length) {
-						player.loseHp();
-					}
+					// if (!player.getRoundHistory("sourceDamage", evt => evt.num > 0, 1)?.length) {
+						// player.loseHp();
+					// }
 					
-					// player.loseHp();
+					player.loseHp();
 				},
 				nopop: true,
 				mark: true,
@@ -5858,6 +5872,8 @@ game.import("character", function () {
 							list.remove(name)
 						);
 						if (card) {
+							player.addSkill(`${event.name}_destroy`);
+							player.markAuto(`${event.name}_destroy`, card);
 							player.$gain2(card);
 							await player.equip(card);
 							// 临时修改（by 棘手怀念摧毁）
@@ -5868,6 +5884,37 @@ game.import("character", function () {
 				},
 				group: "olzhuangrong_count",
 				subSkill: {
+					destroy: {
+						trigger: { global: "loseBegin" },
+						forced: true,
+						charlotte: true,
+						popup: false,
+						onremove: true,
+						filter(event, player) {
+							const storage = player.getStorage("olzhuangrong_destroy");
+							if (!storage) {
+								return false;
+							}
+							for (const i of event.cards) {
+								if (storage.includes(i)) {
+									return true;
+								}
+							}
+							return false;
+						},
+						async content(event, trigger, player) {
+							const storage = player.getStorage(event.name);
+							for (const card of trigger.cards) {
+								if (storage.includes(card)) {
+									player.unmarkAuto(event.name, card);
+									card._destroy = true;
+								}
+							}
+							if (!storage.length) {
+								player.removeSkill("olzhuangrong_destroy");
+							}
+						},
+					},
 					count: {
 						audio: "olzhuangrong",
 						trigger: {
@@ -6205,9 +6252,8 @@ game.import("character", function () {
 			sp_zhongdan: "活动场·忠胆英杰",
 			sp2_guandu: "活动场·官渡之战",
 			sp2_longzhou: "活动场·同舟共济",
-			sp_guozhan2: "国战移植",
 			onlyOL_qldq: "千里单骑移植",
-			sp_others: "其他",
+			sp_guozhan2: "国战移植",
 			
 			onlyOL_waitingforsort: "等待分包",
 		},

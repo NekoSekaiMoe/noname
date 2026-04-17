@@ -126,9 +126,11 @@
 .menu-buttons > .config.more {
 	position: relative;
 	margin-bottom: 10px !important;
-	margin-left: 10px !important;
+	/* 临时修改（by 棘手怀念摧毁） */
+	margin-left: 3px !important;
 	margin-right: 10px !important;
-	width: calc(100% - 25px) !important;
+	/* 临时修改（by 棘手怀念摧毁） */
+	width: calc(100% - 15px) !important;
 	display: inline-block;
 }
 

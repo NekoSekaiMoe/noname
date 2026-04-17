@@ -7,6 +7,18 @@ game.import("character", function () {
 			
 		],
 		character: {
+			mb_muniu: [
+				"male",
+				"shu",
+				4,
+				["mbshezi", "mbyixing"],
+			],
+			jm_yuanshu: [
+				"male",
+				"qun",
+				4,
+				["mbjimi", "mbmaodie"],
+			],
 			jiangziya: ["male", "qun", 3, ["xingzhou", "lieshen"]],
 			shengongbao: ["male", "qun", 3, ["zhuzhou", "yaoxian"]],
 			nanjixianweng: ["male", "qun", 3, ["xwshoufa", "fuzhao"]],
@@ -49,9 +61,11 @@ game.import("character", function () {
 			mp_wangrong: ["male", "wei", 3, ["mpjianlin", "mpsixiao"]],
 			mp_liuling: ["male", "jin", 3, ["mpjiusong", "mpmaotao", "mpbishi"], ["doublegroup:wei:qun:jin"]],
 			mp_xiangxiu: ["male", "jin", 3, ["mpmiaoxi", "mpsijiu"], ["doublegroup:wei:jin"]],
+			hanba: ["female", "qun", 4, ["fentian", "zhiri"]],
 		},
 		characterSort: {
 			collab: {
+				sp_others: ["hanba"],
 				collab_olympic: ["sunyang", "yeshiwen"],
 				collab_tongque: ["sp_fuwan", "sp_fuhuanghou", "sp_jiben", "old_lingju", "sp_mushun"],
 				collab_oldoudizhu: ["wuhujiang", "ol_jsrg_caocao"],
@@ -61,6 +75,7 @@ game.import("character", function () {
 				collab_qixi: ["liuxiecaojie"],
 				collab_decade: ["libai", "xiaoyuehankehan", "zhutiexiong", "wu_zhutiexiong"],
 				collab_remake: ["dc_caocao", "dc_liubei", "dc_sunquan", "nezha", "dc_sunce", "dc_zhaoyun", "dc_noname", "xunyuxunyou"],
+				collab_mbdoudizhu: ["jm_yuanshu", "mb_muniu"],
 				mini_qixian: ["mp_liuling", "mp_wangrong", "mp_xiangxiu"],
 				collab_anime: ["jiangziya", "shengongbao", "nanjixianweng"],
 			},
@@ -69,6 +84,7 @@ game.import("character", function () {
 			zhutiexiong: [["wu_zhutiexiong", ["die:zhutiexiong"]]],
 		},
 		characterIntro: {
+			jm_yuanshu: "集蜜袁术，淮南纯血干饭哈基米，乱世顶级馋蜜显眼包。出身四世三公豪华配置，手握玉玺王炸底牌，却偏把争霸剧本变成了《败家一百零一式》。打仗？不存在的！正经军阀谁随身带蜜罐啊喂！最终众叛亲离、家底败光，还不忘捶床大叫: “蜜呢！我的蜜呢！”主打一个人菜瘦还大，死了都要甜。",
 			liuxiecaojie: "请分别查看「刘协」和「曹节」的武将介绍。",
 			dc_noname: " ",
 			xunyuxunyou: "请分别查看「荀彧」和「荀攸」的武将介绍。",
@@ -108,8 +124,9 @@ game.import("character", function () {
 		},
 		characterInitFilter: {
 			dc_zhaoyun(tag) {
-				if (tag == "noZhuSkill" && (get.mode() != "doudizhu" || _status.mode != "normal"))
+				if (tag == "noZhuSkill" && (get.mode() != "doudizhu" || _status.mode != "normal")) {
 					return false;
+				}
 			},
 		},
 		card: {
@@ -136,6 +153,300 @@ game.import("character", function () {
 		},
 		/** @type { importCharacterConfig['skill'] } */
 		skill: {
+			// 部分武将代码位于sp.js
+			
+			//高达木牛流马
+			mbshezi: {
+				audio: 2,
+				trigger: {
+					player: ["phaseZhunbeiBegin"],
+				},
+				forced: true,
+				filter(event, player) {
+					return game.hasPlayer(current => current.countCards("hej"));
+				},
+				async content(event, trigger, player) {
+					const result = await player
+						.chooseTarget(
+							get.prompt2(event.name),
+							(card, player, target) => {
+								return target.countCards("hej");
+							},
+							true
+						)
+						.set("ai", target => {
+							const player = get.player();
+							return -get.attitude(player, target);
+						})
+						.forResult();
+					if (result?.bool && result?.targets?.length) {
+						const target = result.targets[0];
+						player.line(target);
+						const control = await player
+							.chooseControl("手牌区", "装备区", "判定区", true)
+							.set("ai", function () {
+								const target = get.event().target;
+								if (target.countCards("h") > target.countCards("e")) {
+									return 0;
+								}
+								return 1;
+							})
+							.set("target", target)
+							.set("prompt", `请选择${get.translation(target)}的一个区域`)
+							.forResult();
+						const choice = {
+							手牌区: "h",
+							装备区: "e",
+							判定区: "j",
+						}[control.control];
+						if (target.countCards(choice, card => get.type(card) == "equip")) {
+							await player.gain(target.getGainableCards(player, choice), target, "giveAuto");
+						} else {//刘巴！刘巴！刘巴！
+							target.chat("沒有！没有！没有！");
+						}
+					}
+				},
+			},
+			mbyixing: {
+				group: "mbyixing_update",
+				audio: 2,
+				enable: "phaseUse",
+				usable: 1,
+				locked: false,
+				manualConfirm: true,
+				async content(event, trigger, player) {
+					const cards = player.getExpansions(event.name);
+					if (cards?.length) {
+						await player.loseToDiscardpile(cards);
+						await player.draw(cards.length);
+					}
+					if (!player.countCards("he", card => get.type(card) == "equip")) {
+						return;
+					}
+					const result = await player
+						.chooseCard("he", "你可将任意张装备牌置于武将牌上，称为“器”", [1, Infinity], card => get.type(card) == "equip")
+						.set("ai", card => {
+							return 6 - get.value(card);
+						})
+						.forResult();
+					if (result.bool) {
+						const next = player.addToExpansion(result.cards, player, "give");
+						next.gaintag.add(event.name);
+						await next;
+					}
+				},
+				marktext: "器",
+				intro: {
+					name: "易型（器）",
+					content: "expansion",
+					markcount: "expansion",
+				},
+				onremove(player, skill) {
+					const cards = player.getExpansions(skill);
+					if (cards.length) {
+						player.loseToDiscardpile(cards);
+						player.removeAdditionalSkill(skill);
+					}
+				},
+				mod: {
+					globalFrom(from, to, distance) {
+						return (
+							distance + from.getExpansions("mbyixing").reduce((sum, card) => sum + (lib.card[get.name(card)]?.distance?.globalFrom || 0), 0)
+						);
+					},
+					globalTo(from, to, distance) {
+						return distance + to.getExpansions("mbyixing").reduce((sum, card) => sum + (lib.card[get.name(card)]?.distance?.globalTo || 0), 0);
+					},
+					attackRange(from, distance) {
+						return (
+							distance - from.getExpansions("mbyixing").reduce((sum, card) => sum + (lib.card[get.name(card)]?.distance?.attackFrom || 0), 0)
+						);
+					},
+					attackTo(from, to, distance) {
+						return distance + to.getExpansions("mbyixing").reduce((sum, card) => sum + (lib.card[get.name(card)]?.distance?.attackTo || 0), 0);
+					},
+				},
+				ai: {
+					result: {
+						player(player) {
+							if (player.hp < 3) {
+								return 5;
+							}
+							return 1;
+						},
+					},
+				},
+				subSkill: {
+					update: {
+						trigger: {
+							player: ["loseAfter"],
+							global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
+						},
+						charlotte: true,
+						popup: false,
+						forced: true,
+						filter(event, player) {
+							const skill = "mbyixing";
+							if (event?.gaintag?.includes(skill)) {
+								return event.name == "loseAsync" ? event.type == "addToExpansion" : event.name == "addToExpansion";
+							}
+							const evt = event?.getl(player);
+							return evt?.xs?.length && evt?.xs?.some(card => evt?.gaintag_map[card.cardid]?.includes(skill));
+						},
+						async content(event, trigger, player) {
+							const cards = player.getExpansions("mbyixing");
+							player.addAdditionalSkill("mbyixing", get.skillsFromEquips(cards));
+						},
+					},
+				},
+			},
+			//哈基术
+			mbjimi: {
+				audio: 4,
+				forced: true,
+				trigger: {
+					global: "phaseBefore",
+					player: "enterGame",
+				},
+				filter(event, player) {
+					return event.name != "phase" || game.phaseNumber == 0;
+				},
+				logTarget: () => game.players,
+				logAudio: () => 2,
+				async content(event, trigger, player) {
+					const { targets } = event;
+					const map = new Map();
+					targets.forEach(target =>
+						map.set(
+							target,
+							target.getCards("h", card => !["tao", "jiu"].includes(get.name(card)))
+						)
+					);
+					await game.loseAsync({ lose_list: Array.from(map.entries()) }).setContent("chooseToCompareLose");
+					await game.doAsyncInOrder(
+						targets.sortBySeat(game.findPlayer(i => i.getSeatNum() == 1)),
+						async target => {
+							const cards = [];
+							const list = [[], []];
+							const hs = map.get(target);
+							while (cards.length < hs.length) {
+								const card = get.cardPile(card => ["tao", "jiu"].includes(get.name(card)) && !cards.includes(card));
+								if (card) {
+									cards.push(card);
+									if (get.position(card) == "c") {
+										list[0].push(hs[list[0].length]);
+										list[1].push(card);
+									}
+								} else {
+									break;
+								}
+							}
+							if (list[0].length) {
+								await game.cardsGotoPile(list[0], (event, card) => event.list[1][event.list[0].indexOf(card)]).set("list", list);
+							}
+							if (cards.length) {
+								target._start_cards = target.getCards("h").concat(cards);
+								return target.gain(cards, "draw").set("delay", false);
+							}
+						},
+						() => false
+					);
+				},
+				group: "mbjimi_gain",
+				subSkill: {
+					gain: {
+						audio: ["mbjimi3.mp3", "mbjimi4.mp3"],
+						forced: true,
+						trigger: {
+							global: ["loseAfter", "loseAsyncAfter", "cardsDiscardAfter", "equipAfter"],
+						},
+						filter(event, player) {
+							if (event.name == "cardsDiscard") {
+								const evt = event.getParent();
+								if ((evt.relatedEvent || evt.getParent()).name == "useCard") {
+									return false;
+								}
+							}
+							return event.getd?.().some(card => ["tao", "jiu"].includes(get.name(card)));
+						},
+						async content(event, trigger, player) {
+							const num = get.discarded().filter(card => ["tao", "jiu"].includes(get.name(card))).length;
+							const card = get.cardPile(card => get.is.damageCard(card) && get.cardNameLength(card) == num);
+							if (card) {
+								await player.gain(card, "gain2");
+							} else {
+								player.chat("哈基米哦南北路多");
+							}
+						},
+					},
+				},
+			},
+			mbmaodie: {
+				audio: 4,
+				forced: true,
+				trigger: { player: "useCardAfter" },
+				filter(event, player) {
+					if (player.hasHistory("sourceDamage", evt => evt.card == event.card)) {
+						return true;
+					}
+					return player.countMark(`mbmaodie_used`) < 2 && get.info("mbmaodie").getCards(player, event.targets || []).length > 0;
+				},
+				getCards(player, targets) {
+					return targets.flatMap(target =>
+						(target._start_cards || []).filter(card => "cdhej".includes(get.position(card)) && get.owner(card) !== player)
+					);
+				},
+				logAudio: (event, player) => player.hasHistory("sourceDamage", evt => evt.card == event.card) ? 2 : ["mbmaodie3.mp3", "mbmaodie4.mp3"],
+				async content(event, trigger, player) {
+					if (player.hasHistory("sourceDamage", evt => evt.card == trigger.card)) {
+						player.addTempSkill(`${event.name}_limit`);
+						player.setStorage(`${event.name}_limit`, get.cardNameLength(trigger.card), true);
+					} else {
+						player.addTempSkill(`${event.name}_used`);
+						player.addMark(`${event.name}_used`, 1, false);
+						const card = get.info(event.name).getCards(player, trigger.targets).randomGet();
+						if (card) {
+							let animate = ["gain2"];
+							if (get.owner(card)) {
+								animate = [get.owner(card), "giveAuto"];
+							}
+							await player.gain(card, ...animate);
+							return;
+						}
+					}
+				},
+				subSkill: {
+					used: {
+						charlotte: true,
+						onremove: true,
+					},
+					limit: {
+						charlotte: true,
+						onremove: true,
+						silent: true,
+						trigger: { player: "useCard1" },
+						filter(event, player) {
+							return get.is.damageCard(event.card);
+						},
+						async content(event, trigger, player) {
+							player.removeSkill(event.name);
+						},
+						mod: {
+							cardEnabled(card, player) {
+								const storage = player.storage.mbmaodie_limit;
+								if (!storage || typeof storage != "number" || !get.is.damageCard(card)) {
+									return;
+								}
+								return get.cardNameLength(card) > storage;
+							},
+						},
+						intro: {
+							markcount: storage => storage,
+							content: "下一次使用的伤害牌字数需大于#",
+						},
+					},
+				},
+			},
 			//姜子牙
 			xingzhou: {
 				audio: 2,
@@ -4187,7 +4498,7 @@ game.import("character", function () {
 			lieshen_info: "限定技，出牌阶段，你可以令一名角色将体力值和手牌数调整至游戏开始时。",
 			shengongbao: "申公豹",
 			zhuzhou: "助纣",
-			zhuzhou_info: "每回合限一次，手牌数最多的角色造成伤害后，你可以令其获得受伤角色的的一张手牌。",
+			zhuzhou_info: "每回合限一次，手牌数最多的角色造成伤害后，你可以令其获得受伤角色的一张手牌。",
 			yaoxian: "邀仙",
 			yaoxian_info: "出牌阶段限一次，你可以令一名角色摸两张牌，然后其须对你指定的另一名其他角色使用【杀】，否则其失去1点体力。",
 			nanjixianweng: "南极仙翁",
@@ -4195,7 +4506,20 @@ game.import("character", function () {
 			xwshoufa_info: "出牌阶段，你可以展示并将所有♠/♥/♣/♦花色的手牌交给一名其他角色，令其获得〖天妒〗/〖天香〗/〖倾国〗/〖武圣〗直到你的下个回合开始。",
 			fuzhao: "福照",
 			fuzhao_info: "一名角色进入濒死状态时，你可以令其进行一次判定，若结果为♥，其回复1点体力。",
+			jm_yuanshu: "集蜜袁术",
+			jm_yuanshu_prefix: "集蜜",
+			mbjimi: "集蜜",
+			mbjimi_info: "锁定技，游戏开始时，所有角色将所有手牌替换为等量张【桃】或【酒】。当有【桃】或【酒】不因使用进入弃牌堆后，你获得一张字数为X的伤害牌(X为本回合【桃】、【酒】进入弃牌堆的张数)。",
+			mbmaodie: "冒迭",
+			mbmaodie_info: "锁定技，你使用牌后，若造成伤害，你本回合下一次使用的伤害牌需大于此牌字数；每回合限两次，若未造成伤害，你获得一张目标角色的初始手牌。",
+			mb_muniu: "手杀木牛流马",
+			mb_muniu_prefix: "手杀",
+			mbshezi: "摄梓",
+			mbshezi_info: "锁定技，准备阶段，你选择一名角色并选择其一个区域，若其此区域里有装备牌，你获得其此区域里的所有牌。",
+			mbyixing: "易型",
+			mbyixing_info: "出牌阶段限一次，你可将所有“器”置入弃牌堆并摸等量的牌，然后你可将任意张装备牌置于你的武将牌上，称为“器”。你拥有“器”的所有效果。",
 
+			sp_others: "OL·专属武将",
 			collab_olympic: "OL·伦敦奥运会",
 			collab_tongque: "OL·铜雀台",
 			collab_oldoudizhu: "OL·限时地主",
@@ -4205,6 +4529,7 @@ game.import("character", function () {
 			collab_qixi: "新服·七夕限时地主",
 			collab_decade: "新服·创玩节",
 			collab_remake: "新服·共创武将",
+			collab_mbdoudizhu: "移动版·限时地主",
 			mini_qixian: "小程序·竹林七贤",
 			collab_anime: "三国杀·动画",
 			
@@ -4263,11 +4588,9 @@ game.import("character", function () {
 	"#potzhengshuo2": "孙权在远称臣，此即天人之应也。",
 	"#qice_pot_huanjie1": "无有奇策，何以解之？",
 	"#qice_pot_huanjie2": "为今之际，唯效图纬故事。",
-	
-	// 待补
+	// 待补？
 	// "#kanpo_pot_huanjie1": "",
 	// "#kanpo_pot_huanjie2": "",
-	
 	"#pot_huanjie:die": "陛下厚遇，臣唯结草相报……",
 	"#pottuntian1": "屯田开渠，为军农要用。",
 	"#pottuntian2": "农者，胜之本也。",
@@ -4562,6 +4885,20 @@ game.import("character", function () {
 	"#qice_clan_xunyou2": "穷寇宜追，需防死蛇之不僵。",
 
 	// collab
+	"#mbshezi1": "成为我的一部分吧！",
+	"#mbshezi2": "一切都围着我运行！",
+	"#mbyixing1": "吾即万用之理！",
+	"#mbyixing2": "万势皆顺，万法皆通！",
+	"#mb_muniu:die": "机能有损，不能为丞相，北伐效力了……",
+	"#mbjimi1": "归附于朕之人，都有蜜吃！",
+	"#mbjimi2": "上等之蜜，当配南北绿豆，岂可草草食之？",
+	"#mbjimi3": "啊，此蜜甚是甘甜，让朕精力无限呐！",
+	"#mbjimi4": "不集天下之蜜，何显朕天子之威！",
+	"#mbmaodie1": "哈！朕，要闹得天翻地覆！",
+	"#mbmaodie2": "敢抢朕的蜜？朕看你是不想活了！",
+	"#mbmaodie3": "按理来说，汝这个级别，还无权对朕哈气。",
+	"#mbmaodie4": "朕未到耄耋之年，又怎会冒迭行事？",
+	"#jm_yuanshu:die": "朕集的蜜哪里去了？",
 	"#olhuyi1": "青龙啸赤月，长刀行千里。",
 	"#olhuyi2": "谋取敌将首，声震当阳桥。",
 	"#olhuyi3": "游龙战长坂，可复七进七出。",
@@ -4662,8 +4999,6 @@ game.import("character", function () {
 	"#reguicai_new_simayi2": "天地造化，不过老夫一念之间！",
 	"#fangzhu_new_simayi1": "此非老夫不仁，实乃汝咎由自取。",
 	"#rejizhi_new_simayi1": "一策一划，皆为成吾之远图！",
-	"#xiongzhi_new_simayi1": "烈士雄心，志存高远。",//彩蛋（声音克隆）
-	"#xiongzhi_new_simayi2": "乱世之中，唯我司马！",//彩蛋（声音克隆）
 	"#rezhiheng_new_simayi1": "轮回不止，因果不休。",
 	"#jilin1": "戢鳞潜翼，蓄志待时！",
 	"#jilin2": "老臣一心为国，还望陛下明鉴。",
@@ -5563,6 +5898,18 @@ game.import("character", function () {
 	"#lunshi_yj_sb_guojia_shadow2": "嘉窃料之，绍有十败，公有十胜。",
 	"#yj_sb_guojia:die": "生如夏花，死亦何憾？",
 	"#yj_sb_guojia_shadow:die": "江湖路远，诸君，某先行一步……",
+	
+	// wztx
+	"#dcshuren1": "嫁舟过江浦，荷花犹记女儿红。",
+	"#dcshuren2": "玉锁枷春风，却惊小荷角上蜓。",
+	"#dcsaran1": "愈创愈狂愈烈，越伤越战越凶！",
+	"#dcsaran2": "阵前女儿怒，一步一杀一雷霆！",
+	"#v_sunshangxiang:die": "荷残风住时，无物可赠君……",
+	"#dcshuren_v_sunshangxiang_shadow1": "南雁忽啼王孙去，唯闻故园捣衣声。",
+	"#dcshuren_v_sunshangxiang_shadow2": "褪得绫罗去，清风渡我怀。",
+	"#dcsaran_v_sunshangxiang_shadow1": "赤焰烧云我裁舟，敢教江水逆弓流！",
+	"#dcsaran_v_sunshangxiang_shadow2": "娥眉贯弓，大江作炉熔，千帆成冢，滴铁如红！",
+	"#v_sunshangxiang_shadow:die": "终未成藏剑鞘，倒做了隔岸火……",
 	
 	// mobile
 	"#mbcaiqiu1": "衣为礼之大者，岂可草草而决？",
@@ -9246,7 +9593,7 @@ game.import("character", function () {
 	"#yaowu2": "哼，先让你尝点甜头！",
 	"#huaxiong:die": "这，怎么可能……",
 	"#yicong1": "冲啊！",
-	"#yicong2": "众将听令，排好阵势，御敌！",
+	"#yicong2": "众将听令，摆好阵势，御敌！",
 	"#gongsunzan:die": "我军将败，我已无颜苟活于世……",
 	"#xinfu_jijie1": "一拜一起，未足为劳。",
 	"#xinfu_jijie2": "识言观行，方能雍容风议。",
@@ -10303,6 +10650,11 @@ game.import("character", function () {
 	"#xinfu_zhanji2": "功曹之恩，吾必有展骥之机。",
 	
 	// yijiang
+	"#fjzhitu1": "辨广轮之度，正彼此之体，远近无所隐其形。",
+	"#fjzhitu2": "地有六合，图有六体，可校其经纬。",
+	"#dcfujue1": "《周礼》有言，爵分公、侯、伯、子、男。",
+	"#dcfujue2": "复五等之爵，明尊卑之序。",
+	"#fj_peixiu:die": "这酒，是冷的……",
 	"#xvzhi1": "鹿复现于野，孰不可射乎？",
 	"#xvzhi2": "天下之士合纵，欲复攻于秦。",
 	"#linghuyu:die": "咳咳……我欲谋大事，奈何命不由己……",
@@ -11275,6 +11627,16 @@ game.import("character", function () {
 	// 3v3赵云待补
 	// "#jiuzhu1": "子龙在此，主公莫急！",
 	// "#jiuzhun2": "此处有我抵挡，主公速速撤退。",
+	
+	//彩蛋（声音克隆）
+	// 极略神司马懿
+	"#xiongzhi_new_simayi1": "烈士雄心，志存高远。",
+	"#xiongzhi_new_simayi2": "乱世之中，唯我司马！",
+	// 赵云义从
+	"#reyicong_jsp_zhaoyun1": "变阵冲轭，以守代攻。",
+	"#reyicong_jsp_zhaoyun2": "列阵锋矢，直取要害。",
+	"#yicong_yy_zhaoyun1": "冲啊！",
+	"#yicong_yy_zhaoyun2": "众将听令，摆好阵势，御敌！",
 /*--------------------------------台词因名将吴懿而更新，所以都放这里很合理吧（结束）--------------------------------*/
 		},
 		perfectPair: {

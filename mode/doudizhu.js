@@ -113,8 +113,21 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					break;
 				default:
 					if (!game.zhu.isInitFilter("noZhuSkill")) {
-						game.zhu.addSkill("feiyang");
-						game.zhu.addSkill("bahu");
+						const list = [];
+						const version = _status.connectMode ? lib.configOL.feiyang_version : get.config("feiyang_version");
+						if (version === "online") {
+							list.push("feiyang");
+						} else if (version === "mobile") {
+							list.push("mbfeiyang");
+						} else if (version === "decade") {
+							list.push("dcfeiyang");
+						}
+						list.push("bahu");
+						const enhance = _status.connectMode ? lib.configOL.enhance_dizhu : get.config("enhance_dizhu");
+						if (["kaihei", "yinfu", "shiqiang", "qiangyi", "oldshiqiang"].includes(enhance)) {
+							list.push(enhance);
+						}
+						game.zhu.addSkill(list);
 					}
 			}
 			game.syncState();
@@ -1993,12 +2006,22 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			random2: "随机",
 			feiyang: "飞扬",
 			bahu: "跋扈",
-			feiyang_info:
-				"判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。每回合限一次。",
-			bahu_info: "锁定技，准备阶段开始时，你摸一张牌。出牌阶段，你可以多使用一张【杀】。",
+			feiyang_info: "判定阶段开始时，若你的判定区有牌，则你可以弃置两张牌，然后弃置你判定区的所有牌。",
+			bahu_info: "锁定技，准备阶段开始时，你摸一张牌。出牌阶段，你出【杀】次数+1。",
 			kaihei: "强易",
-			kaihei_info:
-				"出牌阶段，你可以获得一名其他角色的至多两张牌，然后交给其等量的牌。每名角色每局游戏限一次。",
+			kaihei_info: "出牌阶段，你可以获得一名其他角色的至多两张牌，然后交给其等量的牌。每名角色每局游戏限一次。",
+			dcfeiyang: "飞扬",
+			dcfeiyang_info: "判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的所有牌。",
+			mbfeiyang: "飞扬",
+			mbfeiyang_info: "判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。",
+			yinfu: "殷富",
+			yinfu_info: "锁定技。①回合开始时，若你的已损失体力值不小于游戏轮次，你回复1点体力。②当你发动〖殷富①〗至少3次后，你失去〖殷富〗。",
+			shiqiang: "恃强",
+			shiqiang_info: "出牌阶段限一次，你可以将一张牌当无距离限制的【杀】使用。此【杀】结算结束后，若未造成伤害，你减1点体力上限。",
+			oldshiqiang: "恃强",
+			oldshiqiang_info: "出牌阶段限一次，你可以将一张牌当无距离限制的任意【杀】使用。你以此法使用【杀】时，摸一张牌。此【杀】结算结束后，若未造成伤害，你减1点体力上限。",
+			qiangyi: "强易",
+			qiangyi_info: "每名角色限一次。出牌阶段，你选择一名其他角色，获得其一张手牌，然后交给其一张手牌。",
 			doudizhu_cardPile: "底牌",
 			online_gongshoujintui: "攻守进退",
 			gongshoujianbei: "攻守兼备",
@@ -2107,7 +2130,10 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						}, true);
 					if (target) {
 						target.showGiveup();
-						target.chooseDrawRecover(2);
+						const version = _status.connectMode ? lib.configOL.enhance_nongmin : get.config("enhance_nongmin");
+						if (version !== "decade") {
+							target[version === "mobile" ? "chooseDrawRecover" : "draw"](version === "mobile" ? 2 : 1);
+						}
 					}
 				},
 				logAi: function (targets, card) {},
@@ -2545,48 +2571,33 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					},
 				},
 			},
+			//OL飞扬
 			feiyang: {
-				trigger: { player: "phaseJudgeBegin" },
 				charlotte: true,
-				direct: true,
-				filter: function (event, player) {
-					return (
-						_status.mode != "online" &&
-						_status.mode != "binglin" &&
-						player == game.zhu &&
-						player.countCards("j") &&
-						player.countCards("h") > 1
-					);
+				trigger: { player: "phaseJudgeBegin" },
+				filter(event, player) {
+					return _status.mode != "online" && _status.mode != "binglin" && player == game.zhu && player.countCards("j") && player.countCards("he") > 1;
 				},
-				content: function () {
-					"step 0";
-					player
-						.chooseToDiscard(
-							"h",
-							2,
-							get.prompt("feiyang"),
-							"弃置两张手牌，然后弃置判定区里的一张牌"
-						)
-						.set("logSkill", "feiyang")
+				async cost(event, trigger, player) {
+					event.result = await player
+						.chooseToDiscard("he", 2, get.prompt(event.skill), "弃置两张牌，然后弃置判定区里的所有牌")
+						.set("logSkill", event.skill)
 						.set("ai", function (card) {
-							if (_status.event.goon) return 6 - get.value(card);
+							if (_status.event.goon) {
+								return 7 - get.value(card);
+							}
 							return 0;
 						})
 						.set(
 							"goon",
 							(() => {
-								if (player.hasSkillTag("rejudge") && player.countCards("j") < 2) return false;
+								if (player.hasSkillTag("rejudge") && player.countCards("j") < 2) {
+									return false;
+								}
 								return player.hasCard(function (card) {
-									if (
-										get.tag(card, "damage") &&
-										get.damageEffect(
-											player,
-											player,
-											_status.event.player,
-											get.natureList(card)
-										) >= 0
-									)
+									if (get.tag(card, "damage") && get.damageEffect(player, player, _status.event.player, get.natureList(card)) >= 0) {
 										return false;
+									}
 									return (
 										get.effect(
 											player,
@@ -2600,13 +2611,111 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 									);
 								}, "j");
 							})()
-						);
-					"step 1";
-					if (result.bool) {
-						player.discardPlayerCard(player, "j", true);
-					}
+						)
+						.forResult();
+				},
+				popup: false,
+				async content(event, trigger, player) {
+					await player.discardPlayerCard(player, "j", true, player.countCards("j"));
 				},
 			},
+			//十周年飞扬
+			dcfeiyang: {
+				charlotte: true,
+				trigger: { player: "phaseJudgeBegin" },
+				filter(event, player) {
+					return _status.mode != "online" && _status.mode != "binglin" && player == game.zhu && player.countCards("j") && player.countCards("h") > 1;
+				},
+				async cost(event, trigger, player) {
+					event.result = await player
+						.chooseToDiscard("h", 2, get.prompt(event.skill), "弃置两张手牌，然后弃置判定区里的所有牌")
+						.set("logSkill", event.skill)
+						.set("ai", function (card) {
+							if (_status.event.goon) {
+								return 7 - get.value(card);
+							}
+							return 0;
+						})
+						.set(
+							"goon",
+							(() => {
+								if (player.hasSkillTag("rejudge") && player.countCards("j") < 2) {
+									return false;
+								}
+								return player.hasCard(function (card) {
+									if (get.tag(card, "damage") && get.damageEffect(player, player, _status.event.player, get.natureList(card)) >= 0) {
+										return false;
+									}
+									return (
+										get.effect(
+											player,
+											{
+												name: card.viewAs || card.name,
+												cards: [card],
+											},
+											player,
+											player
+										) < 0
+									);
+								}, "j");
+							})()
+						)
+						.forResult();
+				},
+				popup: false,
+				async content(event, trigger, player) {
+					await player.discardPlayerCard(player, "j", true, player.countCards("j"));
+				},
+			},
+			//手杀飞扬
+			mbfeiyang: {
+				charlotte: true,
+				trigger: { player: "phaseJudgeBegin" },
+				filter(event, player) {
+					return _status.mode != "online" && _status.mode != "binglin" && player == game.zhu && player.countCards("j") && player.countCards("h") > 1;
+				},
+				async cost(event, trigger, player) {
+					event.result = await player
+						.chooseToDiscard("h", 2, get.prompt(event.skill), "弃置两张手牌，然后弃置判定区里的一张牌")
+						.set("logSkill", event.skill)
+						.set("ai", function (card) {
+							if (_status.event.goon) {
+								return 7 - get.value(card);
+							}
+							return 0;
+						})
+						.set(
+							"goon",
+							(() => {
+								if (player.hasSkillTag("rejudge")) {
+									return false;
+								}
+								return player.hasCard(function (card) {
+									if (get.tag(card, "damage") && get.damageEffect(player, player, _status.event.player, get.natureList(card)) >= 0) {
+										return false;
+									}
+									return (
+										get.effect(
+											player,
+											{
+												name: card.viewAs || card.name,
+												cards: [card],
+											},
+											player,
+											player
+										) < 0
+									);
+								}, "j");
+							})()
+						)
+						.forResult();
+				},
+				popup: false,
+				async content(event, trigger, player) {
+					await player.discardPlayerCard(player, "j", true);
+				},
+			},
+			//跋扈
 			bahu: {
 				trigger: { player: "phaseZhunbeiBegin" },
 				charlotte: true,
@@ -2626,6 +2735,220 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							card.name == "sha"
 						)
 							return num + 1;
+					},
+				},
+			},
+			//殷富
+			yinfu: {
+				charlotte: true,
+				trigger: { player: "phaseBegin" },
+				filter(event, player) {
+					return player.isDamaged() && player.getDamagedHp() >= game.roundNumber;
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					await player.recover();
+					if (player.getAllHistory("useSkill", evt => evt.skill == event.name).length > 2) {
+						await player.removeSkills(event.name);
+					}
+				},
+			},
+			//恃强·削弱
+			shiqiang: {
+				charlotte: true,
+				enable: "phaseUse",
+				filter(event, player) {
+					return event.filterCard(get.autoViewAs({ name: "sha", storage: { shiqiang: true } }, "unsure"), player, event);
+				},
+				usable: 1,
+				filterCard: true,
+				position: "hes",
+				viewAs: {
+					name: "sha",
+					storage: { shiqiang: true },
+				},
+				locked: false,
+				precontent() {
+					player.addTempSkill("shiqiang_effect");
+				},
+				mod: {
+					targetInRange(card, player, target) {
+						if (card?.storage?.shiqiang) {
+							return true;
+						}
+					},
+				},
+				subSkill: {
+					effect: {
+						charlotte: true,
+						trigger: { player: "useCardAfter" },
+						filter(event, player) {
+							if (event.skill === "shiqiang") {
+								return !game.hasPlayer2(target => target.hasHistory("damage", evt => evt.card === event.card));
+							}
+							return false;
+						},
+						forced: true,
+						popup: false,
+						async content(event, trigger, player) {
+							await player.loseMaxHp();
+						},
+					},
+				},
+				ai: {
+					order: 4,
+					result: {
+						player: 1,
+					},
+				},
+			},
+			//恃强
+			oldshiqiang: {
+				enable: "phaseUse",
+				usable: 1,
+				hiddenCard(player, name) {
+					return name == "sha" && player.countCards("hes");
+				},
+				filter(event, player) {
+					return event.filterCard(get.autoViewAs({ name: "sha", storage: { oldshiqiang: true } }, "unsure"), player, event) || lib.inpile_nature.some(nature => event.filterCard(get.autoViewAs({ name: "sha", nature, storage: { oldshiqiang: true } }, "unsure"), player, event));
+				},
+				chooseButton: {
+					dialog(event, player) {
+						var list = [];
+						if (event.filterCard(get.autoViewAs({ name: "sha", storage: { oldshiqiang: true } }, "unsure"), player, event)) {
+							list.push(["基本", "", "sha"]);
+						}
+						for (var j of lib.inpile_nature) {
+							if (event.filterCard(get.autoViewAs({ name: "sha", nature: j, storage: { oldshiqiang: true } }, "unsure"), player, event)) {
+								list.push(["基本", "", "sha", j]);
+							}
+						}
+						var dialog = ui.create.dialog("恃强", [list, "vcard"], "hidden");
+						dialog.direct = true;
+						return dialog;
+					},
+					check(button) {
+						var player = _status.event.player;
+						var card = { name: button.link[2], nature: button.link[3] };
+						if (
+							_status.event.getParent().type == "phase" &&
+							game.hasPlayer(function (current) {
+								return player.canUse(card, current) && get.effect(current, card, player, player) > 0;
+							})
+						) {
+							switch (button.link[2]) {
+								case "sha":
+									if (button.link[3] == "fire") {
+										return 2.95;
+									} else if (button.link[3] == "thunder" || button.link[3] == "ice") {
+										return 2.92;
+									} else {
+										return 2.9;
+									}
+							}
+						}
+						return 1 + Math.random();
+					},
+					backup(links, player) {
+						return {
+							filterCard: true,
+							check(card) {
+								return 6 - get.value(card);
+							},
+							viewAs: {
+								name: links[0][2],
+								nature: links[0][3],
+								storage: {
+									oldshiqiang: true,
+								},
+							},
+							position: "hes",
+							popname: true,
+						};
+					},
+					prompt(links, player) {
+						return "将一张牌当作" + get.translation(links[0][3] || "") + "【" + get.translation(links[0][2]) + "】使用";
+					},
+				},
+				locked: false,
+				group: ["oldshiqiang_effect"],
+				mod: {
+					targetInRange(card, player, target) {
+						if (card?.storage?.oldshiqiang) {
+							return true;
+						}
+					},
+				},
+				subSkill: {
+					effect: {
+						forced: true,
+						locked: false,
+						trigger: { player: ["useCard", "useCardAfter"] },
+						filter(event, player, name) {
+							if (!event.card?.storage?.oldshiqiang) {
+								return false;
+							}
+							if (name == "useCardAfter") {
+								return !player.hasHistory("sourceDamage", evt => evt.card == event.card);
+							}
+							return true;
+						},
+						async content(event, trigger, player) {
+							if (event.triggername == "useCard") {
+								await player.draw();
+							} else {
+								await player.loseMaxHp();
+							}
+						},
+					},
+				},
+				ai: {
+					order: 4,
+					result: {
+						player: 1,
+					},
+				},
+			},
+			//强易·削弱
+			qiangyi: {
+				charlotte: true,
+				enable: "phaseUse",
+				filter(event, player) {
+					return (
+						player == game.zhu &&
+						game.hasPlayer(function (current) {
+							return lib.skill.qiangyi.filterTarget(null, player, current);
+						})
+					);
+				},
+				filterTarget(card, player, target) {
+					return player != target && !player.getStorage("qiangyi_used").includes(target) && target.countGainableCards(player, "h") > 0;
+				},
+				async content(event, trigger, player) {
+					const { target } = event;
+					player.markAuto(`${event.name}_used`, target);
+					const result = await player.gainPlayerCard(target, "h", true).forResult();
+					if (!result?.bool || !result.cards?.length) {
+						return event.finish();
+					}
+					const hs = player.getCards("h");
+					if (hs.length) {
+						let resultx;
+						if (hs.length == 1) {
+							resultx = { bool: true, cards: hs };
+						} else {
+							resultx = await player.chooseCard("h", true, `选择交给${get.translation(target)}一张手牌`).forResult();
+						}
+						if (resultx?.bool && resultx.cards?.length) {
+							await player.give(resultx.cards, target);
+						}
+					}
+				},
+				ai: {
+					order: 5,
+					result: {
+						player: 1,
+						target: -1,
 					},
 				},
 			},
@@ -3801,7 +4124,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 		help: {
 			斗地主:
 				'<div style="margin:10px">游戏规则</div><ul style="margin-top:0"><li>游戏人数<br>游戏人数为3人（地主x1 + 农民x2）。<li>胜利条件<br>农民：地主死亡。<br>地主：所有农民死亡且自己存活。' +
-				"<li>死亡奖惩<br>当有农民死亡时，若另一名农民存活，则其可以选择摸两张牌或回复1点体力。<li>地主专属技能<br>地主可以使用专属技能〖飞扬〗和〖跋扈〗。<br>〖飞扬〗判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。每回合限一次。<br>〖跋扈〗锁定技，准备阶段开始时，你摸一张牌。出牌阶段，你可以多使用一张【杀】。</ul>",
+				"<li>死亡奖惩<br>当有农民死亡时，若另一名农民存活，则其获得农民遗产（详见选项设置，可自行配置）。<li>地主专属技能<br>地主可以使用专属技能〖飞扬〗和〖跋扈〗（详见选项设置，可自行配置）。<li>加强地主<br>地主可以获得专属技能（详见选项设置，可自行配置）。</ul>",
 		},
 	};
 });

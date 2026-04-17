@@ -288,9 +288,13 @@ game.import("character", function () {
 			
 		},
 		characterFilter: {
-			simashi: function (mode) {
-				if (["boss", "chess", "tafang", "stone"].includes(mode)) return false;
-				if (mode == "versus") return _status.mode != "three";
+			simashi(mode) {
+				if (["boss", "chess", "tafang", "stone"].includes(mode)) {
+					return false;
+				}
+				if (mode == "versus") {
+					return _status.mode != "three";
+				}
 				return true;
 			},
 		},
@@ -10562,7 +10566,7 @@ game.import("character", function () {
 				content: function () {
 					player.awakenSkill("bihuo");
 					trigger.player.draw(3);
-					trigger.player.addTempSkill("bihuo_effect", "roundStart");
+					trigger.player.addTempSkill("bihuo_effect", "roundEnd");
 					trigger.player.addMark("bihuo_effect", game.countPlayer(), false);
 				},
 				subSkill: {

@@ -2756,7 +2756,9 @@ game.import("character", function () {
 					) {
 						var skills = player.getSkills(null, false, false).filter(skill => {
 							var info = get.info(skill);
-							if (!info || get.is.empty(info) || info.charlotte) return false;
+							// 临时修复（by 棘手怀念摧毁）
+							if (!info || get.is.empty(info) || info.charlotte || info.equipSkill) return false;
+							// if (!info || get.is.empty(info) || info.charlotte) return false;
 							return true;
 						});
 						player
@@ -3468,7 +3470,9 @@ game.import("character", function () {
 					"step 0";
 					var skills = player.getSkills(null, false, false).filter(skill => {
 						var info = get.info(skill);
-						if (!info || info.charlotte || !get.is.locked(skill) || get.skillInfoTranslation(skill, player).length == 0) return false;
+						// 临时修复（by 棘手怀念摧毁）
+						if (!info || info.charlotte || info.equipSkill || !get.is.locked(skill) || get.skillInfoTranslation(skill, player).length == 0) return false;
+						// if (!info || info.charlotte || !get.is.locked(skill) || get.skillInfoTranslation(skill, player).length == 0) return false;
 						return true;
 					});
 					player

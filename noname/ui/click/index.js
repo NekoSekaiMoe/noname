@@ -2828,7 +2828,8 @@ export class Click {
 			if (
 				_status.event.name == "chooseTarget" ||
 				_status.event.name == "chooseToUse" ||
-				_status.event.name == "chooseCardTarget"
+				_status.event.name == "chooseCardTarget" ||
+				_status.event.name == "chooseButtonTarget"
 			) {
 				var targetprompt = null;
 				if (_status.event.targetprompt) {

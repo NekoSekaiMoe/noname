@@ -2218,6 +2218,8 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					"敌军: " +
 					get.cnNumber(1 + _status.enemylist.length / (_status.double_character ? 2 : 1), true);
 			},
+			// 临时修改（by 棘手怀念摧毁）
+			/*
 			stoneLoop: function (player) {
 				var next = game.createEvent("phaseLoop");
 				next.player = player;
@@ -2241,6 +2243,80 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					} else {
 						event.player = game.me;
 					}
+					event.goto(0);
+				});
+			},
+			*/
+			stoneLoop: function (player) {
+				var next = game.createEvent("phaseLoop");
+				next.player = player;
+				next.setContent(function () {
+					"step 0";
+					// 临时修复（by 棘手怀念摧毁）
+					// _status.roundStart = game.me;
+					
+					player.phase();
+					event.num = 0;
+					"step 1";
+					// phaseOver时机适配
+					event.trigger("phaseOver");
+					"step 2";
+					/*
+					if (event.num < player.actcharacterlist.length) {
+						var current = player.actcharacterlist[event.num];
+						if (current) {
+							current.phase();
+						}
+						event.num++;
+						event.redo();
+					}
+					*/
+					// phaseOver时机适配
+					if (event.num < player.actcharacterlist.length) {
+						event.goto(3);
+					} else event.goto(6);
+					"step 3";
+					var current = player.actcharacterlist[event.num];
+					if (current) {
+						current.phase();
+					}
+					"step 4";
+					var current = player.actcharacterlist[event.num];
+					if (current) {
+						event.trigger("phaseOver");
+					}
+					"step 5";
+					event.num++;
+					event.goto(2);
+					"step 6";
+					if (event.player == game.me) {
+						event.player = game.enemy;
+					} else {
+						event.player = game.me;
+					}
+					"step 7";
+					// roundEnd时机适配
+					if (game.players.includes(player)) {
+						var isRoundEnd = false;
+						if (lib.onround.every(i => i(event, player))) {
+							isRoundEnd = _status.roundSkipped;
+							// 修改
+							/*if (_status.isRoundFilter) {
+								isRoundEnd = _status.isRoundFilter(event, player);
+							} else if (_status.seatNumSettled) {
+								var seatNum = player.getSeatNum();
+								if (seatNum != 0) {
+									if (get.itemtype(_status.lastPhasedPlayer) != "player" || seatNum < _status.lastPhasedPlayer.getSeatNum()) isRoundEnd = true;
+									// _status.lastPhasedPlayer = player;
+								}
+							} else */if (player == _status.roundStart) isRoundEnd = true;
+							if (isRoundEnd && _status.globalHistory.some(i => i.isRound)) {
+								game.log();
+								event.trigger("roundEnd");
+							}
+						}
+					}
+					"step 8";
 					event.goto(0);
 				});
 			},
@@ -10847,7 +10923,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			priest_puzhao: "普照",
 			priest_puzhao_info: "你出场时，己方主将可令一名其他友方随从增加2点体力和体力上限。",
 			priest_suoxiao: "缩小",
-			priest_suoxiao_info: "你出场时，己方主将可令一名其他随从减少2点体力上限（不能小于1)。",
+			priest_suoxiao_info: "你出场时，己方主将可令一名其他随从减少2点体力上限（不能小于1）。",
 			priest_shengshui: "圣水",
 			priest_shengshui_info: "你跳过摸牌阶段；在你的准备阶段，令一名随机友方角色回复2点体力。",
 			priest_muguang: "暮光",
@@ -11296,7 +11372,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			stonesha: "进攻",
 			stonesha_info: "锁定技，你的装备牌均视为【杀】。",
 			stoneshan: "格挡",
-			stoneshan_info: "锁定技，你的随从和法术牌均视为闪。",
+			stoneshan_info: "锁定技，你的随从和法术牌均视为【闪】。",
 
 			stonecharacter: "随从",
 			spell_shengerpingdeng: "生而平等",

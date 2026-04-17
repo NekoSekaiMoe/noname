@@ -5151,6 +5151,7 @@ export class Library {
 						map.connect_player_number.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
+						map.connect_enable_mingcha.hide();
 						map.connect_double_nei.hide();
 						map.connect_enable_commoner.hide();
 						map.connect_enable_year_limit.show();
@@ -5162,6 +5163,7 @@ export class Library {
 						map.connect_player_number.show();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
+						map.connect_enable_mingcha.hide();
 						map.connect_double_nei.hide();
 						map.connect_enable_commoner.hide();
 						map.connect_enable_year_limit.show();
@@ -5171,6 +5173,7 @@ export class Library {
 						map.connect_player_number.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
+						map.connect_enable_mingcha.hide();
 						map.connect_double_nei.hide();
 						map.connect_enable_commoner.hide();
 						map.connect_enable_year_limit.hide();
@@ -5182,6 +5185,7 @@ export class Library {
 						map.connect_player_number.show();
 						map.connect_limit_zhu.show();
 						map.connect_enhance_zhu.show();
+						map.connect_enable_mingcha.show();
 						map.connect_double_nei[
 							config.connect_player_number != "2" && !config.connect_enable_commoner
 								? "show"
@@ -5311,6 +5315,15 @@ export class Library {
 					restart: true,
 					intro: "为主公增加一个额外技能",
 				},
+				connect_enable_mingcha: {
+					name: "启用明察",
+					init: false,
+					restart: true,
+					frequent: false,
+					get intro() {
+						return lib.mode.identity.config.enable_mingcha.intro;
+					},
+				},
 			},
 			config: {
 				update: function (config, map) {
@@ -5324,6 +5337,7 @@ export class Library {
 					if (config.identity_mode == "zhong") {
 						map.player_number.hide();
 						map.enhance_zhu.hide();
+						map.enable_mingcha.hide();
 						map.double_nei.hide();
 						map.auto_identity.hide();
 						map.choice_zhu.hide();
@@ -5355,6 +5369,7 @@ export class Library {
 						map.continue_game.show();
 						map.player_number.show();
 						map.enhance_zhu.hide();
+						map.enable_mingcha.hide();
 						map.auto_identity.hide();
 						if (config.player_number != "2") {
 							map.double_nei.show();
@@ -5396,6 +5411,7 @@ export class Library {
 					} else if (config.identity_mode == "purple") {
 						map.player_number.hide();
 						map.enhance_zhu.hide();
+						map.enable_mingcha.hide();
 						map.double_nei.hide();
 						map.auto_identity.hide();
 						map.choice_zhu.hide();
@@ -5423,6 +5439,7 @@ export class Library {
 						map.continue_game.show();
 						map.player_number.show();
 						map.enhance_zhu.show();
+						map.enable_mingcha.show();
 						map.auto_identity.show();
 						map.double_nei[
 							config.player_number != "2" && !config.enable_commoner ? "show" : "hide"
@@ -5888,6 +5905,13 @@ export class Library {
 					frequent: false,
 					intro: "开启后将会加入年机制。<br>年机制的具体规则请查看帮助。",
 				},
+				enable_mingcha: {
+					name: "启用明察",
+					init: false,
+					restart: true,
+					frequent: false,
+					intro: "开启后主公将获得技能〖明察〗。",
+				},
 			},
 		},
 		guozhan: {
@@ -6028,6 +6052,21 @@ export class Library {
 					frequent: true,
 					restart: true,
 					intro: "开放不同势力组合，以优先亮出的武将牌作为自己的势力，双势力武将则使用列表的第一个势力",
+				},
+				banGroup: {
+					name: "势力禁用",
+					init: "off",
+					frequent: true,
+					restart: true,
+					// intro: "选将前将随机禁用一个势力",
+					// 临时修改（by 棘手怀念摧毁）
+					intro: "选将前将随机禁用X个势力（使用国战武将开启且群雄割据关闭后生效）",
+					item: {
+						off: "关闭",
+						one: "一个",
+						two: "两个",
+						three: "三个",
+					},
 				},
 				initshow_draw: {
 					name: "首亮奖励",
@@ -6461,11 +6500,11 @@ export class Library {
 				},
 				versus_mode: {
 					name: "游戏模式",
-					init: "four",
+					init: "two",
 					item: {
-						four: "对抗",
-						three: "统率",
 						two: "欢乐",
+						three: "统率",
+						four: "对抗",
 						guandu: "官渡",
 						jiange: "剑阁",
 						siguo: "四国",
@@ -6989,8 +7028,14 @@ export class Library {
 					}
 					if (config.connect_doudizhu_mode != "normal") {
 						map.connect_double_character.hide();
+						map.connect_enhance_dizhu.hide();
+						map.connect_enhance_nongmin.hide();
+						map.connect_feiyang_version.hide();
 					} else {
 						map.connect_double_character.show();
+						map.connect_enhance_dizhu.show();
+						map.connect_enhance_nongmin.show();
+						map.connect_feiyang_version.show();
 					}
 				},
 				connect_doudizhu_mode: {
@@ -7018,6 +7063,39 @@ export class Library {
 					frequent: true,
 					restart: true,
 				},
+				connect_enhance_dizhu: {
+					name: "加强地主",
+					init: "disabled",
+					restart: true,
+					item: {
+						disabled: "禁用",
+						yinfu: "获得〖殷富〗",
+						kaihei: "获得〖强易〗",
+						qiangyi: "获得削弱〖强易〗",
+						oldshiqiang: "获得〖恃强〗",
+						shiqiang: "获得削弱〖恃强〗",
+					},
+				},
+				connect_enhance_nongmin: {
+					name: "农民遗产",
+					init: "mobile",
+					restart: true,
+					item: {
+						online: "OL版本",
+						mobile: "手杀版本",
+						decade: "十周年版本",
+					},
+				},
+				connect_feiyang_version: {
+					name: "〖飞扬〗版本",
+					init: "online",
+					restart: true,
+					item: {
+						online: "OL版本",
+						mobile: "手杀版本",
+						decade: "十周年版本",
+					},
+				},
 			},
 			config: {
 				update: function (config, map) {
@@ -7040,6 +7118,9 @@ export class Library {
 						map.choice_zhu.hide();
 						map.choice_fan.hide();
 						map.revive.hide();
+						map.enhance_dizhu.hide();
+						map.enhance_nongmin.hide();
+						map.feiyang_version.hide();
 					} else {
 						map.double_character.show();
 						map.free_choose.show();
@@ -7050,6 +7131,9 @@ export class Library {
 						map.choice_zhu.show();
 						map.choice_fan.show();
 						map.revive.show();
+						map.enhance_dizhu.show();
+						map.enhance_nongmin.show();
+						map.feiyang_version.show();
 					}
 					if (config.double_character && config.doudizhu_mode == "normal") {
 						map.double_hp.show();
@@ -7220,6 +7304,39 @@ export class Library {
 						6: "六",
 						8: "八",
 						10: "十",
+					},
+				},
+				enhance_dizhu: {
+					name: "加强地主",
+					init: "disabled",
+					restart: true,
+					item: {
+						disabled: "禁用",
+						yinfu: "获得〖殷富〗",
+						kaihei: "获得〖强易〗",
+						qiangyi: "获得削弱〖强易〗",
+						oldshiqiang: "获得〖恃强〗",
+						shiqiang: "获得削弱〖恃强〗",
+					},
+				},
+				enhance_nongmin: {
+					name: "农民遗产",
+					init: "mobile",
+					restart: true,
+					item: {
+						online: "OL版本",
+						mobile: "手杀版本",
+						decade: "十周年版本",
+					},
+				},
+				feiyang_version: {
+					name: "〖飞扬〗版本",
+					init: "online",
+					restart: true,
+					item: {
+						online: "OL版本",
+						mobile: "手杀版本",
+						decade: "十周年版本",
 					},
 				},
 				edit_character: {
@@ -10157,6 +10274,9 @@ export class Library {
 		phaseUse: "出牌阶段",
 		phaseDiscard: "弃牌阶段",
 		phaseJieshu: "结束阶段",
+
+		identity_mingcha: "明察",
+		identity_mingcha_info: "游戏开始时，你可以查看一名角色的身份是否为反贼（对所有玩家可见）。",
 	};
 
 	experimental = Experimental;
@@ -11541,6 +11661,8 @@ export class Library {
 					if (max == Infinity) {
 						max = "∞";
 					}
+					// 临时修复（by 棘手怀念摧毁）
+					if(storage == undefined) storage = 0;
 					return `当前蓄力点数：${storage}/${max}`;
 				},
 			},
@@ -12959,6 +13081,55 @@ export class Library {
 			},
 			set ai(ai) {
 				lib.skill._recasting.ai = ai;
+			},
+		},
+		identity_mingcha: {
+			// 临时修改（by 棘手怀念摧毁）
+			priority: 10,
+			mode: ["identity"],
+			trigger: {
+				global: "phaseBefore",
+				player: "enterGame",
+			},
+			filter(event, player) {
+				return game.hasPlayer(current => current !== player) && (event.name != "phase" || game.phaseNumber == 0);
+			},
+			unique: true,
+			charlotte: true,
+			forceunique: true,
+			async cost(event, trigger, player) {
+				event.result = await player
+					.chooseTarget(get.prompt(event.skill), "请选择一名你要查看身份的目标", lib.filter.notMe)
+					.set("ai", target => {
+						const player = get.player();
+						return get.threaten(target);
+					})
+					.forResult();
+			},
+			async content(event, trigger, player) {
+				const [target] = event.targets;
+				target.addExpose(0.15);
+				// 临时修改（by 棘手怀念摧毁）
+				await game.asyncDelayx();
+				// await game.delayx();
+				const { identity } = target;
+				if (identity == "fan") {
+					game.broadcastAll(player => {
+						player.showIdentity();
+					}, target);
+					event.videoId = lib.status.videoId++;
+					const createDialog = (player, target, identity, id) => {
+						const dialog = ui.create.dialog(`${get.translation(player)}展示了${get.translation(target)}的身份牌<br>`, "forcebutton");
+						dialog.videoId = id;
+						ui.create.spinningIdentityCard(identity, dialog);
+					};
+					game.broadcastAll(createDialog, player, target, identity, event.videoId);
+					game.log(target, "的身份为", `#g${get.translation(identity + "2")}`);
+					// 临时修改（by 棘手怀念摧毁）
+					await game.asyncDelay(3);
+					// await game.delay(3);
+					game.broadcastAll("closeDialog", event.videoId);
+				}
 			},
 		},
 	};
@@ -15185,6 +15356,13 @@ export class Library {
 					return span.outerHTML;
 				},
 			},
+		],
+		[
+			"集蜜",
+			{
+				color: "#e3d660",
+				nature: "metalmm",
+			}
 		],
 		
 		// 补充by棘手怀念摧毁

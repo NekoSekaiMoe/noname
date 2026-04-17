@@ -1518,6 +1518,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			},
 			bossPhaseLoop: function () {
 				var next = game.createEvent("phaseLoop");
+				//确定首次行动的角色
 				if (game.bossinfo.loopFirst) {
 					next.player = game.bossinfo.loopFirst();
 				} else {
@@ -1529,6 +1530,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					if (player.chongzheng) {
 						player.chongzheng = false;
 					} else if (player.isDead()) {
+						//增加重整计数，以及复活角色
 						if (player.hp < 0) player.hp = 0;
 						player.storage.boss_chongzheng++;
 						if (player.maxHp > 0 && game.bossinfo.chongzheng) {
@@ -1551,30 +1553,71 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							game.boss.chongzheng = true;
 						}
 					} else {
+						//执行回合
 						if (player.identity == "zhu" && game.boss != player) {
 							player = game.boss;
 						}
 						player.phase();
 					}
 					"step 1";
+					//触发phaseOver时机
+					event.trigger("phaseOver");
+					"step 2";
 					if (game.bossinfo.loopType == 2) {
+						//最强神话那种回合执行顺序，boss一个回合，玩家再按顺序执行一个回合
 						_status.roundStart = true;
 						if (event.player == game.boss) {
 							if (!_status.last || _status.last.nextSeat == game.boss) {
 								event.player = game.boss.nextSeat;
+								
+								// 新版本体
+								//如果当前角色为boss且下一个角色从头开始才触发每轮结束时的时机
+								delete _status.roundStart;
 							} else {
 								event.player = _status.last.nextSeat;
 							}
 						} else {
 							_status.last = player;
 							event.player = game.boss;
-							if (player.nextSeat == game.boss) {
-								delete _status.roundStart;
-							}
+							
+							// 旧版本体
+							// if (player.nextSeat == game.boss) {
+								// delete _status.roundStart;
+							// }
 						}
 					} else {
+						//这个是正常的执行顺序，就按座位顺序算
 						event.player = event.player.nextSeat;
 					}
+					"step 3";
+					// 临时修改（by 棘手怀念摧毁）
+					// roundEnd时机适配
+					
+					// 最强神话、那个男人那种回合执行顺序要额外加修复代码
+					if (_status.roundStart == undefined) {
+						_status.roundStart = event.player;
+					}
+					
+					if (game.players.includes(player)) {
+						var isRoundEnd = false;
+						if (lib.onround.every(i => i(event, player))) {
+							isRoundEnd = _status.roundSkipped;
+							if (_status.isRoundFilter) {
+								isRoundEnd = _status.isRoundFilter(event, player);
+							} else if (_status.seatNumSettled) {
+								var seatNum = player.getSeatNum();
+								if (seatNum != 0) {
+									if (get.itemtype(_status.lastPhasedPlayer) != "player" || seatNum < _status.lastPhasedPlayer.getSeatNum()) isRoundEnd = true;
+									// _status.lastPhasedPlayer = player;
+								}
+							} else if (player == _status.roundStart) isRoundEnd = true;
+							if (isRoundEnd && _status.globalHistory.some(i => i.isRound)) {
+								game.log();
+								event.trigger("roundEnd");
+							}
+						}
+					}
+					"step 4";
 					event.goto(0);
 				});
 			},

@@ -733,6 +733,10 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					lib.characterIntro.boss_baijiwenyuan = lib.characterIntro.zhangliao;
 					lib.characterIntro.boss_yihanyunchang = lib.characterIntro.guanyu;
 					lib.characterIntro.boss_fuweizilong = lib.characterIntro.zhaoyun;
+					lib.characterIntro.boss_weiwuyide = lib.characterIntro.zhangfei;
+					lib.characterIntro.boss_elaiziman = lib.characterIntro.dianwei;
+					lib.characterIntro.boss_shenjianhansheng = lib.characterIntro.huangzhong;
+					lib.characterIntro.boss_yiyongwenze = lib.characterIntro.yujin;
 					"step 1";
 					for (var i in lib.skill) {
 						if (lib.skill[i].seatRelated) {
@@ -4300,12 +4304,18 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				};
 				next.setContent(function () {
 					"step 0";
+					//执行event.player的回合
 					var next = player.phase();
 					if (!game.players.some((current) => current.classList.contains("acted"))) {
 						next._isThreeRound = true;
 					}
 					player.classList.add("acted");
 					"step 1";
+					// phaseOver时机适配
+					event.trigger("phaseOver");
+					"step 2";
+					//继续执行某一方的回合
+					/*
 					if (player.identity != "zhu") {
 						for (var i = 0; i < game.players.length; i++) {
 							if (
@@ -4320,7 +4330,34 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							}
 						}
 					}
-					"step 2";
+					*/
+					// 临时修改（by 棘手怀念摧毁）
+					// phaseOver时机适配
+					event.numlist = [];
+					if (player.identity != "zhu") {
+						for (var i = 0; i < game.players.length; i++) {
+							if (
+								game.players[i].side == player.side &&
+								game.players[i].identity != "zhu" &&
+								game.players[i] != player &&
+								!game.players[i].classList.contains("acted")
+							) {
+								event.numlist.push(i);
+								break;
+							}
+						}
+					}
+					if(!event.numlist.length) event.goto(6);
+					"step 3";
+					var i = event.numlist.shift();
+					game.players[i].classList.add("acted");
+					game.players[i].phase();
+					"step 4";
+					event.trigger("phaseOver");
+					"step 5";
+					if(event.numlist.length) event.goto(3);
+					"step 6";
+					//判断双方该谁执行回合
 					var target = event.swap(player);
 					var swap = [],
 						swap2 = [];
@@ -4339,6 +4376,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							target = event.swap(target);
 							swap = swap2;
 						} else {
+							//双方的角色都执行过回合后开始新的对战轮次
 							for (var i = 0; i < game.players.length; i++) {
 								// if (game.players[i].isOut()) continue;
 								game.players[i].classList.remove("acted");
@@ -4352,6 +4390,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					if (swap.length == 1) {
 						event.directresult = swap[0];
 					} else {
+						//选择要先行动的角色
 						var rand = Math.random();
 						var next = target.chooseTarget(
 							"选择行动的角色",
@@ -4387,16 +4426,48 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							return num;
 						};
 					}
-					"step 3";
+					"step 7";
 					if (event.directresult) {
 						event.player = event.directresult;
 						delete event.directresult;
 					} else if (result.bool) {
 						event.player = result.targets[0];
 					}
+					"step 8";
+					// 临时修改（by 棘手怀念摧毁）
+					// roundEnd时机适配
+					
+					// 额外加修复代码
+					if (_status.roundStart == undefined) {
+						_status.roundStart = event.player;
+					}
+					
+					if (game.players.includes(player)) {
+						var isRoundEnd = false;
+						if (lib.onround.every(i => i(event, player))) {
+							isRoundEnd = _status.roundSkipped;
+							// 修改
+							/*if (_status.isRoundFilter) {
+								isRoundEnd = _status.isRoundFilter(event, player);
+							} else if (_status.seatNumSettled) {
+								var seatNum = player.getSeatNum();
+								if (seatNum != 0) {
+									if (get.itemtype(_status.lastPhasedPlayer) != "player" || seatNum < _status.lastPhasedPlayer.getSeatNum()) isRoundEnd = true;
+									// _status.lastPhasedPlayer = player;
+								}
+							} else */if (player == _status.roundStart) isRoundEnd = true;
+							if (isRoundEnd && _status.globalHistory.some(i => i.isRound)) {
+								game.log();
+								event.trigger("roundEnd");
+							}
+						}
+					}
+					"step 9";
 					event.goto(0);
 				});
 			},
+			// 临时修改（by 棘手怀念摧毁）
+			/*
 			versusPhaseLoop: function (player) {
 				var next = game.createEvent("phaseLoop");
 				next.player = player;
@@ -4453,6 +4524,98 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					event.goto(0);
 				});
 			},
+			*/
+			versusPhaseLoop: function (player) {
+				var next = game.createEvent("phaseLoop");
+				next.player = player;
+				next.setContent(function () {
+					"step 0";
+					//执行回合
+					if (lib.storage.zhu) {
+						player.classList.add("acted");
+					}
+					player.phase();
+					"step 1";
+					// phaseOver时机适配
+					event.trigger("phaseOver");
+					"step 2";
+					//判断接着行动的一方和角色
+					if (lib.storage.zhu) {
+						_status.currentSide = !_status.currentSide;
+						_status.round++;
+						if (_status.round >= 2 * Math.max(game.friend.length, game.enemy.length)) {
+							//行动次数达到上限
+							_status.round = 0;
+							for (var i = 0; i < game.players.length; i++) {
+								game.players[i].classList.remove("acted");
+							}
+							delete _status.roundStart;
+						}
+						var list =
+							_status.currentSide == game.me.side ? game.friend.slice(0) : game.enemy.slice(0);
+						for (var i = 0; i < list.length; i++) {
+							if (list[i].classList.contains("acted") || list[i].isOut()) {
+								list.splice(i, 1);
+								i--;
+							}
+						}
+						if (list.length == 0) event.redo();
+						else if (
+							list.length == 1 ||
+							(game.me != game.friendZhu && !lib.storage.single_control) ||
+							_status.currentSide != game.me.side
+						) {
+							list.sort(function (a, b) {
+								if (a.countCards("j") > b.countCards("j")) return 1;
+								return a.hp - b.hp;
+							});
+							event.player = list[0];
+							event.goto(4);
+						} else {
+							game.me.chooseTarget("选择要行动的角色", true, function (card, player, target) {
+								return (
+									target.classList.contains("acted") == false && target.side == game.me.side
+								);
+							}).includeOut = true;
+						}
+					} else {
+						event.player = event.player.next;
+						event.goto(4);
+					}
+					"step 3";
+					event.player = result.targets[0];
+					"step 4";
+					// 额外加修复代码
+					if (_status.roundStart == undefined) {
+						_status.roundStart = event.player;
+					}
+					
+					if (game.players.includes(player)) {
+						var isRoundEnd = false;
+						if (lib.onround.every(i => i(event, player))) {
+							isRoundEnd = _status.roundSkipped;
+							// 修改
+							/*if (_status.isRoundFilter) {
+								isRoundEnd = _status.isRoundFilter(event, player);
+							} else if (_status.seatNumSettled) {
+								var seatNum = player.getSeatNum();
+								if (seatNum != 0) {
+									if (get.itemtype(_status.lastPhasedPlayer) != "player" || seatNum < _status.lastPhasedPlayer.getSeatNum()) isRoundEnd = true;
+									// _status.lastPhasedPlayer = player;
+								}
+							} else */if (player == _status.roundStart) isRoundEnd = true;
+							if (isRoundEnd && _status.globalHistory.some(i => i.isRound)) {
+								game.log();
+								event.trigger("roundEnd");
+							}
+						}
+					}
+					"step 5";
+					event.goto(0);
+				});
+			},
+			// 临时修改（by 棘手怀念摧毁）
+			/*
 			phaseLoopJiange: function () {
 				var next = game.createEvent("phaseLoop");
 				next.num = 0;
@@ -4466,6 +4629,36 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					}
 					event.num++;
 					event.redo();
+				});
+			},
+			*/
+			phaseLoopJiange: function () {
+				var next = game.createEvent("phaseLoop");
+				next.num = 0;
+				next.setContent(function () {
+					"step 0";
+					if (event.num >= 8) {
+						event.num -= 8;
+					}
+					var player = _status.actlist[event.num];
+					if (player.isAlive()) {
+						player.phase();
+					}
+					"step 1";
+					// phaseOver时机适配
+					var player = _status.actlist[event.num];
+					if (player.isAlive()) {
+						event.trigger("phaseOver");
+					}
+					"step 2";
+					event.num++;
+					// roundEnd时机适配
+					if (event.num >= 8) {
+						game.log();
+						event.trigger("roundEnd");
+					}
+					"step 3";
+					event.goto(0);
 				});
 			},
 			replacePlayerOL: function (player) {
@@ -4879,6 +5072,38 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				["boss_fengjian", "boss_keding"],
 				["jiangeboss", "hiddenboss", "bossallowed"],
 				"shu",
+			],
+			boss_weiwuyide: [
+				"male",
+				"shu",
+				4,
+				["boss_mengwu", "boss_hupo", "boss_shuhun"],
+				["jiangeboss", "hiddenboss", "bossallowed"],
+				"shu",
+			],
+			boss_elaiziman: [
+				"male",
+				"wei",
+				5,
+				["boss_yingji", "boss_zhene", "boss_weizhu"],
+				["jiangeboss", "hiddenboss", "bossallowed"],
+				"wei",
+			],
+			boss_shenjianhansheng: [
+				"male",
+				"shu",
+				4,
+				["boss_qixian", "boss_jinggong", "boss_beishi"],
+				["jiangeboss", "hiddenboss", "bossallowed"],
+				"shu",
+			],
+			boss_yiyongwenze: [
+				"male",
+				"wei",
+				4,
+				["boss_hanjun", "boss_pigua", "boss_zhengji"],
+				["jiangeboss", "hiddenboss", "bossallowed"],
+				"wei",
 			],
 		},
 		cardsFour: [
@@ -5475,6 +5700,35 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			boss_baijiwenyuan: "百计文远",
 			boss_yihanyunchang: "翊汉云长",
 			boss_fuweizilong: "扶危子龙",
+
+			boss_weiwuyide: "威武翼德",
+			boss_elaiziman: "恶来子满",
+			boss_shenjianhansheng: "神箭汉升",
+			boss_yiyongwenze: "毅勇文则",
+			boss_mengwu: "猛武",
+			boss_mengwu_info: "锁定技，你使用【杀】无距离次数限制，使用【杀】被抵消后摸一张牌。",
+			boss_hupo: "虎魄",
+			boss_hupo_info: "锁定技，你的锦囊牌视为【杀】。",
+			boss_shuhun: "蜀魂",
+			boss_shuhun_info: "锁定技，你造成伤害后，令随机一名友方角色恢复1点体力。",
+			boss_yingji: "影戟",
+			boss_yingji_info: "出牌阶段限一次，你可以展示所有手牌视为使用一张【杀】，且此【杀】的伤害基数改为你以此法展示的类别数。",
+			boss_zhene: "镇恶",
+			boss_zhene_info: "锁定技，你于出牌阶段使用牌指定目标后，若其手牌数不大于你，其不能响应此牌。",
+			boss_weizhu: "卫主",
+			boss_weizhu_info: "友方角色受到伤害时，你可以弃置一张手牌防止之。",
+			boss_qixian: "启弦",
+			boss_qixian_info: "你于出牌阶段内获得一张牌后，令你本回合下一次使用【杀】的伤害+1。",
+			boss_jinggong: "惊弓",
+			boss_jinggong_info: "锁定技，你使用【杀】无距离限制；你的回合结束时，若你本回合未使用【杀】，你失去1点体力。",
+			boss_beishi: "备矢",
+			boss_beishi_info: "锁定技，其他友方角色对敌方角色造成伤害后，你摸一张牌。",
+			boss_hanjun: "撼军",
+			boss_hanjun_info: "出牌阶段限一次，你可以随机弃置所有敌方角色各一张牌，然后获得其中的装备牌或非装备牌。",
+			boss_pigua: "披挂",
+			boss_pigua_info: "锁定技，准备阶段，若你的装备区没有牌，你失去1点体力并从牌堆或弃牌堆获得一张装备牌。",
+			boss_zhengji: "整纪",
+			boss_zhengji_info: "锁定技，友方角色的装备被弃置后，你令所有友方角色各摸一张牌。",
 
 			boss_xiaorui: "骁锐",
 			boss_xiaorui2: "骁锐",
@@ -6235,6 +6489,303 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				},
 			},
 			//剑阁技能
+			boss_mengwu: {
+				trigger: {
+					player: "shaMiss",
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					await player.draw();
+				},
+				mod: {
+					cardUsable(card, player) {
+						if (card.name == "sha") {
+							return Infinity;
+						}
+					},
+					targetInRange(card, player) {
+						if (card.name == "sha") {
+							return true;
+						}
+					},
+				},
+			},
+			boss_hupo: {
+				forced: true,
+				mod: {
+					cardname(card, player) {
+						if (["trick", "delay"].includes(lib.card[card.name].type)) {
+							return "sha";
+						}
+					},
+					cardnature(card, player) {
+						if (["trick", "delay"].includes(lib.card[card.name].type)) {
+							return null;
+						}
+					},
+				},
+			},
+			boss_shuhun: {
+				trigger: {
+					source: "damageSource",
+				},
+				forced: true,
+				filter(event, player) {
+					return game.hasPlayer(current => {
+						return current.isFriendOf(player) && current.isDamaged();
+					});
+				},
+				logTarget(event, player) {
+					return game.filterPlayer(current => {
+						return current.isFriendOf(player) && current.isDamaged();
+					}).randomGet();
+				},
+				async content(event, trigger, player) {
+					const target = event.targets[0];
+					await target.recover();
+				},
+			},
+			boss_yingji: {
+				enable: "phaseUse",
+				usable: 1,
+				filterCard: true,
+				selectCard: -1,
+				ignoreMod: true,
+				viewAs: {
+					name: "sha",
+				},
+				async precontent(event, trigger, player) {
+					delete event.result.skill;
+					const cards = event.result.cards;
+					player.logSkill("boss_yingji");
+					await player.showCards(cards);
+					event.result.cards = [];
+					event.result.card = new lib.element.VCard({ name: "sha", isCard: true });
+					// 临时修改（by 棘手怀念摧毁）
+					player
+						.when("useCard1")
+						.filter(evt => evt.getParent() == event.getParent())
+						.vars({ cards: cards })
+						.then(() => {
+							trigger.baseDamage = cards.map(card => get.type2(card)).toUniqued().length;
+						});
+					/*
+					player
+						.when("useCard1")
+						.filter(evt => evt.getParent() == event.getParent())
+						.step(async (event, trigger, player) => {
+							trigger.baseDamage = cards.map(card => get.type2(card)).toUniqued().length;
+						});
+					*/
+				},
+				ai: {
+					order: 9,
+				},
+			},
+			boss_zhene: {
+				trigger: {
+					player: "useCardToPlayered",
+				},
+				filter(event, player) {
+					return event.target.countCards("h") <= player.countCards("h");
+				},
+				forced: true,
+				logTarget: "target",
+				async content(event, trigger, player) {
+					trigger.getParent().directHit.add(trigger.target);
+				},
+			},
+			boss_weizhu: {
+				trigger: {
+					global: "damageBegin4",
+				},
+				filter(event, player) {
+					return player.countCards("h") && event.player.isFriendOf(player);
+				},
+				async cost(event, trigger, player) {
+					event.result = await player
+						.chooseToDiscard(get.prompt2(event.skill, trigger.player), "h")
+						.set("chooseonly", true)
+						// 临时修改（by 棘手怀念摧毁）
+						// .set("eff", get.damageEffect(trigger.player, trigger.source ?? trigger.player, player))
+						.set("eff", get.damageEffect(trigger.player, trigger.source != null ? trigger.source : trigger.player, player))
+						.set("ai", card => {
+							const { eff } = get.event();
+							if (eff >= 0) {
+								return 0;
+							}
+							return 7 - get.value(card);
+						})
+						.forResult();
+					event.result.targets = [trigger.player];
+				},
+				async content(event, trigger, player) {
+					const { cards } = event;
+					await player.modedDiscard(cards);
+					trigger.cancel();
+				},
+			},
+			boss_qixian: {
+				trigger: {
+					player: "gainAfter",
+					global: ["loseAfter", "loseAsyncAfter"],
+				},
+				getIndex(event, player) {
+					if (!event.getg) {
+						return false;
+					}
+					return event.getg(player);
+				},
+				filter(event, player) {
+					return player.isPhaseUsing();
+				},
+				forced: true,
+				locked: false,
+				async content(event, trigger, player) {
+					// 临时修改（by 棘手怀念摧毁）
+					player
+						.when("useCard1")
+						.filter(evt => evt.card?.name == "sha")
+						.then(() => {
+							if (trigger.baseDamage == null) trigger.baseDamage = 1;
+							trigger.baseDamage++;
+						});
+					/*
+					player
+						.when("useCard1")
+						.filter(evt => evt.card?.name == "sha")
+						.step(async (event, trigger, player) => {
+							// 临时修改（by 棘手怀念摧毁）
+							// trigger.baseDamage ??= 1;
+							if (trigger.baseDamage == null) trigger.baseDamage = 1;
+							trigger.baseDamage++;
+						});
+					*/
+				},
+			},
+			boss_jinggong: {
+				trigger: {
+					player: "phaseEnd",
+				},
+				forced: true,
+				filter(event, player) {
+					return !player.hasHistory("useCard", evt => evt?.card?.name == "sha");
+				},
+				async content(event, trigger, player) {
+					await player.loseHp();
+				},
+				mod: {
+					targetInRange(card, player) {
+						if (card.name == "sha") {
+							return true;
+						}
+					},
+				},
+			},
+			boss_beishi: {
+				trigger: {
+					global: "damageSource",
+				},
+				forced: true,
+				filter(event, player) {
+					if (event.player.isFriendOf(player)) {
+						return false;
+					}
+					return event.source?.isFriendOf(player) && event.source != player;
+				},
+				logTarget: "source",
+				async content(event, trigger, player) {
+					await player.draw();
+				},
+			},
+			boss_hanjun: {
+				enable: "phaseUse",
+				usable: 1,
+				filter(event, player) {
+					return game.hasPlayer(current => {
+						return !current.isFriendOf(player) && current.countDiscardableCards(player, "he");
+					});
+				},
+				filterTarget(card, player, target) {
+					return !target.isFriendOf(player) && target.countDiscardableCards(player, "he");
+				},
+				selectTarget: -1,
+				async content(event, trigger, player) {
+					const cards = event.target.getDiscardableCards(player, "he");
+					if (cards?.length) {
+						const card = cards.randomGet();
+						await event.target.modedDiscard(card, player);
+						// 临时修改（by 棘手怀念摧毁）
+						// event.getParent().hanjunCards ??= [];
+						if (event.getParent().hanjunCards == null) event.getParent().hanjunCards = [];
+						event.getParent().hanjunCards.add(card);
+					}
+				},
+				async contentAfter(event, trigger, player) {
+					const cards = event.getParent().hanjunCards;
+					if (cards.length) {
+						const equips = cards.filter(card => get.type(card) == "equip"),
+							noequips = cards.filter(card => get.type(card) != "equip");
+						const result = equips.length && noequips.length ? await player
+							.chooseControl("装备牌", "非装备牌")
+							.set("choiceList", [
+								`获得${get.translation(equips)}`,
+								`获得${get.translation(noequips)}`,
+							])
+							.set("prompt", "撼军：请选择获得的类型")
+							.set("ai", () => get.event().resultx)
+							.set("resultx", equips.length > noequips.length ? 0 : 1)
+							.forResult() : {
+								index: equips.length ? 0 : 1,
+							};
+						if (result.index == 0) {
+							await player.gain(equips, "gain2");
+						} else {
+							await player.gain(noequips, "gain2");
+						}
+					}
+				},
+			},
+			boss_pigua: {
+				trigger: {
+					player: "phaseZhunbeiBegin",
+				},
+				filter(event, player) {
+					return !player.countCards("e");
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					await player.loseHp();
+					const card = get.cardPile(card => get.type(card) == "equip");
+					if (card) {
+						await player.gain(card, "gain2");
+					}
+				},
+			},
+			boss_zhengji: {
+				trigger: {
+					global: ["loseAfter", "loseAsyncAfter"],
+				},
+				getIndex(event, player) {
+					if (!event.getl || event.type != "discard") {
+						return [];
+					}
+					return game.filterPlayer(current => current.isFriendOf(player)).reduce((cards, current) => {
+						const equips = event.getl(current)?.es;
+						if (equips?.length) {
+							cards.addArray(equips);
+						}
+						return cards;
+					}, []);
+				},
+				logTarget(event, player) {
+					return game.filterPlayer(current => current.isFriendOf(player));
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					await game.asyncDraw(event.targets);
+				},
+			},
 			boss_xiaorui: {
 				trigger: { global: "damageSource" },
 				forced: true,

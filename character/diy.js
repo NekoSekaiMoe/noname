@@ -123,11 +123,12 @@ game.import("character", function () {
 			std_pengyang: ["male", "shu", 3, ["stdxiaofan", "stdtuishi"], ["unseen"]],//不想你，diy牢彭羕
 		},
 		characterFilter: {
-			ns_duangui(mode) {
-				return mode == "identity" && _status.mode == "normal";
-			},
 			diy_liuyan(mode) {
 				return mode != "chess" && mode != "tafang";
+			},
+			
+			ns_duangui(mode) {
+				return mode === "identity" && _status.mode === "normal";
 			},
 		},
 		characterSort: {
@@ -7310,7 +7311,7 @@ game.import("character", function () {
 						return false;
 				},
 				viewAs: { name: "sha" },
-				prompt: "将一张黑色锦囊牌当作杀使用或打出",
+				prompt: "将一张黑色锦囊牌当作【杀】使用或打出",
 				check() {
 					return 1;
 				},
@@ -7873,7 +7874,7 @@ game.import("character", function () {
 					}, "hes");
 				},
 				viewAs: { name: "shuiyanqijun" },
-				prompt: "将一张非基本牌当水淹七军使用",
+				prompt: "将一张非基本牌当【水攻】使用",
 				check(card) {
 					return 8 - get.value(card);
 				},
@@ -8460,7 +8461,9 @@ game.import("character", function () {
 					if (!event.addSkill.length) return false;
 					var skills = player.getSkills(null, false, false).filter(function (i) {
 						var info = get.info(i);
-						return info && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.charlotte && !info.equipSkill;
+						// return info && !info.charlotte;
 					});
 					return skills.length > player.maxHp;
 				},
@@ -8472,7 +8475,9 @@ game.import("character", function () {
 					var skills = player.getSkills(null, false, false).filter(function (i) {
 						if (i == "junkdili") return false;
 						var info = get.info(i);
-						return info && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.charlotte && !info.equipSkill;
+						// return info && !info.charlotte;
 					});
 					var list = [];
 					for (var skill of skills) {
@@ -9271,10 +9276,10 @@ game.import("character", function () {
 			diyqiangxi_info:
 				"出牌阶段，你可以自减1点体力或弃一张武器牌，然后你对你攻击范围内的一名角色造成1点伤害并弃置其一张牌，每回合限一次。",
 			diyduanliang_info:
-				"出牌阶段限一次，你可以将一张黑色的基本牌当兵粮寸断对一名角色使用，然后摸一张牌。你的兵粮寸断可以指定距离2以内的角色作为目标。",
+				"出牌阶段限一次，你可以将一张黑色的基本牌当【兵粮寸断】对一名角色使用，然后摸一张牌。你的【兵粮寸断】可以指定距离2以内的角色作为目标。",
 			guihan_info: "限定技，当你进入濒死状态时，可以指定一名男性角色与其各回复1点体力并摸两张牌。",
 			luweiyan_info:
-				"出牌阶段限一次，你可以将一张非基本牌当作水攻使用；结算后你可以视为对其中一个目标使用一张不计入出杀次数的【杀】。",
+				"出牌阶段限一次，你可以将一张非基本牌当作【水攻】使用；结算后你可以视为对其中一个目标使用一张不计入出杀次数的【杀】。",
 			xiongzi_info: "锁定技，你于摸牌阶段额外摸X+1张牌，X为你装备区牌数的一半，向下取整。",
 			honglian_info: "每当你受到来自其他角色的伤害，可以弃置伤害来源的所有红色牌。",
 			jieyan_info: "出牌阶段限一次，你可以弃置一张红色手牌令场上所有角色受到1点火焰伤害。",

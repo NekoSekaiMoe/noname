@@ -1631,7 +1631,7 @@ game.import("character", function () {
 					kuang: {
 						mark: true,
 						intro: {
-							content: "锁定技，每当你使用一张牌指定惟一目标，有50%的机率指定错误的目标",
+							content: "锁定技，每当你使用一张牌指定唯一目标，有50%的机率指定错误的目标",
 						},
 						trigger: { player: "useCard" },
 						forced: true,
@@ -2868,10 +2868,10 @@ game.import("character", function () {
 							return choice;
 						})
 						.set("choiceList", [
-							"获得技能魔血，每个出牌阶段开始时需交给" + get.translation(player) + "一张牌",
+							"获得技能〖魔血〗，每个出牌阶段开始时需交给" + get.translation(player) + "一张牌",
 							"视为" +
 								get.translation(player) +
-								"对你使用一张决斗，若你赢，本局不能再成为腐化目标",
+								"对你使用一张【决斗】，若你赢，本局不能再成为腐化目标",
 						]);
 					"step 1";
 					if (result.index == 0) {
@@ -3572,7 +3572,7 @@ game.import("character", function () {
 				viewAsFilter(player) {
 					if (!player.countCards("he", { suit: "spade" })) return false;
 				},
-				prompt: "将一张黑桃牌当作无中生有使用",
+				prompt: "将一张黑桃牌当作【无中生有】使用",
 				check(card) {
 					return 7 - get.value(card);
 				},
@@ -5269,7 +5269,7 @@ game.import("character", function () {
 				content() {
 					"step 0";
 					player.chooseToDiscard(
-						"是否弃置一张点数为" + player.storage.xunbao2.number + "的牌获得藏宝图？",
+						"是否弃置一张点数为" + player.storage.xunbao2.number + "的牌获得【藏宝图】？",
 						"he",
 						function (card) {
 							return card.number == player.storage.xunbao2.number;
@@ -6203,7 +6203,7 @@ game.import("character", function () {
 					for (var i = 0; i < trigger.targets.length; i++) {
 						effect += get.effect(trigger.targets[i], trigger.card, trigger.player, player);
 					}
-					var str = "蔽日：是否弃置一张闪令" + get.translation(trigger.player);
+					var str = "蔽日：是否弃置一张【闪】令" + get.translation(trigger.player);
 					if (trigger.targets && trigger.targets.length) {
 						str += "对" + get.translation(trigger.targets);
 					}
@@ -7430,7 +7430,7 @@ game.import("character", function () {
 				},
 				viewAs: { name: "shan" },
 				position: "he",
-				prompt: "将一张装备牌当闪使用或打出",
+				prompt: "将一张装备牌当【闪】使用或打出",
 				check() {
 					return 1;
 				},
@@ -8220,7 +8220,9 @@ game.import("character", function () {
 					if (event.player == player) return false;
 					if (_status.currentPhase != event.player) return false;
 					if (event.player.hasSkill("mengun2")) return false;
-					if (get.itemtype(event.card) != "card") return false;
+					// 临时修复（by 棘手怀念摧毁）
+					if (get.itemtype(event.cards) != "cards") return false;
+					// if (get.itemtype(event.card) != "card") return false;
 					if (!player.countCards("h", { suit: get.suit(event.card) })) return false;
 					return get.type(event.card) == "basic";
 				},
@@ -10199,7 +10201,7 @@ game.import("character", function () {
 			hshuanling_bg: "灵",
 			hshuanling_info:
 				"结束阶段，你可以弃置至多X张牌（X为你装备区内的牌数且至少为1）并摸等量的牌，每弃置一张牌，你随机使用一张本局敌方角色使用过的单目标非转化普通锦囊牌，随机指定一个具有正收益的角色为目标。",
-			// hshuanling_info:'锁定技，当你于回合内使用首张指定其他角色为惟一目标的锦囊牌后，你视为对其随机使用一张锦囊牌（此牌对你有正面效果）。',
+			// hshuanling_info:'锁定技，当你于回合内使用首张指定其他角色为唯一目标的锦囊牌后，你视为对其随机使用一张锦囊牌（此牌对你有正面效果）。',
 			// hshuanling_info:'每当你使用一张基本牌或普通锦囊牌，你可以弃置任意张牌令其增加或减少等量的目标。',
 			huanfeng: "唤风",
 			huanfeng_info: "锁定技，准备阶段，若你有4个图腾，你失去所有图腾，然后获得并召唤随从奥拉基尔。",
@@ -10258,15 +10260,15 @@ game.import("character", function () {
 			yindan: "引弹",
 			yindan_info: "出牌阶段限一次，你可以弃置一张黑桃牌并失去1点体力，然后获得两张炸弹机器人。",
 			huanjue: "幻觉",
-			huanjue_info: "每当你使用一张牌，若此牌指定了惟一目标，你可以发现一张牌，然后可以代替此牌结算。",
+			huanjue_info: "每当你使用一张牌，若此牌指定了唯一目标，你可以发现一张牌，然后可以代替此牌结算。",
 			oldhuanjue: "幻觉",
-			oldhuanjue_info: "每回合限一次，当你成为一名其他角色的卡牌惟一目标时，你可以发现一张牌代替此牌。",
+			oldhuanjue_info: "每回合限一次，当你成为一名其他角色的卡牌唯一目标时，你可以发现一张牌代替此牌。",
 			zhziwu: "紫雾",
 			zhziwu_info: "每当你于回合外失去牌，你可以令当前回合角色不能使用【杀】直到回合结束。",
 			huanjue_info_old:
-				"每名角色的回合限一次，当你使用卡牌指定其他角色为惟一目标，或当其他角色使用卡牌指定你为惟一目标时，你可以发现一张牌代替此牌，然后该牌的使用者在结算后摸一张牌。",
+				"每名角色的回合限一次，当你使用卡牌指定其他角色为唯一目标，或当其他角色使用卡牌指定你为唯一目标时，你可以发现一张牌代替此牌，然后该牌的使用者在结算后摸一张牌。",
 			yinzong: "影踪",
-			yinzong_info: "锁定技，每当你失去装备区内的牌，你获得一张闪。",
+			yinzong_info: "锁定技，每当你失去装备区内的牌，你获得一张【闪】。",
 			tansuo: "探索",
 			tansuo_info: "出牌阶段限一次，你可以弃置一张牌，然后发现一张炉石衍生牌。",
 			srjici: "棘刺",
@@ -10324,7 +10326,7 @@ game.import("character", function () {
 				"锁定技，在你首次进入濒死状态时，你弃置所有牌、重置武将牌、将体力和体力上限变为4并摸四张牌；在你第二次进入濒死状态时，你弃置所有牌、重置武将牌、将体力和体力上限变为6并摸六张牌。",
 			mengye: "梦魇",
 			mengye_info:
-				"结束阶段，你可以选择一名有手牌的角色将其一张随机的非毒手牌转化为毒，然后令其获得1点护甲。",
+				"结束阶段，你可以选择一名有手牌的角色将其一张随机的非【毒】手牌转化为【毒】，然后令其获得1点护甲。",
 			mengye_old: "梦魇",
 			mengye_old2: "梦魇",
 			mengye_old_info:
@@ -10332,10 +10334,10 @@ game.import("character", function () {
 			fuhua: "腐化",
 			fuhua2: "腐化",
 			fuhua_info:
-				"出牌阶段，你可以将一张毒交给一名没有魔血技能的其他角色，该角色选择一项：1. 获得技能魔血，此后每个结束阶段需交给你一张手牌；2. 视为你对其使用一张决斗。",
+				"出牌阶段，你可以将一张【毒】交给一名没有〖魔血〗技能的其他角色，该角色选择一项：1. 获得技能〖魔血〗，此后每个结束阶段需交给你一张手牌；2. 视为你对其使用一张【决斗】。",
 			moxie: "魔血",
 			moxie_info:
-				"锁定技，当你因【毒】失去体力时，你改为摸两张牌；结束阶段，你将一张随机手牌转化为毒。",
+				"锁定技，当你因【毒】失去体力时，你改为摸两张牌；结束阶段，你将一张随机手牌转化为【毒】。",
 			gfuhun: "附魂",
 			gfuhun_info:
 				"结束阶段，若你未翻面，你可以和一名其他角色拼点，若你赢，你将武将牌翻至背面，该角色进入混乱状态直到下一回合结束。",
@@ -10362,7 +10364,7 @@ game.import("character", function () {
 			yushou_misha: "米莎",
 			yushou_misha_info: "每当你受到一次伤害，你获得1点护甲。",
 			yushou_huofu: "霍弗",
-			yushou_huofu_info: "你可以将一张黑色牌当作决斗使用。",
+			yushou_huofu_info: "你可以将一张黑色牌当作【决斗】使用。",
 			yushou_leiouke: "雷欧克",
 			yushou_leiouke_info: "你每回合造成的首次伤害+1。",
 			hsqingyu_hufu: "青玉护符",
@@ -10456,7 +10458,7 @@ game.import("character", function () {
 			tanmi_info: "在一名其他角色的结束阶段，若你没有手牌，你可以摸两张牌并可以使用两张牌。",
 			yiwen: "轶闻",
 			yiwen_info:
-				"锁定技，每当其他角色于回合内首次使用非特殊卡牌指定你为惟一目标，你获得一张此牌的复制。",
+				"锁定技，每当其他角色于回合内首次使用非特殊卡牌指定你为唯一目标，你获得一张此牌的复制。",
 			tanbao_old: "探宝",
 			tanbao_old_info:
 				"出牌阶段限一次，你可以弃置三张牌，然后展示牌堆顶的三张牌，然后获得其中任意张类别不同的牌；若三张牌类别均不相同，你回复全部体力值。",
@@ -10469,7 +10471,7 @@ game.import("character", function () {
 			xunbao: "寻宝",
 			xunbao2: "寻宝",
 			xunbao_info:
-				"准备阶段，若你的武将牌上没有藏宝图，你可以将一张藏宝图置于你的武将牌上；若你的武将牌上有藏宝图，你可以弃置一张与藏宝图点数相同的牌并获得此藏宝图。",
+				"准备阶段，若你的武将牌上没有【藏宝图】，你可以将一张【藏宝图】置于你的武将牌上；若你的武将牌上有【藏宝图】，你可以弃置一张与【藏宝图】点数相同的牌并获得此【藏宝图】。",
 			xieneng: "邪能",
 			xieneng_info: "结束阶段，你可以选择一张神器牌并获得之。",
 			fbeifa: "北伐",
@@ -10482,7 +10484,7 @@ game.import("character", function () {
 			yufa_info:
 				"在任意一名其他角色的结束阶段，若你于此回合内受过其伤害，你可以将一张传送门交给除此角色外的任意一名角色。",
 			bingyan: "冰焰",
-			bingyan_info: "出牌阶段限一次，你可以将一张红色牌当作炽羽袭，或将一张黑色牌当作惊雷闪使用。",
+			bingyan_info: "出牌阶段限一次，你可以将一张红色牌当作【炽羽袭】，或将一张黑色牌当作【惊雷闪】使用。",
 			hsshenqi: "神器",
 			hsshenqi_morijingxiang: "末日镜像",
 			hsshenqi_morijingxiang_info:
@@ -10498,7 +10500,7 @@ game.import("character", function () {
 			hsbaowu_huangjinyuanhou_info:
 				"将你的手牌（含此张）替换为随机炉石衍生牌，并获得潜行直到下一回合开始。",
 			hsbaowu_cangbaotu: "藏宝图",
-			hsbaowu_cangbaotu_info: "结束阶段，将一张黄金猿猴置入你的手牌；摸一张牌。",
+			hsbaowu_cangbaotu_info: "结束阶段，将一张【黄金猿猴】置入你的手牌；摸一张牌。",
 			hsyaoshui: "药水",
 			hsqingyu: "青玉",
 
@@ -10514,7 +10516,7 @@ game.import("character", function () {
 			yuanzheng: "远征",
 			yuanzheng_info: "每当你对距离1以外的角色使用一张牌，你可以弃置目标区域内的一张牌。",
 			bzhuiji: "追击",
-			bzhuiji_info: "每当一名角色死亡，你可以摸两张牌，并视为对杀死该角色的人使用一张决斗。",
+			bzhuiji_info: "每当一名角色死亡，你可以摸两张牌，并视为对杀死该角色的人使用一张【决斗】。",
 			byuhuo: "浴火",
 			byuhuo2: "浴火",
 			byuhuo_info:
@@ -10557,7 +10559,7 @@ game.import("character", function () {
 			jixuan_info: "锁定技，回合结束后，你摸一张牌进行一个额外的回合。",
 			biri: "蔽日",
 			biri_info:
-				"每当距离你1以内的一名其他角色成为【杀】的唯一目标时，若【杀】的使用者不是你，你可以弃置一张闪取消之。",
+				"每当距离你1以内的一名其他角色成为【杀】的唯一目标时，若【杀】的使用者不是你，你可以弃置一张【闪】取消之。",
 			stuxi: "吐息",
 			stuxi2: "吐息",
 			stuxi2_bg: "息",
@@ -10596,7 +10598,7 @@ game.import("character", function () {
 			hszuzhou_nvwudexuetu_info:
 				"出牌阶段对没有咒降技能的角色使用，令目标非锁定技失效，并获得技能咒降直到下一回合结束。",
 			hszuzhou_wushushike: "巫术时刻",
-			hszuzhou_wushushike_info: "出牌阶段对所有角色使用，将手牌中的闪替换为【杀】。",
+			hszuzhou_wushushike_info: "出牌阶段对所有角色使用，将手牌中的【闪】替换为【杀】。",
 			hszuzhou_guhuo: "蛊惑",
 			hszuzhou_guhuo_info: "出牌阶段对一名其他角色使用，令其交给你一张牌。",
 			xjumo: "聚魔",
@@ -10681,7 +10683,7 @@ game.import("character", function () {
 			liechao_info_alter:
 				"出牌阶阶段限一次，若你的武将牌正面朝上且手牌数不大于当前体力值，你可以翻面并摸三张牌，若如此做，你跳过本回合的弃牌阶段。",
 			aoshu: "奥术",
-			aoshu_info: "出牌阶段限一次，你可以将一张黑桃牌当作无中生有使用。",
+			aoshu_info: "出牌阶段限一次，你可以将一张黑桃牌当作【无中生有】使用。",
 
 			qianhou: "千喉",
 			qianhou_info:
@@ -10698,7 +10700,7 @@ game.import("character", function () {
 			dunji_info:
 				"出牌阶段限一次，你可以对攻击范围内的至多X名其他角色各造成1点伤害，并失去等量的护甲，X为你的护甲数。",
 			qiaodong: "巧动",
-			qiaodong_info: "你可以将一张装备牌当作闪使用或打出。",
+			qiaodong_info: "你可以将一张装备牌当作【闪】使用或打出。",
 			fengxian: "奉献",
 			fengxian_info: "出牌阶段限一次，你可以令场上所有角色各弃置一张手牌。",
 			zhanhou: "战吼",
@@ -10717,7 +10719,7 @@ game.import("character", function () {
 				"出牌阶段，若你武将牌上没有牌，你可以将一张手牌背面朝上置于你的武将牌上，当你成为其他角色的与此牌花色相同的牌的目标时，你移去此牌，获得1点护甲，并且本回合内防止一切伤害。",
 			bianxing: "变形",
 			bianxing_info:
-				"当一其他角色于回合内使用卡牌指定了惟一的其他目标后，你可以用一张合理的基本牌替代此牌，每名角色的回合限一次。",
+				"当一其他角色于回合内使用卡牌指定了唯一的其他目标后，你可以用一张合理的基本牌替代此牌，每名角色的回合限一次。",
 			xianzhi: "先知",
 			xianzhi_info: "任意一名角色进行判定前，你可以观看牌堆顶的两张牌，并可以将其调换顺序。",
 			mdzhoufu: "缚魂",

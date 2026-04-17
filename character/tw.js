@@ -373,10 +373,10 @@ game.import("character", function () {
 			
 		},
 		characterFilter: {
-			nashime: function (mode) {
+			nashime(mode) {
 				return mode != "guozhan";
 			},
-			tw_xiahouba: function (mode) {
+			tw_xiahouba(mode) {
 				return mode != "guozhan";
 			},
 		},
@@ -6643,7 +6643,9 @@ game.import("character", function () {
 					var skills = event.player.getSkills(null, false, false).filter((skill) => {
 						if (player.hasSkill(skill, null, false, false)) return false;
 						var info = get.info(skill);
-						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.equipSkill;
+						// return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
 					});
 					return skills.length > 0;
 				},
@@ -6652,7 +6654,9 @@ game.import("character", function () {
 					var skills = event.player.getSkills(null, false, false).filter((skill) => {
 						if (player.hasSkill(skill, null, false, false)) return false;
 						var info = get.info(skill);
-						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.equipSkill;
+						// return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
 					});
 					var str = "";
 					for (var i of skills) {
@@ -6669,7 +6673,9 @@ game.import("character", function () {
 					var skills = trigger.player.getSkills(null, false, false).filter((skill) => {
 						if (player.hasSkill(skill, null, false, false)) return false;
 						var info = get.info(skill);
-						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.equipSkill;
+						// return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
 					});
 					if (skills.length) {
 						//for(var i of skills) player.addSkillLog(i);
@@ -19163,14 +19169,14 @@ game.import("character", function () {
 									"twlingfa",
 									game.filterPlayer((current) => current != player).sortBySeat()
 								);
-								player.addTempSkill("twlingfa_sha", "roundStart");
+								player.addTempSkill("twlingfa_sha", "roundEnd");
 								break;
 							case 2:
 								player.logSkill(
 									"twlingfa",
 									game.filterPlayer((current) => current != player).sortBySeat()
 								);
-								player.addTempSkill("twlingfa_tao", "roundStart");
+								player.addTempSkill("twlingfa_tao", "roundEnd");
 								break;
 							default:
 								player.logSkill("twlingfa");
@@ -22904,7 +22910,7 @@ game.import("character", function () {
 			tw_caozhao: "曹肇",
 			twfuzuan: "复纂",
 			twfuzuan_info:
-				"出牌阶段限一次/当你受到伤害后/当你对其他角色造成伤害后，你可选择一名拥有转换技的角色，变更其的一个转换技的的状态。",
+				"出牌阶段限一次/当你受到伤害后/当你对其他角色造成伤害后，你可选择一名拥有转换技的角色，变更其的一个转换技的状态。",
 			twchongqi: "宠齐",
 			twchongqi_info:
 				"锁定技。游戏开始时，你令所有角色获得〖非服〗。然后你可减1点体力上限，令一名其他角色获得〖复纂〗。",

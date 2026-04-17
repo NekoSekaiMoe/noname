@@ -458,7 +458,9 @@ game.import("character", function () {
 					chooseControl(event, player) {
 						let list = player.getSkills(null, false, false).filter(skill => {
 							let info = get.info(skill);
-							if (!info || info.charlotte || get.skillInfoTranslation(skill, player).length == 0) return false;
+							// 临时修复（by 棘手怀念摧毁）
+							if (!info || info.charlotte || info.equipSkill || get.skillInfoTranslation(skill, player).length == 0) return false;
+							// if (!info || info.charlotte || get.skillInfoTranslation(skill, player).length == 0) return false;
 							return true;
 						});
 						if (player.countCards("he", card => get.subtype(card) == "equip1")) list.unshift("弃置武器牌");
@@ -11506,7 +11508,9 @@ game.import("character", function () {
 					var skills = target.getSkills(null, false, false).filter(function (i) {
 						if (i == "bazhen") return;
 						var info = get.info(i);
-						return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
+						// 临时修复（by 棘手怀念摧毁）
+						return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill && !info.equipSkill;
+						// return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
 					});
 					target.addAdditionalSkills("dcjiezhen_blocker", "bazhen");
 					target.addSkill("dcjiezhen_blocker");
@@ -11521,7 +11525,9 @@ game.import("character", function () {
 							var skills = target.getSkills(null, false, false).filter(function (i) {
 								if (i == "bazhen") return;
 								var info = get.info(i);
-								return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
+								// 临时修复（by 棘手怀念摧毁）
+								return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill && !info.equipSkill;
+								// return info && !get.is.locked(i) && !info.limited && !info.juexingji && !info.zhuSkill && !info.charlotte && !info.persevereSkill;
 							});
 							if (!skills.length && target.hasEmptySlot(2)) return 1;
 							return -0.5 * skills.length;
@@ -11541,7 +11547,9 @@ game.import("character", function () {
 						charlotte: true,
 						locked: true,
 						skillBlocker: function (skill, player) {
-							return skill != "bazhen" && skill != "dcjiezhen_blocker" && !lib.skill[skill].charlotte && !lib.skill[skill].persevereSkill && player.getStorage("dcjiezhen_blocker").includes(skill);
+							// 临时修复（by 棘手怀念摧毁）
+							return skill != "bazhen" && skill != "dcjiezhen_blocker" && !lib.skill[skill].charlotte && !get.info(skill)?.equipSkill && !lib.skill[skill].persevereSkill && player.getStorage("dcjiezhen_blocker").includes(skill);
+							// return skill != "bazhen" && skill != "dcjiezhen_blocker" && !lib.skill[skill].charlotte && !lib.skill[skill].persevereSkill && player.getStorage("dcjiezhen_blocker").includes(skill);
 						},
 						mark: true,
 						marktext: "阵",
@@ -17566,7 +17574,7 @@ game.import("character", function () {
 				"锁定技。①当你于出牌阶段使用牌时，你选择此阶段未执行过的一项执行：⒈令一名角色弃置X张牌；⒉摸X张牌；⒊重铸X张牌；⒋弃置X张牌（X为此技能于本阶段的发动次数）。②出牌阶段结束时，若你本阶段执行过〖渐专①〗的所有选项，则你随机移除〖渐专①〗的一项。",
 			dcjianzhuan_faq: "渐专概率",
 			dcjianzhuan_faq_info:
-				"<br>当系统随机选择要删除的选项时，“弃置X张牌”的选项概率固定为90%；剩余选项平分剩余的的10%概率。<br>如第一次删除时，删除弃牌选项概率为90%，其余三个选项被删除的概率均为3.33%，若删除了非弃牌选项，第二次删除时，删除弃牌选项的概率依旧是90%，其余两个选项被删除的概率均为5%。",
+				"<br>当系统随机选择要删除的选项时，“弃置X张牌”的选项概率固定为90%；剩余选项平分剩余的10%概率。<br>如第一次删除时，删除弃牌选项概率为90%，其余三个选项被删除的概率均为3.33%，若删除了非弃牌选项，第二次删除时，删除弃牌选项的概率依旧是90%，其余两个选项被删除的概率均为5%。",
 			dcfanshi: "返势",
 			dcfanshi_info:
 				"觉醒技，结束阶段，若〖渐专①〗剩余选项数小于2，则你执行三次X视为1的剩余选项，然后增加2点体力上限并回复2点体力，失去技能〖渐专〗并获得技能〖覆斗〗。",

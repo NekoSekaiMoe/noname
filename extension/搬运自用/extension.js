@@ -11,52 +11,51 @@ game.import("extension",function(lib,game,ui,get,ai,_status){
 return {
 name:"搬运自用",
 content:function(config,pack){
-	// 特效/界面错位解决方案
-	// 扩展：特效修复，作者：梨花喵🐱，魔改：棘手怀念摧毁
-	// 注1：特效错位已修复——手机端测试通过（新版Android System WebView导致，据反馈是127以上版本有此问题）；电脑端测试通过
-	// 注2：界面错位已修复——菜单蓝色光标、子菜单位置，结合棘手懒人包的十周年UI/menu.js修复（3处界面错位修复）
-	// 特效错位修复
-	game.getChromeVersion = function () {
-		const userAgent = navigator.userAgent;
-		if (userAgent.indexOf("Chrome") > -1) {
-			const versionMatch = userAgent.match(/Chrome\/(\d+)/);
-			if (versionMatch && versionMatch[1]) {
-				return parseInt(versionMatch[1]);
+	// 临时修复（by 棘手怀念摧毁）
+	// 按钮宽度调整（武将/卡牌的全部禁用/全部启用）
+	game.dynamicStyle.update(".content>.pointerdiv", {
+		width: "calc(100% - 18px) !important"
+	});
+	
+	// 特效/界面错位修复
+	if (lib.config['extension_搬运自用_byzy_texiaoorjiemianxiufu']!=false) {
+		// 搬运自扩展：特效修复，作者：梨花喵🐱，魔改：棘手怀念摧毁
+		// 注1：特效错位已修复——手机端测试通过（新版Android System WebView导致，据反馈是127以上版本有此问题）；电脑端测试通过
+		// 注2：界面错位已修复——菜单蓝色光标、子菜单位置，结合棘手懒人包的十周年UI/menu.js修复（3处界面错位修复）
+		game.getChromeVersion = function () {
+			const userAgent = navigator.userAgent;
+			if (userAgent.indexOf("Chrome") > -1) {
+				const versionMatch = userAgent.match(/Chrome\/(\d+)/);
+				if (versionMatch && versionMatch[1]) {
+					return parseInt(versionMatch[1]);
+				}
+			}
+			return 0;
+		};
+		if (game.getChromeVersion() >= 128) {
+			const gBC = HTMLElement.prototype.getBoundingClientRect;
+			HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
+				let {bottom, height, left, right, top, width, x, y} = gBC.call(this);
+				bottom /= game.documentZoom;
+				height /= game.documentZoom;
+				left /= game.documentZoom;
+				right /= game.documentZoom;
+				top /= game.documentZoom;
+				width /= game.documentZoom;
+				x /= game.documentZoom;
+				y /= game.documentZoom;
+				return {
+					bottom,
+					height,
+					left,
+					right,
+					top,
+					width,
+					x,
+					y
+				};
 			}
 		}
-		return 0;
-	};
-	if (game.getChromeVersion() >= 128) {
-		const gBC = HTMLElement.prototype.getBoundingClientRect;
-		HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
-			let {bottom, height, left, right, top, width, x, y} = gBC.call(this);
-			bottom /= game.documentZoom;
-			height /= game.documentZoom;
-			left /= game.documentZoom;
-			right /= game.documentZoom;
-			top /= game.documentZoom;
-			width /= game.documentZoom;
-			x /= game.documentZoom;
-			y /= game.documentZoom;
-			return {
-				bottom,
-				height,
-				left,
-				right,
-				top,
-				width,
-				x,
-				y
-			};
-		}
-	}
-	
-	// 临时修复塔防等模式的武将显示问题
-	if(!['chess', 'tafang', 'stone'].includes(get.mode())){
-		// 按钮宽度调整（武将/卡牌的全部禁用/全部启用）
-		game.dynamicStyle.update(".content>.pointerdiv", {
-			width: "calc(100% - 18px) !important"
-		});
 	}
 	
 	// 武将称号补充（缓更中）
@@ -155,6 +154,7 @@ content:function(config,pack){
 		lib.characterTitle.zhoufei = "软玉温香";
 		
 		// yijiang: "一将成名",
+		lib.characterTitle.fj_peixiu = "玄静守真";
 		lib.characterTitle.xiahoumao = "束甲之鸟";
 		lib.characterTitle.chenshi = "裨将可期";
 		lib.characterTitle.sunli = "百炼公才";
@@ -350,7 +350,6 @@ content:function(config,pack){
 		lib.characterTitle.xf_huangquan = "道绝殊途";
 		lib.characterTitle.xf_sufei = "与子同袍";
 		lib.characterTitle.sp_dongzhuo = lib.characterTitle.dongzhuo;
-		lib.characterTitle.hanba = "如惔如焚";
 		lib.characterTitle.caiyang = "古城勇将";
 		lib.characterTitle.ol_tw_zhangji = "";
 		
@@ -678,7 +677,7 @@ content:function(config,pack){
 		lib.characterTitle.lvlingqi = "无双虓姬";
 		lib.characterTitle.zhanghu = "晋阳侯";
 		lib.characterTitle.luyusheng = lib.characterTitle.ol_luyusheng;
-		lib.characterTitle.huaxin = "渊清玉洁";
+		lib.characterTitle.huaxin = lib.characterTitle.ol_huaxin;
 		lib.characterTitle.mengyou = "蛮杰陷谋";
 		lib.characterTitle.liuyong = "甘陵王";
 		lib.characterTitle.dc_sunru = "呦呦鹿鸣";
@@ -702,6 +701,7 @@ content:function(config,pack){
 		lib.characterTitle.jiangfei = "社稷股肱";
 		
 		// xianding: "限定专属",
+		lib.characterTitle.y_dc_zhangqiying = lib.characterTitle.zhangqiying;
 		lib.characterTitle.wu_huangfusong = "襄武翼汉";
 		lib.characterTitle.wenyuan = "揾泪红袖";
 		lib.characterTitle.dc_jiangqing = "祁奚之器";
@@ -743,7 +743,7 @@ content:function(config,pack){
 		lib.characterTitle.sunlingluan = "弦凤栖梧";
 		lib.characterTitle.dc_wangjun = "遏浪飞艨";
 		lib.characterTitle.zhoubuyi = "幼有异才";
-		lib.characterTitle.dc_duyu = "文成武德";
+		lib.characterTitle.dc_duyu = lib.characterTitle.duyu;
 		lib.characterTitle.ganfurenmifuren = "千里婵娟";
 		lib.characterTitle.dc_ganfuren = lib.characterTitle.ganfuren;
 		lib.characterTitle.dc_mifuren = "乱世沉香";
@@ -863,7 +863,7 @@ content:function(config,pack){
 		lib.characterTitle.re_hejin = lib.characterTitle.hejin;
 		lib.characterTitle.re_hansui = lib.characterTitle.hansui;
 		lib.characterTitle.liuhong = "汉灵帝";
-		lib.characterTitle.zhujun = "征无疑虑";
+		lib.characterTitle.zhujun = "征无遗虑";
 		lib.characterTitle.re_maliang = "";
 		lib.characterTitle.caobuxing = "";
 		lib.characterTitle.lijue = "奸谋恶勇";
@@ -881,6 +881,9 @@ content:function(config,pack){
 		lib.characterTitle.mangyachang = "截头蛮锋";
 		lib.characterTitle.xugong = "独计击流";
 		lib.characterTitle.zhangchangpu = lib.characterTitle.ol_zhangchangpu;
+		
+		// wztx: "威震天下",
+		lib.characterTitle.v_sunshangxiang = "巽荷绽情";
 		
 		// mobile: "移动版",
 		lib.characterTitle.mb_cuilingyi = "戴冠金尾";
@@ -1117,7 +1120,7 @@ content:function(config,pack){
 		lib.characterTitle.sp_huaxin = "清素拂浊";
 		lib.characterTitle.xiangchong = "镇军之岳";
 		lib.characterTitle.caizhenji = "舍心顾复";
-		lib.characterTitle.sp_kongrong = "凛然重义";
+		lib.characterTitle.sp_kongrong = lib.characterTitle.dc_kongrong;
 		lib.characterTitle.zhouchu = "英情天逸";
 		lib.characterTitle.wangfuzhaolei = "忱忠不移";
 		lib.characterTitle.wangling = lib.characterTitle.dc_wangling;
@@ -1126,7 +1129,7 @@ content:function(config,pack){
 		lib.characterTitle.sp_xinpi = lib.characterTitle.xinpi;
 		lib.characterTitle.feiyi = "洞世权相";
 		lib.characterTitle.sp_bianfuren = "内助贤后";
-		lib.characterTitle.sp_duyu = "文成武德";
+		lib.characterTitle.sp_duyu = lib.characterTitle.duyu;
 		lib.characterTitle.luotong = "力政人臣";
 		lib.characterTitle.sp_wangcan = "词章纵横";
 		lib.characterTitle.sp_chenzhen = "歃盟使节";
@@ -1139,7 +1142,7 @@ content:function(config,pack){
 		lib.characterTitle.pot_chenjiao = "";
 		lib.characterTitle.pot_chendao = lib.characterTitle.chendao;
 		lib.characterTitle.pot_dengai = "勇气陵云";
-		lib.characterTitle.pot_huanjie = "";
+		lib.characterTitle.pot_huanjie = "才周托命";
 		lib.characterTitle.pot_xinxianying = "明鉴致节";
 		lib.characterTitle.mb_chenzhi = "";
 		lib.characterTitle.pot_lusu = "廓开大计";
@@ -1213,7 +1216,7 @@ content:function(config,pack){
 		lib.characterTitle.tw_liwei = lib.characterTitle.liwei;
 		lib.characterTitle.tw_yanxiang = lib.characterTitle.yanxiang;
 		lib.characterTitle.tw_xiahouen = "长坂剑圣";
-		lib.characterTitle.tw_xiahoushang = "魏胤前驱";
+		lib.characterTitle.tw_xiahoushang = lib.characterTitle.mb_xiahoushang;
 		lib.characterTitle.tw_qiaorui = "穷勇技尽";
 		lib.characterTitle.tw_haomeng = lib.characterTitle.haomeng;
 		lib.characterTitle.tw_weixu = "缚陈降曹";
@@ -1271,7 +1274,7 @@ content:function(config,pack){
 		lib.characterTitle.tw_hejin = "专擅朝政";
 		lib.characterTitle.tw_hucheer = lib.characterTitle.hucheer;
 		lib.characterTitle.tw_yujin = "逐暴定乱";
-		lib.characterTitle.tw_fuwan = "沉毅的国丈";
+		lib.characterTitle.tw_fuwan = lib.characterTitle.fuwan;
 		lib.characterTitle.tw_zhaoxiang = lib.characterTitle.zhaoxiang;
 		lib.characterTitle.yuejiu = lib.characterTitle.dc_yuejiu;
 		lib.characterTitle.wuban = lib.characterTitle.xin_wuban;
@@ -1428,7 +1431,7 @@ content:function(config,pack){
 		lib.characterTitle.yj_caohong = "";
 		lib.characterTitle.yj_liru = "";
 		lib.characterTitle.yj_caocao = "";
-		lib.characterTitle.longyufei = "";
+		lib.characterTitle.longyufei = "将星之魂";
 		lib.characterTitle.sp_liubei = "汉昭烈帝";
 		lib.characterTitle.sp_zhangfei = "横矛立马";
 		lib.characterTitle.sp_lvmeng = "";
@@ -1441,7 +1444,7 @@ content:function(config,pack){
 		lib.characterTitle.sp_xiahoushi = "";
 		lib.characterTitle.sp_gongsunzan = lib.characterTitle.gongsunzan;
 		lib.characterTitle.sp_simazhao = "";
-		lib.characterTitle.sp_wangyuanji = "文明皇后";
+		lib.characterTitle.sp_wangyuanji = lib.characterTitle.jin_wangyuanji;
 		lib.characterTitle.sp_xinxianying = "";
 		lib.characterTitle.sp_liuxie = "汉献帝";
 		lib.characterTitle.ns_lijue = "";
@@ -1463,7 +1466,7 @@ content:function(config,pack){
 		lib.characterTitle.jsrg_qiaoxuan = "泛爱博容";
 		lib.characterTitle.jsrg_yangbiao = lib.characterTitle.yangbiao;
 		lib.characterTitle.jsrg_kongrong = "北海太守";
-		lib.characterTitle.jsrg_zhujun = "征无遗虑";
+		lib.characterTitle.jsrg_zhujun = lib.characterTitle.zhujun;
 		lib.characterTitle.jsrg_liubei = "负戎荷戈";
 		lib.characterTitle.jsrg_wangyun = "居功自矜";
 		lib.characterTitle.jsrg_liuyan = lib.characterTitle.liuyan;
@@ -1618,6 +1621,8 @@ content:function(config,pack){
 		lib.characterTitle.std_zhoufang = "";
 		
 		// collab: "联动卡",
+		lib.characterTitle.mb_muniu = "";
+		lib.characterTitle.jm_yuanshu = "";
 		lib.characterTitle.jiangziya = "武庙主祭";
 		lib.characterTitle.shengongbao = "道友留步";
 		lib.characterTitle.nanjixianweng = "阐教真君";
@@ -1652,6 +1657,7 @@ content:function(config,pack){
 		lib.characterTitle.mp_wangrong = "善发谈端";
 		lib.characterTitle.mp_liuling = "醉侯";
 		lib.characterTitle.mp_xiangxiu = "出尘窥冥";
+		lib.characterTitle.hanba = "如惔如焚";
 		
 		// shengxiao: "特殊武将",
 		lib.characterTitle.ol_zishu = "十二生肖";
@@ -1680,7 +1686,7 @@ content:function(config,pack){
 		lib.characterTitle.panfeng = lib.characterTitle.std_panfeng;
 		lib.characterTitle.old_shen_zhaoyun = lib.characterTitle.shen_zhaoyun;
 		lib.characterTitle.old_guanyinping = lib.characterTitle.guanyinping;
-		lib.characterTitle.old_caocao = lib.characterTitle.shen_caocao;
+		lib.characterTitle.old_caocao = "挟汉临诸夏";
 		lib.characterTitle.old_chendao = lib.characterTitle.chendao;
 		lib.characterTitle.old_liyan = lib.characterTitle.liyan;
 		lib.characterTitle.old_guanzhang = lib.characterTitle.guanzhang;
@@ -1899,170 +1905,170 @@ content:function(config,pack){
 		lib.characterTitle.gz_re_xushu = "难为完臣";
 		lib.characterTitle.gz_wujing = "汗马鎏金";
 		lib.characterTitle.gz_yanbaihu = lib.characterTitle.yanbaihu;
-		lib.characterTitle.gz_xuyou = "";
-		lib.characterTitle.gz_xiahouba = "";
-		lib.characterTitle.gz_panjun = "";
-		lib.characterTitle.gz_huangzu = "";
-		lib.characterTitle.gz_zhugeke = "";
+		lib.characterTitle.gz_xuyou = lib.characterTitle.jsrg_xuyou;
+		lib.characterTitle.gz_xiahouba = lib.characterTitle.xiahouba;
+		lib.characterTitle.gz_panjun = "逆鳞之砥";
+		lib.characterTitle.gz_huangzu = "遮山扼江";
+		lib.characterTitle.gz_zhugeke = lib.characterTitle.zhugeke;
 		lib.characterTitle.gz_wenqin = "勇而无算";
-		lib.characterTitle.gz_xf_sufei = "";
+		lib.characterTitle.gz_xf_sufei = lib.characterTitle.sp_sufei;
 		lib.characterTitle.gz_liuba = "清河一鲲";
-		lib.characterTitle.gz_pengyang = "";
+		lib.characterTitle.gz_pengyang = "误身的狂士";
 		lib.characterTitle.gz_zhuling = "五子之亚";
 		lib.characterTitle.gz_caocao = lib.characterTitle.caocao;
-		lib.characterTitle.gz_simayi = "";
-		lib.characterTitle.gz_xiahoudun = "";
-		lib.characterTitle.gz_zhangliao = "";
-		lib.characterTitle.gz_xuzhu = "";
-		lib.characterTitle.gz_guojia = "";
-		lib.characterTitle.gz_zhenji = "";
-		lib.characterTitle.gz_xiahouyuan = "";
-		lib.characterTitle.gz_zhanghe = "";
-		lib.characterTitle.gz_xuhuang = "";
-		lib.characterTitle.gz_caoren = "";
+		lib.characterTitle.gz_simayi = lib.characterTitle.simayi;
+		lib.characterTitle.gz_xiahoudun = lib.characterTitle.xiahoudun;
+		lib.characterTitle.gz_zhangliao = lib.characterTitle.zhangliao;
+		lib.characterTitle.gz_xuzhu = lib.characterTitle.xuzhu;
+		lib.characterTitle.gz_guojia = lib.characterTitle.guojia;
+		lib.characterTitle.gz_zhenji = lib.characterTitle.zhenji;
+		lib.characterTitle.gz_xiahouyuan = "虎步关右";
+		lib.characterTitle.gz_zhanghe = lib.characterTitle.zhanghe;
+		lib.characterTitle.gz_xuhuang = lib.characterTitle.re_xuhuang;
+		lib.characterTitle.gz_caoren = lib.characterTitle.old_caoren;
 		lib.characterTitle.gz_dianwei = lib.characterTitle.dianwei;
-		lib.characterTitle.gz_xunyu = "";
-		lib.characterTitle.gz_caopi = "";
+		lib.characterTitle.gz_xunyu = lib.characterTitle.xunyu;
+		lib.characterTitle.gz_caopi = lib.characterTitle.caopi;
 		lib.characterTitle.gz_yuejin = lib.characterTitle.std_yuejin;
 		lib.characterTitle.gz_liubei = lib.characterTitle.liubei;
 		lib.characterTitle.gz_guanyu = lib.characterTitle.ol_sb_guanyu;
-		lib.characterTitle.gz_zhangfei = "";
-		lib.characterTitle.gz_zhugeliang = "";
-		lib.characterTitle.gz_zhaoyun = "";
-		lib.characterTitle.gz_machao = "";
-		lib.characterTitle.gz_huangyueying = "";
-		lib.characterTitle.gz_huangzhong = "";
-		lib.characterTitle.gz_weiyan = "";
-		lib.characterTitle.gz_pangtong = "";
-		lib.characterTitle.gz_sp_zhugeliang = "";
-		lib.characterTitle.gz_liushan = "";
-		lib.characterTitle.gz_menghuo = "";
-		lib.characterTitle.gz_zhurong = "";
-		lib.characterTitle.gz_ganfuren = "";
+		lib.characterTitle.gz_zhangfei = lib.characterTitle.zhangfei;
+		lib.characterTitle.gz_zhugeliang = lib.characterTitle.zhugeliang;
+		lib.characterTitle.gz_zhaoyun = lib.characterTitle.old_zhaoyun;
+		lib.characterTitle.gz_machao = lib.characterTitle.machao;
+		lib.characterTitle.gz_huangyueying = lib.characterTitle.huangyueying;
+		lib.characterTitle.gz_huangzhong = lib.characterTitle.re_huangzhong;
+		lib.characterTitle.gz_weiyan = lib.characterTitle.re_weiyan;
+		lib.characterTitle.gz_pangtong = lib.characterTitle.pangtong;
+		lib.characterTitle.gz_sp_zhugeliang = lib.characterTitle.sp_zhugeliang;
+		lib.characterTitle.gz_liushan = lib.characterTitle.liushan;
+		lib.characterTitle.gz_menghuo = lib.characterTitle.menghuo;
+		lib.characterTitle.gz_zhurong = lib.characterTitle.zhurong;
+		lib.characterTitle.gz_ganfuren = lib.characterTitle.ganfuren;
 		lib.characterTitle.gz_yuji = "魂绕左右";
 		lib.characterTitle.gz_sunquan = lib.characterTitle.sunquan;
-		lib.characterTitle.gz_ganning = "";
-		lib.characterTitle.gz_lvmeng = "";
-		lib.characterTitle.gz_huanggai = "";
-		lib.characterTitle.gz_zhouyu = "";
-		lib.characterTitle.gz_daqiao = "";
-		lib.characterTitle.gz_luxun = "";
-		lib.characterTitle.gz_sunshangxiang = "";
+		lib.characterTitle.gz_ganning = lib.characterTitle.ganning;
+		lib.characterTitle.gz_lvmeng = lib.characterTitle.re_lvmeng;
+		lib.characterTitle.gz_huanggai = lib.characterTitle.huanggai;
+		lib.characterTitle.gz_zhouyu = lib.characterTitle.zhouyu;
+		lib.characterTitle.gz_daqiao = lib.characterTitle.daqiao;
+		lib.characterTitle.gz_luxun = "擎天之柱";
+		lib.characterTitle.gz_sunshangxiang = lib.characterTitle.sunshangxiang;
 		lib.characterTitle.gz_sunjian = "魂佑江东";
-		lib.characterTitle.gz_xiaoqiao = "";
-		lib.characterTitle.gz_re_taishici = "";
-		lib.characterTitle.gz_zhoutai = "";
-		lib.characterTitle.gz_re_lusu = "";
-		lib.characterTitle.gz_zhangzhang = "";
-		lib.characterTitle.gz_dingfeng = "";
-		lib.characterTitle.gz_huatuo = "";
+		lib.characterTitle.gz_xiaoqiao = lib.characterTitle.xiaoqiao;
+		lib.characterTitle.gz_re_taishici = lib.characterTitle.taishici;
+		lib.characterTitle.gz_zhoutai = lib.characterTitle.old_zhoutai;
+		lib.characterTitle.gz_re_lusu = lib.characterTitle.re_lusu;
+		lib.characterTitle.gz_zhangzhang = lib.characterTitle.zhangzhang;
+		lib.characterTitle.gz_dingfeng = lib.characterTitle.dingfeng;
+		lib.characterTitle.gz_huatuo = lib.characterTitle.huatuo;
 		lib.characterTitle.gz_lvbu = "戟指中原";
-		lib.characterTitle.gz_diaochan = "";
-		lib.characterTitle.gz_re_yuanshao = "";
-		lib.characterTitle.gz_yanwen = "";
+		lib.characterTitle.gz_diaochan = lib.characterTitle.diaochan;
+		lib.characterTitle.gz_re_yuanshao = lib.characterTitle.re_yuanshao;
+		lib.characterTitle.gz_yanwen = lib.characterTitle.yanwen;
 		lib.characterTitle.gz_jiaxu = lib.characterTitle.jiaxu;
-		lib.characterTitle.gz_pangde = "";
+		lib.characterTitle.gz_pangde = lib.characterTitle.re_pangde;
 		lib.characterTitle.gz_zhangjiao = lib.characterTitle.sp_zhangjiao;
-		lib.characterTitle.gz_caiwenji = "";
-		lib.characterTitle.gz_mateng = "";
-		lib.characterTitle.gz_kongrong = "";
-		lib.characterTitle.gz_jiling = "";
-		lib.characterTitle.gz_tianfeng = "";
-		lib.characterTitle.gz_panfeng = "";
-		lib.characterTitle.gz_zoushi = "";
-		lib.characterTitle.gz_dengai = "";
+		lib.characterTitle.gz_caiwenji = lib.characterTitle.caiwenji;
+		lib.characterTitle.gz_mateng = lib.characterTitle.dc_mateng;
+		lib.characterTitle.gz_kongrong = lib.characterTitle.dc_kongrong;
+		lib.characterTitle.gz_jiling = lib.characterTitle.dc_jiling;
+		lib.characterTitle.gz_tianfeng = lib.characterTitle.dc_tianfeng;
+		lib.characterTitle.gz_panfeng = lib.characterTitle.std_panfeng;
+		lib.characterTitle.gz_zoushi = lib.characterTitle.re_zoushi;
+		lib.characterTitle.gz_dengai = lib.characterTitle.dengai;
 		lib.characterTitle.gz_caohong = "魏之福将";
-		lib.characterTitle.gz_jiangfei = "";
-		lib.characterTitle.gz_jiangwei = "";
-		lib.characterTitle.gz_xusheng = "";
+		lib.characterTitle.gz_jiangfei = lib.characterTitle.jiangfei;
+		lib.characterTitle.gz_jiangwei = lib.characterTitle.jiangwei;
+		lib.characterTitle.gz_xusheng = lib.characterTitle.re_xusheng;
 		lib.characterTitle.gz_jiangqing = lib.characterTitle.dc_jiangqing;
-		lib.characterTitle.gz_hetaihou = "";
-		lib.characterTitle.gz_re_lidian = "";
-		lib.characterTitle.gz_zangba = "";
-		lib.characterTitle.gz_madai = "";
-		lib.characterTitle.gz_mifuren = "";
-		lib.characterTitle.gz_sunce = "";
+		lib.characterTitle.gz_hetaihou = lib.characterTitle.hetaihou;
+		lib.characterTitle.gz_re_lidian = lib.characterTitle.old_re_lidian;
+		lib.characterTitle.gz_zangba = lib.characterTitle.zangba;
+		lib.characterTitle.gz_madai = lib.characterTitle.old_madai;
+		lib.characterTitle.gz_mifuren = lib.characterTitle.dc_mifuren;
+		lib.characterTitle.gz_sunce = lib.characterTitle.sunce;
 		lib.characterTitle.gz_chendong = lib.characterTitle.chendong;
 		lib.characterTitle.gz_sp_dongzhuo = lib.characterTitle.dongzhuo;
-		lib.characterTitle.gz_zhangren = "";
+		lib.characterTitle.gz_zhangren = lib.characterTitle.zhangren;
 		lib.characterTitle.gz_jun_liubei = "龙横蜀汉";
 		lib.characterTitle.gz_jun_zhangjiao = "时代的先驱";
 		lib.characterTitle.gz_jun_sunquan = "虎踞江东";
-		lib.characterTitle.gz_liqueguosi = "";
-		lib.characterTitle.gz_zuoci = "";
+		lib.characterTitle.gz_liqueguosi = lib.characterTitle.liqueguosi;
+		lib.characterTitle.gz_zuoci = "鬼影神道";
 		lib.characterTitle.gz_bianfuren = lib.characterTitle.ol_bianfuren;
-		lib.characterTitle.gz_xunyou = "";
-		lib.characterTitle.gz_lingtong = "";
-		lib.characterTitle.gz_lvfan = "忠笃亮直";
-		lib.characterTitle.gz_masu = "";
+		lib.characterTitle.gz_xunyou = lib.characterTitle.xunyou;
+		lib.characterTitle.gz_lingtong = lib.characterTitle.lingtong;
+		lib.characterTitle.gz_lvfan = lib.characterTitle.lvfan;
+		lib.characterTitle.gz_masu = "帷幄经谋";
 		lib.characterTitle.gz_shamoke = "五溪蛮王";
-		lib.characterTitle.gz_lingcao = "";
-		lib.characterTitle.gz_lifeng = "";
-		lib.characterTitle.gz_beimihu = "";
-		lib.characterTitle.gz_jianggan = "";
-		lib.characterTitle.gz_sp_duyu = "";
-		lib.characterTitle.gz_huaxin = "";
-		lib.characterTitle.gz_luyusheng = "";
-		lib.characterTitle.gz_zongyu = "";
-		lib.characterTitle.gz_miheng = "";
-		lib.characterTitle.gz_fengxi = "";
-		lib.characterTitle.gz_dengzhi = "";
-		lib.characterTitle.gz_re_nanhualaoxian = "";
-		lib.characterTitle.gz_zhouyi = "";
-		lib.characterTitle.gz_re_xunchen = "";
-		lib.characterTitle.gz_lvlingqi = "";
-		lib.characterTitle.gz_dc_yanghu = "";
+		lib.characterTitle.gz_lingcao = lib.characterTitle.lingcao;
+		lib.characterTitle.gz_lifeng = "继父尽事";
+		lib.characterTitle.gz_beimihu = lib.characterTitle.tw_beimihu;
+		lib.characterTitle.gz_jianggan = lib.characterTitle.jianggan;
+		lib.characterTitle.gz_sp_duyu = lib.characterTitle.duyu;
+		lib.characterTitle.gz_huaxin = lib.characterTitle.ol_huaxin;
+		lib.characterTitle.gz_luyusheng = lib.characterTitle.ol_luyusheng;
+		lib.characterTitle.gz_zongyu = lib.characterTitle.zongyu;
+		lib.characterTitle.gz_miheng = lib.characterTitle.re_miheng;
+		lib.characterTitle.gz_fengxi = lib.characterTitle.fengxi;
+		lib.characterTitle.gz_dengzhi = lib.characterTitle.re_dengzhi;
+		lib.characterTitle.gz_re_nanhualaoxian = "虚步太清";
+		lib.characterTitle.gz_zhouyi = lib.characterTitle.zhouyi;
+		lib.characterTitle.gz_re_xunchen = lib.characterTitle.re_xunchen;
+		lib.characterTitle.gz_lvlingqi = lib.characterTitle.lvlingqi;
+		lib.characterTitle.gz_dc_yanghu = lib.characterTitle.dc_yanghu;
 		lib.characterTitle.gz_cuimao = lib.characterTitle.cuimao;
-		lib.characterTitle.gz_yujin = "";
-		lib.characterTitle.gz_wangping = "";
-		lib.characterTitle.gz_fazheng = "";
-		lib.characterTitle.gz_wuguotai = "";
-		lib.characterTitle.gz_lukang = "";
-		lib.characterTitle.gz_yuanshu = "";
-		lib.characterTitle.gz_zhangxiu = "";
+		lib.characterTitle.gz_yujin = lib.characterTitle.yujin;
+		lib.characterTitle.gz_wangping = "键闭剑门";
+		lib.characterTitle.gz_fazheng = lib.characterTitle.xin_fazheng;
+		lib.characterTitle.gz_wuguotai = lib.characterTitle.re_wuguotai;
+		lib.characterTitle.gz_lukang = "孤柱扶厦";
+		lib.characterTitle.gz_yuanshu = lib.characterTitle.yl_yuanshu;
+		lib.characterTitle.gz_zhangxiu = lib.characterTitle.zhangxiu;
 		lib.characterTitle.gz_jun_caocao = "凤舞九霄";
-		lib.characterTitle.gz_jin_zhangchunhua = "";
-		lib.characterTitle.gz_jin_simayi = "";
-		lib.characterTitle.gz_jin_wangyuanji = "";
-		lib.characterTitle.gz_jin_simazhao = "";
-		lib.characterTitle.gz_jin_xiahouhui = "";
+		lib.characterTitle.gz_jin_zhangchunhua = lib.characterTitle.jin_zhangchunhua;
+		lib.characterTitle.gz_jin_simayi = lib.characterTitle.jin_simayi;
+		lib.characterTitle.gz_jin_wangyuanji = lib.characterTitle.jin_wangyuanji;
+		lib.characterTitle.gz_jin_simazhao = lib.characterTitle.jin_simazhao;
+		lib.characterTitle.gz_jin_xiahouhui = lib.characterTitle.jin_xiahouhui;
 		lib.characterTitle.gz_jin_simashi = lib.characterTitle.jin_simashi;
-		lib.characterTitle.gz_duyu = "";
-		lib.characterTitle.gz_zhanghuyuechen = "";
-		lib.characterTitle.gz_jin_yanghuiyu = "";
-		lib.characterTitle.gz_simazhou = "";
-		lib.characterTitle.gz_shibao = "";
-		lib.characterTitle.gz_weiguan = "";
-		lib.characterTitle.gz_zhongyan = "";
-		lib.characterTitle.gz_yangyan = "";
-		lib.characterTitle.gz_zuofen = "";
-		lib.characterTitle.gz_xuangongzhu = "";
-		lib.characterTitle.gz_xinchang = "";
-		lib.characterTitle.gz_yangzhi = "";
-		lib.characterTitle.gz_liaohua = "";
-		lib.characterTitle.gz_zhugejin = "";
-		lib.characterTitle.gz_yangxiu = "";
-		lib.characterTitle.gz_zumao = "";
-		lib.characterTitle.gz_fuwan = "";
-		lib.characterTitle.gz_chendao = "";
-		lib.characterTitle.gz_tw_tianyu = "";
-		lib.characterTitle.gz_tw_liufuren = "";
-		lib.characterTitle.gz_old_huaxiong = "";
-		lib.characterTitle.gz_tw_xiahoushang = "";
-		lib.characterTitle.gz_xf_huangquan = "";
-		lib.characterTitle.gz_guohuai = "";
-		lib.characterTitle.gz_guanqiujian = "";
-		lib.characterTitle.gz_zhujun = "";
-		lib.characterTitle.gz_chengong = "";
-		lib.characterTitle.gz_re_xugong = "";
-		lib.characterTitle.gz_yangwan = "";
+		lib.characterTitle.gz_duyu = lib.characterTitle.duyu;
+		lib.characterTitle.gz_zhanghuyuechen = lib.characterTitle.zhanghuyuechen;
+		lib.characterTitle.gz_jin_yanghuiyu = lib.characterTitle.jin_yanghuiyu;
+		lib.characterTitle.gz_simazhou = lib.characterTitle.simazhou;
+		lib.characterTitle.gz_shibao = lib.characterTitle.shibao;
+		lib.characterTitle.gz_weiguan = lib.characterTitle.weiguan;
+		lib.characterTitle.gz_zhongyan = lib.characterTitle.zhongyan;
+		lib.characterTitle.gz_yangyan = lib.characterTitle.yangyan;
+		lib.characterTitle.gz_zuofen = lib.characterTitle.zuofen;
+		lib.characterTitle.gz_xuangongzhu = lib.characterTitle.xuangongzhu;
+		lib.characterTitle.gz_xinchang = lib.characterTitle.xinchang;
+		lib.characterTitle.gz_yangzhi = lib.characterTitle.yangzhi;
+		lib.characterTitle.gz_liaohua = lib.characterTitle.liaohua;
+		lib.characterTitle.gz_zhugejin = lib.characterTitle.zhugejin;
+		lib.characterTitle.gz_yangxiu = lib.characterTitle.yangxiu;
+		lib.characterTitle.gz_zumao = lib.characterTitle.zumao;
+		lib.characterTitle.gz_fuwan = lib.characterTitle.fuwan;
+		lib.characterTitle.gz_chendao = lib.characterTitle.chendao;
+		lib.characterTitle.gz_tw_tianyu = lib.characterTitle.tw_tianyu;
+		lib.characterTitle.gz_tw_liufuren = lib.characterTitle.tw_liufuren;
+		lib.characterTitle.gz_old_huaxiong = lib.characterTitle.old_huaxiong;
+		lib.characterTitle.gz_tw_xiahoushang = lib.characterTitle.mb_xiahoushang;
+		lib.characterTitle.gz_xf_huangquan = lib.characterTitle.dc_huangquan;
+		lib.characterTitle.gz_guohuai = lib.characterTitle.guohuai;
+		lib.characterTitle.gz_guanqiujian = lib.characterTitle.guanqiujian;
+		lib.characterTitle.gz_zhujun = lib.characterTitle.zhujun;
+		lib.characterTitle.gz_chengong = "鸷鸟夺凤翎";
+		lib.characterTitle.gz_re_xugong = lib.characterTitle.xugong;
+		lib.characterTitle.gz_yangwan = lib.characterTitle.yangwan;
 		// lib.characterTitle.gz_key_ushio = "";
 		lib.characterTitle.gz_wangling = lib.characterTitle.dc_wangling;
-		lib.characterTitle.gz_yanyan = "";
-		lib.characterTitle.gz_xin_zhuran = "";
+		lib.characterTitle.gz_yanyan = lib.characterTitle.yanyan;
+		lib.characterTitle.gz_xin_zhuran = lib.characterTitle.zhuran;
 		lib.characterTitle.gz_gaoshun = "清威严整";
-		lib.characterTitle.gz_jin_jiachong = "";
-		lib.characterTitle.gz_jin_yanghu = "";
+		lib.characterTitle.gz_jin_jiachong = lib.characterTitle.jin_jiachong;
+		lib.characterTitle.gz_jin_yanghu = lib.characterTitle.jin_yanghu;
 		
 		// lib.characterTitle.gz_re_xusheng = "";
 	}
@@ -2125,6 +2131,8 @@ content:function(config,pack){
 		// C
 		setWuJiangYinWenTranslation([
 			'lib.characterPack.extra.shen_caocao',
+			true,
+			'lib.characterPack.old.old_caocao',
 			true,
 		], '山不厌高，海不厌深。周公吐哺，天下归心。', '');
 		setWuJiangYinWenTranslation([
@@ -2539,25 +2547,14 @@ content:function(config,pack){
 		setKaPaiYinWenTranslation(obj);
 	}
 	
-	
 	// 允许选择并复制
-	// 右键菜单修改/资料卡修改/卡牌资料卡修改 开启后生效
-	if(config.youjiancaidan || config.byzy_kpzlkxg || (config.byzy_zlkxg && !(lib.config.extensions && lib.config.extensions.contains('千幻聆音') && lib.config['extension_千幻聆音_enable']))){
-		window.byzy_yunxuxuanzebingxiugai=function(){
+	// 资料卡修改/卡牌资料卡修改 开启后生效
+	if(config.byzy_kpzlkxg || (config.byzy_zlkxg && !(lib.config.extensions && lib.config.extensions.contains('千幻聆音') && lib.config['extension_千幻聆音_enable']))){
+		window.byzy_yunxuxuanzebingfuzhi=function(){
 			if (ui.css.selectandcopy)
 				ui.css.selectandcopy.remove();
 			// 添加样式
 			ui.css.selectandcopy=lib.init.sheet();
-			
-			// 右键菜单
-			if(lib.config.byzy_yjcdyxxzbfz != false) {
-				ui.css.selectandcopy.sheet.insertRule(
-				`.dialog.popped:not(.menu) {
-				user-select: text;
-				-webkit-user-select: text;
-				}`
-				,0);
-			}
 			
 			// 资料卡/卡牌资料卡
 			if((lib.config.byzy_zlkyxxzbfz != false && _status.uiclickcharactercardziliaokawaiguan)||(lib.config.byzy_kpzlkyxxzbfz != false && _status.getnodeintroziliaokawaiguan)) {
@@ -2569,11 +2566,110 @@ content:function(config,pack){
 				,0);
 			}
 		};
-		window.byzy_yunxuxuanzebingxiugai();
+		window.byzy_yunxuxuanzebingfuzhi();
 	}
+	window.byzy_yunxuxuanzebingfuzhimenu=function(){
+		if (ui.css.selectandcopymenu)
+			ui.css.selectandcopymenu.remove();
+		// 添加样式
+		ui.css.selectandcopymenu=lib.init.sheet();
+		
+		// 右键菜单
+		if(lib.config.byzy_yjcdyxxzbfz != false) {
+			ui.css.selectandcopymenu.sheet.insertRule(
+			`.dialog.popped:not(.menu) {
+			user-select: text;
+			-webkit-user-select: text;
+			}`
+			,0);
+		}
+		
+		// 菜单
+		if(lib.config.byzy_cdyxxzbfz == true) {
+			ui.css.selectandcopymenu.sheet.insertRule(
+			`.dialog.popped.menu {
+			user-select: text;
+			-webkit-user-select: text;
+			}`
+			,0);
+		}
+	};
+	window.byzy_yunxuxuanzebingfuzhimenu();
 	
 	// 右键菜单修改
 	if(config.youjiancaidan){
+		// 双将的右键菜单收藏功能能分别收藏主将和副将了
+		ui.click.favouriteCharacter=function(e) {
+			if (typeof this.link == "string") {
+				// 修改开始
+				if (this.innerHTML == "添加收藏") {
+					this.innerHTML = "移除收藏";
+					lib.config.favouriteCharacter.add(this.link);
+				} else if (this.innerHTML == "移除收藏") {
+					this.innerHTML = "添加收藏";
+					lib.config.favouriteCharacter.remove(this.link);
+				}
+				if (this.innerHTML == "主将添加收藏") {
+					this.innerHTML = "主将移除收藏";
+					lib.config.favouriteCharacter.add(this.link);
+				} else if (this.innerHTML == "主将移除收藏") {
+					this.innerHTML = "主将添加收藏";
+					lib.config.favouriteCharacter.remove(this.link);
+				}
+				if (this.innerHTML == "副将添加收藏") {
+					this.innerHTML = "副将移除收藏";
+					lib.config.favouriteCharacter.add(this.link);
+				} else if (this.innerHTML == "副将移除收藏") {
+					this.innerHTML = "副将添加收藏";
+					lib.config.favouriteCharacter.remove(this.link);
+				}
+				// 修改结束
+				if (ui.favouriteCharacter) {
+					if (lib.config.favouriteCharacter.includes(this.link)) {
+						for (var i = 0; i < ui.favouriteCharacter.childElementCount; i++) {
+							if (ui.favouriteCharacter.childNodes[i].link == this.link) {
+								break;
+							}
+						}
+						if (i == ui.favouriteCharacter.childElementCount) {
+							ui.create
+								.button(this.link, "character", ui.favouriteCharacter)
+								.listen(function (e) {
+									this._banning = "offline";
+									ui.click.touchpop();
+									ui.click.intro.call(this, e);
+									_status.clicked = false;
+									delete this._banning;
+								})
+								.classList.add("noclick");
+						}
+					} else {
+						for (var i = 0; i < ui.favouriteCharacter.childElementCount; i++) {
+							if (ui.favouriteCharacter.childNodes[i].link == this.link) {
+								ui.favouriteCharacter.childNodes[i].remove();
+								break;
+							}
+						}
+					}
+					var shownode = false;
+					for (var i = 0; i < lib.config.favouriteCharacter.length; i++) {
+						var favname = lib.config.favouriteCharacter[i];
+						if (lib.character[favname]) {
+							shownode = true;
+							break;
+						}
+					}
+					if (shownode) {
+						ui.favouriteCharacter.node.style.display = "";
+					} else {
+						ui.favouriteCharacter.node.style.display = "none";
+					}
+				}
+				game.saveConfig("favouriteCharacter", lib.config.favouriteCharacter);
+			}
+			e.stopPropagation();
+		};
+		
 		// 修复滚轮滚动问题（右键菜单更改皮肤）
 		ui.click.mousewheel=function(evt) {
 			if (
@@ -3059,6 +3155,35 @@ content:function(config,pack){
 			// 配置显示内容-添加/移除收藏
 			if(lib.config['extension_搬运自用_yjcd_shoucang']!=false) {
 				var modepack = lib.characterPack['mode_' + get.mode()];
+				// 双将的右键菜单收藏功能能分别收藏主将和副将了
+				if (node.name2) {
+					if (lib.config.show_favourite && lib.character[node.name] && game.players.includes(node) &&
+						(!modepack || !modepack[node.name]) && (!simple || get.is.phoneLayout())) {
+						var addFavourite1 = ui.create.div('.text.center.pointerdiv');
+						addFavourite1.link = node.name;
+						if (lib.config.favouriteCharacter.includes(node.name)) {
+							addFavourite1.innerHTML = '主将移除收藏';
+						}
+						else {
+							addFavourite1.innerHTML = '主将添加收藏';
+						}
+						addFavourite1.listen(ui.click.favouriteCharacter);
+						uiintro.add(addFavourite1);
+					}
+					if (lib.config.show_favourite && lib.character[node.name2] && game.players.includes(node) &&
+						(!modepack || !modepack[node.name2]) && (!simple || get.is.phoneLayout())) {
+						var addFavourite2 = ui.create.div('.text.center.pointerdiv');
+						addFavourite2.link = node.name2;
+						if (lib.config.favouriteCharacter.includes(node.name2)) {
+							addFavourite2.innerHTML = '副将移除收藏';
+						}
+						else {
+							addFavourite2.innerHTML = '副将添加收藏';
+						}
+						addFavourite2.listen(ui.click.favouriteCharacter);
+						uiintro.add(addFavourite2);
+					}
+				} else
 				if (lib.config.show_favourite && lib.character[node.name] && game.players.includes(node) &&
 					(!modepack || !modepack[node.name]) && (!simple || get.is.phoneLayout())) {
 					var addFavourite = ui.create.div('.text.center.pointerdiv');
@@ -3092,10 +3217,14 @@ content:function(config,pack){
 							var nameskin2 = nameskin;
 							var gzbool = false;
 							if (nameskin.startsWith('gz_shibing')) {
-								nameskin = nameskin.slice(3, 11);
+								// 国战皮肤能单独添加了
+								nameskin = nameskin;
+								// nameskin = nameskin.slice(3, 11);
 							}
 							else if (nameskin.startsWith('gz_')) {
-								nameskin = nameskin.slice(3);
+								// 国战皮肤能单独添加了
+								nameskin = nameskin;
+								// nameskin = nameskin.slice(3);
 								gzbool = true;
 							}
 							for (var i = 0; i <= num; i++) {
@@ -3159,10 +3288,14 @@ content:function(config,pack){
 							var nameskin2 = nameskin;
 							var gzbool = false;
 							if (nameskin.startsWith('gz_shibing')) {
-								nameskin = nameskin.slice(3, 11);
+								// 国战皮肤能单独添加了
+								nameskin = nameskin;
+								// nameskin = nameskin.slice(3, 11);
 							}
 							else if (nameskin.startsWith('gz_')) {
-								nameskin = nameskin.slice(3);
+								// 国战皮肤能单独添加了
+								nameskin = nameskin;
+								// nameskin = nameskin.slice(3);
 								gzbool = true;
 							}
 							img.src = lib.assetURL + 'image/skin/' + nameskin + '/' + num + '.jpg';
@@ -3180,10 +3313,14 @@ content:function(config,pack){
 								var nameskin1 = node.name1;
 								var nameskin2 = node.name2;
 								if (nameskin1 && nameskin1.startsWith('gz_')) {
-									nameskin1 = nameskin1.slice(3);
+									// 国战皮肤能单独添加了
+									nameskin1 = nameskin1;
+									// nameskin1 = nameskin1.slice(3);
 								}
 								if (nameskin2 && nameskin2.startsWith('gz_')) {
-									nameskin2 = nameskin2.slice(3);
+									// 国战皮肤能单独添加了
+									nameskin2 = nameskin2;
+									// nameskin2 = nameskin2.slice(3);
 								}
 								if (!node.isUnseen(0) && lib.skin[nameskin1]) {
 									createButtons(lib.skin[nameskin1]);
@@ -3473,6 +3610,18 @@ content:function(config,pack){
 			else if (node.classList.contains('character')) {
 			// 选将时查看资料卡
 			if(lib.config['extension_搬运自用_byzy_xjsckzlk'] != false && node.parentNode.classList.contains('buttons')) {
+				// 选将时查看资料卡样式
+				if(lib.config['extension_搬运自用_byzy_xjsckzlkys']=="1"){
+					// 添加transparent2样式
+					ui.arena.classList.add('transparent2');
+				} else if(lib.config['extension_搬运自用_byzy_xjsckzlkys']=="2"){
+					// 添加blur样式
+					ui.arena.classList.add('blur');
+				}
+				
+				// 临时修复统率自由选将时查看资料卡的显示问题
+				if(ui.window.classList.contains("modepaused")) ui.window.classList.remove("modepaused");
+				
 				ui.click.charactercard(node.link, node, null, true, this.parentNode);
 				return;
 			} else {
@@ -3693,10 +3842,14 @@ content:function(config,pack){
 						var nameskin2 = nameskin;
 						var gzbool = false;
 						if (nameskin.startsWith('gz_shibing')) {
-							nameskin = nameskin.slice(3, 11);
+							// 国战皮肤能单独添加了
+							nameskin = nameskin;
+							// nameskin = nameskin.slice(3, 11);
 						}
 						else if (nameskin.startsWith('gz_')) {
-							nameskin = nameskin.slice(3);
+							// 国战皮肤能单独添加了
+							nameskin = nameskin;
+							// nameskin = nameskin.slice(3);
 							gzbool = true;
 						}
 						var createButtons = function (num) {
@@ -3883,6 +4036,14 @@ content:function(config,pack){
 			// 添加样式
 			ui.css.characterbutton=lib.init.sheet();
 			
+			//适配新版本体（临时修复 by 棘手怀念摧毁）
+			if(lib.version != lib.extensionPack['搬运自用'].version)
+			ui.css.characterbutton.sheet.insertRule(
+			`.menubg.charactercard {
+			transform: translate(0%, 0%);
+			}`
+			,0);
+			
 			// 资料卡外观
 			if((lib.config.byzy_zlkwg=='2'&&_status.uiclickcharactercardziliaokawaiguan) || (lib.config.byzy_kpzlkwg=='2'&&_status.getnodeintroziliaokawaiguan)) {
 				// 经典版(大杯)
@@ -3970,7 +4131,7 @@ content:function(config,pack){
 				font-size: 17px;
 				left: 290px;
 				width: 440px;
-				height: 179px;
+				height: 179px !important;//适配新版本体（临时修复 by 棘手怀念摧毁）
 				padding: 5px;
 				overflow: scroll;
 				border-radius: 4px;
@@ -4099,7 +4260,7 @@ content:function(config,pack){
 				`.menubg.charactercard .characterintro {
 				left: 238px;
 				width: 342px;
-				height: 135px;
+				height: 135px !important;//适配新版本体（临时修复 by 棘手怀念摧毁）
 				padding: 5px;
 				overflow: scroll;
 				border-radius: 4px;
@@ -4229,7 +4390,7 @@ content:function(config,pack){
 				`.menubg.charactercard .characterintro {
 				left: 200px;
 				width: 280px;
-				height: 105px;
+				height: 105px !important;//适配新版本体（临时修复 by 棘手怀念摧毁）
 				padding: 5px;
 				overflow: scroll;
 				border-radius: 4px;
@@ -4286,6 +4447,14 @@ content:function(config,pack){
 				ui.css.characterbutton1.remove();
 			// 添加样式
 			ui.css.characterbutton1=lib.init.sheet();
+			
+			//适配新版本体（临时修复 by 棘手怀念摧毁）
+			if(lib.version != lib.extensionPack['搬运自用'].version)
+			ui.css.characterbutton1.sheet.insertRule(
+			`.menubg.charactercard {
+			transform: translate(0%, 0%);
+			}`
+			,0);
 			
 			// 资料卡样式
 			if((lib.config.byzy_zlkys=='1'&&_status.uiclickcharactercardziliaokayangshi) || (lib.config.byzy_kpzlkys=='1'&&_status.getnodeintroziliaokayangshi)) {
@@ -4462,8 +4631,21 @@ content:function(config,pack){
 		setTimeout(function(){
 			var byzyOrigin_getnodeintro=get.nodeintro;
 			get.nodeintro=function(node,simple,evt){
+				// 查看不可见卡牌资料卡
+				var canSeeUnseenCard = true;
+				if (node.classList.contains('card') && node.parentNode.cardMod) {
+					for (var i in node.parentNode.cardMod) {
+						var item = node.parentNode.cardMod[i](node);
+						if (Array.isArray(item)) {
+							canSeeUnseenCard = false;
+						}
+					}
+				}
+				if (lib.config['extension_搬运自用_byzy_ckbkjkpzlk'] == true) canSeeUnseenCard = true;
+				// 已废除不查看卡牌资料卡
+				if(node.classList.contains('card') && ["feichu_equip1","feichu_equip2","feichu_equip3","feichu_equip4","feichu_equip5","feichu_equip6","disable_judge"].includes(node.name)) canSeeUnseenCard = false;
 				// 临时修复点击标记报错、菜单界面长按/右击不会查看资料卡
-				if (!node.classList.contains('mark') && node.classList.contains('card') && (node._banning || (!node.classList.contains('noclick') && lib.config['extension_搬运自用_byzy_yjckkpzlk'] == true))) {
+				if (canSeeUnseenCard && !node.classList.contains('mark') && node.classList.contains('card') && (node._banning || (!node.classList.contains('noclick') && lib.config['extension_搬运自用_byzy_yjckkpzlk'] == true))) {
 					var sourcenode = null;
 					var noedit = null;
 					var resume = true;
@@ -4532,7 +4714,7 @@ content:function(config,pack){
 						// 菜单-卡牌-禁卡不允许快捷禁卡
 						&& node.parentNode.parentNode.parentNode.childNodes[0].querySelector('.active').innerHTML != "禁卡"
 					){
-						var bannedlistcardtotal=lib.config[lib.config.mode + "_bannedcards"] || [];;
+						var bannedlistcardtotal=lib.config[lib.config.mode + "_bannedcards"] || [];
 						if(!node.classList.contains('banned')){
 							node.classList.add('banned');
 							var list_jk=[];
@@ -4558,11 +4740,23 @@ content:function(config,pack){
 					_status.getnodeintroziliaokayangshi=true;
 					window.byzy_ziliaokayangshi();
 					// 允许选择并复制
-					window.byzy_yunxuxuanzebingxiugai();
+					window.byzy_yunxuxuanzebingfuzhi();
 					
 					// 查看资料卡不暂停游戏
 					if (lib.config['extension_搬运自用_byzy_ckkpzlkbztyx'] != true)
 					game.pause2();
+					
+				// 临时修复：菜单查看卡牌资料卡不添加样式
+				if(!node.classList.contains('noclick')){
+					// 查看卡牌资料卡样式
+					if(lib.config['extension_搬运自用_byzy_ckkpzlkys']=="1"){
+						// 添加transparent2样式
+						ui.arena.classList.add('transparent2');
+					} else if(lib.config['extension_搬运自用_byzy_ckkpzlkys']=="2"){
+						// 添加blur样式
+						ui.arena.classList.add('blur');
+					}
+				}
 					
 					if(_status.dragged) return;
 					if(lib.config.theme!='simple'){
@@ -4587,6 +4781,10 @@ content:function(config,pack){
 						ui.menuContainer.classList.remove('forceopaque');
 						ui.menuContainer.classList.remove('transparent2');
 						ui.arena.classList.remove('blur');
+						
+						// 移除transparent2样式
+						ui.arena.classList.remove('transparent2');
+						
 						ui.system.classList.remove('blur');
 						ui.menuContainer.classList.remove('blur');
 						this.delete();
@@ -4623,6 +4821,15 @@ content:function(config,pack){
 					var exturl1=node.style['background-image'].slice(5,-2) || '';
 					var exturl2=node.querySelector('.image.menusize')?.style['background-image'].slice(5,-2) || '';
 					var exturl3=node.querySelector('.image')?.style['background-image'].slice(5,-2) || '';
+					// 手机端适配
+					if(lib.device){
+						var extindex1 = exturl1.indexOf("/extension/");
+						if(extindex1 != -1) exturl1=exturl1.substring(extindex1+1);
+						var extindex2 = exturl2.indexOf("/extension/");
+						if(extindex2 != -1) exturl2=exturl2.substring(extindex2+1);
+						var extindex3 = exturl3.indexOf("/extension/");
+						if(extindex3 != -1) exturl3=exturl3.substring(extindex3+1);
+					}
 					
 					// 炉石模式特殊处理
 					if (get.mode() == "stone" && bgname.endsWith("_stonecharacter")) {
@@ -6202,11 +6409,39 @@ content:function(config,pack){
 		},
 	};
 	
-	// 手牌可视，魔改自本体versus.js函数versus_viewHandcard:{
+	// 手牌可视
+	// 开局获得_status.byzy_spksrealMe（“玩家”）用以区分敌我，搬运自攻心为上扩展并魔改
+	// 关闭手牌可视后再开启会重新将当前角色设为“玩家”（_status.byzy_spksrealMe）
+	lib.skill._shoupaikeshi_start={
+		trigger:{
+			global:'gameStart',
+		},
+		popup:false,
+		charlotte:true,
+		direct:true,
+		firstDo:true,
+		filter:function(event,player){
+			return lib.config.byzy_shoupaikeshi!=false && !event._byzy_spksend;
+		},
+		content:function(){
+			trigger._byzy_spksend = true;
+			_status.byzy_spksrealMe = game.me;
+		}
+	};
+	// 魔改自本体versus.js函数versus_viewHandcard:{
 	lib.skill._byzyshoupaikeshi={
 		ai:{
 			viewHandcard:true,
 			skillTagFilter:function(player,tag,target){
+				if(lib.config['extension_搬运自用_byzy_shoupaikeshi_dyspks']==false && lib.config['extension_搬运自用_byzy_shoupaikeshi_drspks']==false) {
+					return false;
+				} else if(lib.config['extension_搬运自用_byzy_shoupaikeshi_dyspks']==true && lib.config['extension_搬运自用_byzy_shoupaikeshi_drspks']==false) {
+					// 队友手牌可视
+					return lib.config.byzy_shoupaikeshi==true && target != game.me && _status.byzy_spksrealMe?.getFriends()?.includes(target);
+				} else if(lib.config['extension_搬运自用_byzy_shoupaikeshi_dyspks']==false && lib.config['extension_搬运自用_byzy_shoupaikeshi_drspks']==true) {
+					// 敌人手牌可视
+					return lib.config.byzy_shoupaikeshi==true && target != game.me && _status.byzy_spksrealMe?.getEnemies()?.includes(target);
+				} else 
 				return lib.config.byzy_shoupaikeshi==true && target != game.me;
 			},
 		},
@@ -6504,9 +6739,15 @@ content:function(config,pack){
 			var createDialog = {
 				// 修改game.js的函数characterDialog:function(){
 				characterDialog:function(){
+					/*
+					// 更改选将框，移除key势力！
 					var filter = function (name) {
 						var info = lib.character[name];
-					}, str, noclick, thisiscard, seperate, expandall, onlypack, target, heightset, precharacter, characterx;
+						return info && info[1] === 'key';
+					};
+					*/
+					var filter;
+					var str, noclick, thisiscard, seperate, expandall, onlypack, target, heightset, precharacter, characterx;
 					for(var i=0;i<arguments.length;i++){
 						if(arguments[i]==='thisiscard'){
 							thisiscard=true;
@@ -7229,9 +7470,13 @@ content:function(config,pack){
 					var value=input.value;
 					var choice=div.querySelector('select').options[div.querySelector('select').selectedIndex].value;
 					if(value){
-						if(game.say1) game.say1('搜索完成');
-						//if(dialog.currentcaptnode2) dialog.currentcaptnode2.classList.remove('thundertext');
-						//if(dialog.currentcaptnode) dialog.currentcaptnode.classList.remove('thundertext');
+						// 自由选将搜索暂不支持二次/多次筛选（得把筛选按钮的高亮去掉）
+						// TODO：“筛选”按钮的高亮去掉
+						if(dialog.currentcaptnode2) dialog.currentcaptnode2.classList.remove('thundertext');
+						if(dialog.currentcaptnode) dialog.currentcaptnode.classList.remove('thundertext');
+						if(dialog.currentgroupnode) dialog.currentgroupnode.classList.remove('thundertext');
+						
+						if(game.byzy_say1) game.byzy_say1('搜索完成');
 						for(var i=0;i<dialogButtons.length;i++){
 							dialogButtons[i].classList.add('nodisplay');
 							var name=dialogButtons[i].link;
@@ -7595,7 +7840,7 @@ content:function(config,pack){
 							}
 						}
 					}else{
-						if(game.say1) game.say1('请先输入需要搜索的内容');
+						if(game.byzy_say1) game.byzy_say1('请先输入需要搜索的内容');
 					}
 				};
 				input.onkeydown=function(e){
@@ -8242,6 +8487,53 @@ content:function(config,pack){
 				}
 			};
 			autoskin();
+		};
+		// 换肤函数修改
+		ui.click.skin = function(avatar, name, callback) {
+			var num = 1;
+			if (name.startsWith("gz_")) {
+				// 国战皮肤能单独添加了
+				name = name;
+				// name = name.slice(3);
+			}
+			if (lib.config.skin[name]) {
+				num = lib.config.skin[name] + 1;
+			}
+			var fakeavatar = avatar.cloneNode(true);
+			var finish = function (bool) {
+				var player = avatar.parentNode;
+				if (bool) {
+					fakeavatar.style.boxShadow = "none";
+					player.insertBefore(fakeavatar, avatar.nextSibling);
+					setTimeout(function () {
+						fakeavatar.delete();
+					}, 100);
+				}
+				if (bool && lib.config.animation && !lib.config.low_performance) {
+					player.$rare();
+				}
+				if (callback) {
+					callback(bool);
+				}
+			};
+			var img = new Image();
+			img.onload = function () {
+				lib.config.skin[name] = num;
+				game.saveConfig("skin", lib.config.skin);
+				avatar.style.backgroundImage = 'url("' + img.src + '")';
+				finish(true);
+			};
+			img.onerror = function () {
+				if (lib.config.skin[name]) {
+					finish(true);
+				} else {
+					finish(false);
+				}
+				delete lib.config.skin[name];
+				game.saveConfig("skin", lib.config.skin);
+				avatar.setBackground(name, "character");
+			};
+			img.src = lib.assetURL + "image/skin/" + name + "/" + num + ".jpg";
 		};
 	}
 	
@@ -9073,6 +9365,15 @@ content:function(config,pack){
 			if (lib.config['extension_搬运自用_byzy_ckzlkbztyx'] != true)
 			game.pause2();
 			
+			// 查看资料卡样式
+			if(lib.config['extension_搬运自用_byzy_ckzlkys']=="1"){
+				// 添加transparent2样式
+				ui.arena.classList.add('transparent2');
+			} else if(lib.config['extension_搬运自用_byzy_ckzlkys']=="2"){
+				// 添加blur样式
+				ui.arena.classList.add('blur');
+			}
+			
 			// 资料卡查看多形态原画
 			if(lib.config['extension_搬运自用_byzy_zlkcksxtyh'] != false) {
 				var audioName=player.skin.name || player.name1 || player.name;
@@ -9105,6 +9406,15 @@ content:function(config,pack){
 			if (lib.config['extension_搬运自用_byzy_ckzlkbztyx'] != true)
 			game.pause2();
 			
+			// 查看资料卡样式
+			if(lib.config['extension_搬运自用_byzy_ckzlkys']=="1"){
+				// 添加transparent2样式
+				ui.arena.classList.add('transparent2');
+			} else if(lib.config['extension_搬运自用_byzy_ckzlkys']=="2"){
+				// 添加blur样式
+				ui.arena.classList.add('blur');
+			}
+			
 			// 资料卡查看多形态原画
 			if(lib.config['extension_搬运自用_byzy_zlkcksxtyh'] != false) {
 				ui.click.charactercard(player.name2, null, null, true, this, player.skin.name2 || player.name2);
@@ -9115,27 +9425,69 @@ content:function(config,pack){
 		// ui.click.charactercard=function(name,sourcenode,noedit,resume,avatar){
 		// 修改
 		ui.click.charactercard=function(name, sourcenode, noedit, resume, avatar, audioName) {
-			// 当前模式快捷禁用武将
+			// 快捷功能
 			if(
-				lib.config['extension_搬运自用_byzy_dqmskjjywj']
+				(lib.config['extension_搬运自用_byzy_dqmskjjywj'] || lib.config['extension_搬运自用_byzy_kjaijywj'] || lib.config['extension_搬运自用_byzy_kuaijieshoucang'] || lib.config['extension_搬运自用_byzy_kuaijiezuijin'])
 				&& sourcenode && sourcenode.classList.contains('noclick')
-				// 菜单-武将-禁将不允许快捷禁将
+				// 菜单-武将-禁将/收藏不允许快捷功能
 				&& sourcenode.parentNode.parentNode.parentNode.childNodes[0].querySelector('.active').innerHTML != "禁将"
+				&& sourcenode.parentNode.parentNode.parentNode.childNodes[0].querySelector('.active').innerHTML != "收藏"
 			){
-				var bannedlistcharactertotal=lib.config[lib.config.mode + "_banned"] || [];;
+				var bannedlistcharactertotal=[];
+				if(lib.config['extension_搬运自用_byzy_dqmskjjywj']){
+					// 当前模式快捷禁用武将
+					bannedlistcharactertotal=lib.config[lib.config.mode + "_banned"];
+				}else if(lib.config['extension_搬运自用_byzy_kjaijywj']){
+					// 快捷AI禁用武将
+					bannedlistcharactertotal=lib.config.forbidai_user;
+				}else if(lib.config['extension_搬运自用_byzy_kuaijieshoucang']){
+					// 快捷收藏功能
+					bannedlistcharactertotal=lib.config.favouriteCharacter;
+				}else if(lib.config['extension_搬运自用_byzy_kuaijiezuijin']){
+					// 快捷最近功能
+					bannedlistcharactertotal=get.config("recentCharacter");
+				}
+				
+				// 修复弹窗
+				if(!Array.isArray(bannedlistcharactertotal)) bannedlistcharactertotal=[];
+				
 				if(!sourcenode.classList.contains('banned')){
 					sourcenode.classList.add('banned');
 					var list_jj=[];
 					list_jj.push(name);
 					var unionArr= [...new Set([...bannedlistcharactertotal,...list_jj])];
-					game.saveConfig(lib.config.mode+'_banned',unionArr);
+					if(lib.config['extension_搬运自用_byzy_dqmskjjywj']){
+						// 当前模式快捷禁用武将
+						game.saveConfig(lib.config.mode+'_banned',unionArr);
+					}else if(lib.config['extension_搬运自用_byzy_kjaijywj']){
+						// 快捷AI禁用武将
+						game.saveConfig('forbidai_user',unionArr);
+					}else if(lib.config['extension_搬运自用_byzy_kuaijieshoucang']){
+						// 快捷收藏功能
+						game.saveConfig('favouriteCharacter',unionArr);
+					}else if(lib.config['extension_搬运自用_byzy_kuaijiezuijin']){
+						// 快捷最近功能
+						game.saveConfig('recentCharacter',unionArr,true);
+					}
 				}
 				else {
 					sourcenode.classList.remove('banned');
 					var list_jj=[];
 					list_jj.push(name);
 					var arrDiffer= bannedlistcharactertotal.filter(item=>!list_jj.includes(item));
-					game.saveConfig(lib.config.mode+'_banned',arrDiffer);
+					if(lib.config['extension_搬运自用_byzy_dqmskjjywj']){
+						// 当前模式快捷禁用武将
+						game.saveConfig(lib.config.mode+'_banned',arrDiffer);
+					}else if(lib.config['extension_搬运自用_byzy_kjaijywj']){
+						// 快捷AI禁用武将
+						game.saveConfig('forbidai_user',arrDiffer);
+					}else if(lib.config['extension_搬运自用_byzy_kuaijieshoucang']){
+						// 快捷收藏功能
+						game.saveConfig('favouriteCharacter',arrDiffer);
+					}else if(lib.config['extension_搬运自用_byzy_kuaijiezuijin']){
+						// 快捷最近功能
+						game.saveConfig('recentCharacter',arrDiffer,true);
+					}
 				}
 				return;
 			}
@@ -9148,7 +9500,7 @@ content:function(config,pack){
 			_status.uiclickcharactercardziliaokayangshi=true;
 			window.byzy_ziliaokayangshi();
 			// 允许选择并复制
-			window.byzy_yunxuxuanzebingxiugai();
+			window.byzy_yunxuxuanzebingfuzhi();
 			
 			// 多个阵亡配音按顺序播放
 			_status.uiclickcharactercard=true;
@@ -9181,6 +9533,10 @@ content:function(config,pack){
 				ui.menuContainer.classList.remove('forceopaque');
 				ui.menuContainer.classList.remove('transparent2');
 				ui.arena.classList.remove('blur');
+				
+				// 移除transparent2样式
+				ui.arena.classList.remove('transparent2');
+				
 				ui.system.classList.remove('blur');
 				ui.menuContainer.classList.remove('blur');
 				this.delete();
@@ -9230,10 +9586,14 @@ content:function(config,pack){
 			
 			var gzbool=false;
 			if(nameskin.startsWith('gz_shibing')){
-				nameskin=nameskin.slice(3,11);
+				// 国战皮肤能单独添加了
+				nameskin=nameskin;
+				// nameskin=nameskin.slice(3,11);
 			}
 			else if(nameskin.startsWith('gz_')){
-				nameskin=nameskin.slice(3);
+				// 国战皮肤能单独添加了
+				nameskin=nameskin;
+				// nameskin=nameskin.slice(3);
 				gzbool=true;
 			}
 			var changeskin=function(){
@@ -11173,7 +11533,7 @@ content:function(config,pack){
 			*/
 			
 			var byzyOrigin_charactercard=ui.click.charactercard;
-			ui.click.charactercard=function(name,sourcenode,noedit,resume,avatar){
+			ui.click.charactercard=function(name,sourcenode,noedit,resume,avatar,audioName){
 				if(typeof name=='string'&&!lib.character[name]){
 					var result=get.character(name);
 					if(result){
@@ -11186,7 +11546,8 @@ content:function(config,pack){
 				if(config.byzy_zwpy){
 					// 阵亡文本
 					lib.skill["byzyzhenwangpeiyin"]={};
-					lib.skill["byzyzhenwangpeiyin"]["audio"]="sanguomingjiang_die_audio:"+name;
+					// 资料卡试听阵亡配音适配资料卡查看多形态原画
+					lib.skill["byzyzhenwangpeiyin"]["audio"]="sanguomingjiang_die_audio:"+(audioName?audioName:name);
 					// var strinfo='台词文本见上方';
 					
 					// 新增判断有无台词文本的功能
@@ -11234,7 +11595,8 @@ content:function(config,pack){
 				if(config.byzy_slpy){
 					// 胜利文本
 					lib.skill["byzyshenglipeiyin"]={};
-					lib.skill["byzyshenglipeiyin"]["audio"]="sanguomingjiang_win_audio:"+name;
+					// 资料卡试听胜利配音适配资料卡查看多形态原画
+					lib.skill["byzyshenglipeiyin"]["audio"]="sanguomingjiang_win_audio:"+(audioName?audioName:name);
 					var strinfo_1='暂无台词文本';
 					
 					// 不着色
@@ -12785,6 +13147,30 @@ content:function(config,pack){
 						lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(true);
 						this.classList.add("glow");
 					}
+				} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='2') {
+					if(lib.config['extension_搬运自用_byzy_kjaijywj']) {
+						lib.extensionMenu.extension_搬运自用.byzy_kjaijywj.onclick(false);
+						this.classList.remove("glow");
+					} else {
+						lib.extensionMenu.extension_搬运自用.byzy_kjaijywj.onclick(true);
+						this.classList.add("glow");
+					}
+				} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='3') {
+					if(lib.config['extension_搬运自用_byzy_kuaijieshoucang']) {
+						lib.extensionMenu.extension_搬运自用.byzy_kuaijieshoucang.onclick(false);
+						this.classList.remove("glow");
+					} else {
+						lib.extensionMenu.extension_搬运自用.byzy_kuaijieshoucang.onclick(true);
+						this.classList.add("glow");
+					}
+				} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='4') {
+					if(lib.config['extension_搬运自用_byzy_kuaijiezuijin']) {
+						lib.extensionMenu.extension_搬运自用.byzy_kuaijiezuijin.onclick(false);
+						this.classList.remove("glow");
+					} else {
+						lib.extensionMenu.extension_搬运自用.byzy_kuaijiezuijin.onclick(true);
+						this.classList.add("glow");
+					}
 				} else {
 					if(lib.config['extension_搬运自用_byzy_xjsckzlk']) {
 						lib.extensionMenu.extension_搬运自用.byzy_xjsckzlk.onclick(false);
@@ -12798,6 +13184,21 @@ content:function(config,pack){
 			if(lib.config['extension_搬运自用_byzy_qiefunction']=='1') {
 				// “切”高亮则进入快捷禁将模式
 				if(lib.config['extension_搬运自用_byzy_dqmskjjywj']){
+					ui.leftmenuqie.classList.add("glow");
+				} else ui.leftmenuqie.classList.remove("glow");
+			} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='2') {
+				// “切”高亮则进入快捷AI禁将模式
+				if(lib.config['extension_搬运自用_byzy_kjaijywj']){
+					ui.leftmenuqie.classList.add("glow");
+				} else ui.leftmenuqie.classList.remove("glow");
+			} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='3') {
+				// “切”高亮则进入快捷收藏功能
+				if(lib.config['extension_搬运自用_byzy_kuaijieshoucang']){
+					ui.leftmenuqie.classList.add("glow");
+				} else ui.leftmenuqie.classList.remove("glow");
+			} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='4') {
+				// “切”高亮则进入快捷最近功能
+				if(lib.config['extension_搬运自用_byzy_kuaijiezuijin']){
 					ui.leftmenuqie.classList.add("glow");
 				} else ui.leftmenuqie.classList.remove("glow");
 			} else {
@@ -13313,14 +13714,14 @@ content:function(config,pack){
 			}
 			
 			if(item == '0'){
-				if(game.say1){
-					game.say1('同人模式已关闭');
+				if(game.byzy_say1){
+					game.byzy_say1('同人模式已关闭');
 				}else{
 					// alert('同人模式已关闭');
 				}
 			} else {
-				if(game.say1){
-					game.say1('同人武将数为：'+list.length+'，场上角色数为：'+game.players.length);
+				if(game.byzy_say1){
+					game.byzy_say1('同人武将数为：'+list.length+'，场上角色数为：'+game.players.length);
 				}else{
 					// alert('同人武将数为：'+list.length+'，场上角色数为：'+game.players.length);
 				}
@@ -13399,7 +13800,7 @@ content:function(config,pack){
 		}
 	}
 	
-	// 禁用武将切换功能，搬运自官将重修扩展
+	// 选将时禁用武将切换功能，搬运自官将重修扩展
 	if (config.byzy_jywjqhgn) {
 		for(var i in lib.characterReplace) {
 			lib.characterReplace[i] = [];
@@ -14267,7 +14668,12 @@ precontent:function(){
 				event.list.remove(get.sourceCharacter(target.name1));
 				event.list.remove(get.sourceCharacter(target.name2));
 				if (target == game.zhu && _status.mode != 'purple') {
-					if (!event.stratagemMode&&game.players.length > 4 || get.mode() == 'doudizhu') {
+					// 明忠模式：修复未亮身份主公重新选将会加体力上限的bug
+					if (
+						(_status.mode != "zhong" && !event.stratagemMode && game.players.length > 4) ||
+						(_status.mode == "zhong" && game.getAllGlobalHistory("everything", evt => evt.name == "sheshen").length) ||
+						get.mode() == 'doudizhu'
+					) {
 						if(!target.isInitFilter('noZhuHp')){
 							target.maxHp++;
 							target.hp++;
@@ -14276,10 +14682,17 @@ precontent:function(){
 					}
 					if (get.mode() == 'identity') {
 						var enhance_zhu = false;
+						// 修复谋攻模式会加强主公的bug
 						if (_status.connectMode) {
-							enhance_zhu = (_status.mode != 'zhong' && _status.mode != 'purple' && lib.configOL.enhance_zhu && get.population('fan') >= 3);
+							enhance_zhu =
+								!["zhong", "stratagem", "purple"].includes(_status.mode) &&
+								lib.configOL.enhance_zhu &&
+								get.population("fan") >= 3;
 						} else {
-							enhance_zhu = (_status.mode != 'zhong' && _status.mode != 'purple' && get.config('enhance_zhu') && get.population('fan') >= 3);
+							enhance_zhu =
+								!["zhong", "stratagem", "purple"].includes(_status.mode) &&
+								get.config("enhance_zhu") &&
+								get.population("fan") >= 3;
 						}
 						if (enhance_zhu) {
 							var skill;
@@ -14294,7 +14707,7 @@ precontent:function(){
 									skill = 'hengzheng';
 									break;
 								case 'sunquan':
-									skill = 'batu';
+									skill = 'batu'; // 英雄杀技能
 									break;
 								case 'sp_zhangjiao':
 									skill = 'tiangong';
@@ -14302,6 +14715,7 @@ precontent:function(){
 								case 'liushan':
 									skill = 'shengxi';
 									break;
+								/** 玩点论杀技能 */
 								case 'sunce':
 									skill = 'ciqiu';
 									break;
@@ -14312,7 +14726,7 @@ precontent:function(){
 									skill = 'geju';
 									break;
 								case 're_caocao':
-									skill = 'dangping';
+									skill = 'dangping'; // 古剑奇谭技能
 									break;
 								case 'caopi':
 									skill = 'junxing';
@@ -14329,10 +14743,43 @@ precontent:function(){
 								target.storage.enhance_zhu = skill;
 							}, game.zhu, skill);
 						}
+						
+						// 启用明察
+						let enable_mingcha;
+						if (_status.connectMode) {
+							enable_mingcha = lib.configOL.enable_mingcha;
+						} else {
+							enable_mingcha = get.config("enable_mingcha");
+						}
+						// 临时修改（by 棘手怀念摧毁）
+						if (["zhong", "stratagem", "purple"].includes(_status.mode)) enable_mingcha = false;
+						if (enable_mingcha) {
+							game.broadcastAll(player => {
+								player.addSkill("identity_mingcha");
+							}, game.zhu);
+						}
 					}
 					if (get.mode() == 'doudizhu') {
-						if (['normal', 'huanle', 'kaihei'].contains(_status.mode)) {
-							var skill = ['feiyang', 'bahu'];
+						// 适配不享受地主的额外技能
+						if (['normal', 'huanle', 'kaihei'].contains(_status.mode) && !target.isInitFilter("noZhuSkill")) {
+							// 适配新版本体
+							const list = [];
+							const version = _status.connectMode ? lib.configOL.feiyang_version : get.config("feiyang_version");
+							if (version === "online") {
+								list.push("feiyang");
+							} else if (version === "mobile") {
+								list.push("mbfeiyang");
+							} else if (version === "decade") {
+								list.push("dcfeiyang");
+							}
+							list.push("bahu");
+							const enhance = _status.connectMode ? lib.configOL.enhance_dizhu : get.config("enhance_dizhu");
+							if (["kaihei", "yinfu", "shiqiang", "qiangyi", "oldshiqiang"].includes(enhance)) {
+								list.push(enhance);
+							}
+							var skill = list;
+							// var skill = ['feiyang', 'bahu'];
+							
 							game.broadcastAll(function (player, skill) {
 								target.addSkill(skill);
 							}, game.zhu, skill);
@@ -14366,6 +14813,21 @@ precontent:function(){
 							target.hp++;
 							target.update();
 						}
+					}
+				}
+				// 明忠模式
+				if (_status.mode == "zhong" && target.identity == "mingzhong") {
+					// 明忠会加技能了
+					if (target.sex == "male" && target.maxHp <= 4) {
+						target.addSkill("dongcha");
+					} else {
+						target.addSkill("sheshen");
+					}
+					// 明忠会加体力上限了
+					if (!target.isInitFilter("noZhuHp")) {
+						target.hp++;
+						target.maxHp++;
+						target.update();
 					}
 				}
 				/*for(var i=0;i<game.players.length;i++){
@@ -14555,7 +15017,14 @@ precontent:function(){
 					lib.init.onfree();
 				}
 				else if (chosen.length){
-					game.me.init(chosen[0], chosen[1], false);
+					// game.me.init(chosen[0], chosen[1], false);
+					// lib.init.onfree();
+					
+					// 再战武将的势力临时修复（by 棘手怀念摧毁）
+					result.buttons = [
+						{link:chosen[0]},
+						{link:chosen[1]}
+					];
 					lib.init.onfree();
 				}
 				else {
@@ -14670,7 +15139,10 @@ precontent:function(){
 					target.group = 'unknown';
 					target.sex = 'unknown';
 					target.name1 = target.name;
-					target.name = 'unknown';
+					// 修复控制台里的显示
+					var seatNum = target.getSeatNum() - 1;
+					target.name = `unknown${seatNum}`;
+					// target.name = 'unknown';
 					target.identity = 'unknown';
 					target.node.name.show();
 					target.node.name2.show();
@@ -15846,12 +16318,18 @@ precontent:function(){
 		}
 		if(num==7){
 			game.over(true);
+			// 临时修复国战未亮将再战导致的报错问题
+			if(get.mode()=="guozhan") game.showIdentity();
 		}
 		if(num==8){
 			game.over(false);
+			// 临时修复国战未亮将再战导致的报错问题
+			if(get.mode()=="guozhan") game.showIdentity();
 		}
 		if(num==9){
 			game.over('平局');
+			// 临时修复国战未亮将再战导致的报错问题
+			if(get.mode()=="guozhan") game.showIdentity();
 		}
 		if(num==10){
 			// 直接写的好处是可根据需求修改
@@ -16146,6 +16624,11 @@ precontent:function(){
 			}
 		}
 		
+		// AI禁将功能
+		if(num==901){
+			var list=[];game.saveConfig('forbidai_user',list);
+		}
+		
 		// 禁将功能
 		if(num==1001){
 			for(var i in lib.mode){var list=[];game.saveConfig(i+'_banned',list);}
@@ -16161,19 +16644,16 @@ precontent:function(){
 			var libmode = lib.mode;
 			if(lib.config['extension_搬运自用_byzy_yydqjjd_identity']==false) delete libmode.identity;
 			if(lib.config['extension_搬运自用_byzy_yydqjjd_guozhan']==false) delete libmode.guozhan;
-			if(lib.config['extension_搬运自用_byzy_yydqjjd_versus']==false) delete libmode.versus;
-			if(lib.config['extension_搬运自用_byzy_yydqjjd_boss']==false) delete libmode.boss;
 			if(lib.config['extension_搬运自用_byzy_yydqjjd_doudizhu']==false) delete libmode.doudizhu;
+			if(lib.config['extension_搬运自用_byzy_yydqjjd_versus']==false) delete libmode.versus;
 			if(lib.config['extension_搬运自用_byzy_yydqjjd_single']==false) delete libmode.single;
+			if(lib.config['extension_搬运自用_byzy_yydqjjd_boss']==false) delete libmode.boss;
 			if(lib.config['extension_搬运自用_byzy_yydqjjd_chess']==false) delete libmode.chess;
 			if(lib.config['extension_搬运自用_byzy_yydqjjd_tafang']==false) delete libmode.tafang;
 			if(lib.config['extension_搬运自用_byzy_yydqjjd_stone']==false) delete libmode.stone;
 			for(var i in libmode){if(i!=lib.config.mode){var list=lib.config[lib.config.mode + "_banned"] || [];game.saveConfig(i+'_banned',list);}}
 		}
 		if(num==1004){
-			var list=[];game.saveConfig('forbidai_user',list);
-		}
-		if(num==1005){
 			var bannedlistcharactertotal=lib.config[lib.config.mode + "_banned"] || [];
 			var list_jj=[];
 			for (var i = 0; i < game.players.length; i++) {
@@ -16185,7 +16665,7 @@ precontent:function(){
 			var unionArr= [...new Set([...bannedlistcharactertotal,...list_jj])];
 			game.saveConfig(lib.config.mode+'_banned',unionArr);
 		}
-		if(num==1006){
+		if(num==1005){
 			var bannedlistcharactertotal=lib.config[lib.config.mode + "_banned"] || [];
 			var list_jj=[];
 			for (var i = 0; i < game.players.length; i++) {
@@ -16197,7 +16677,7 @@ precontent:function(){
 			var arrDiffer= bannedlistcharactertotal.filter(item=>!list_jj.includes(item));
 			game.saveConfig(lib.config.mode+'_banned',arrDiffer);
 		}
-		if(num==1007){
+		if(num==1006){
 			var bannedlistcharactertotal=lib.config[lib.config.mode + "_banned"] || [];
 			var list_jj=[];
 			for (var i = 0; i < game.players.length; i++) {
@@ -16211,7 +16691,7 @@ precontent:function(){
 			var unionArr= [...new Set([...bannedlistcharactertotal,...list_jj])];
 			game.saveConfig(lib.config.mode+'_banned',unionArr);
 		}
-		if(num==1008){
+		if(num==1007){
 			var bannedlistcharactertotal=lib.config[lib.config.mode + "_banned"] || [];
 			var list_jj=[];
 			for (var i = 0; i < game.players.length; i++) {
@@ -16241,10 +16721,10 @@ precontent:function(){
 			var libmode = lib.mode;
 			if(lib.config['extension_搬运自用_byzy_yydqjkd_identity']==false) delete libmode.identity;
 			if(lib.config['extension_搬运自用_byzy_yydqjkd_guozhan']==false) delete libmode.guozhan;
-			if(lib.config['extension_搬运自用_byzy_yydqjkd_versus']==false) delete libmode.versus;
-			if(lib.config['extension_搬运自用_byzy_yydqjkd_boss']==false) delete libmode.boss;
 			if(lib.config['extension_搬运自用_byzy_yydqjkd_doudizhu']==false) delete libmode.doudizhu;
+			if(lib.config['extension_搬运自用_byzy_yydqjkd_versus']==false) delete libmode.versus;
 			if(lib.config['extension_搬运自用_byzy_yydqjkd_single']==false) delete libmode.single;
+			if(lib.config['extension_搬运自用_byzy_yydqjkd_boss']==false) delete libmode.boss;
 			if(lib.config['extension_搬运自用_byzy_yydqjkd_chess']==false) delete libmode.chess;
 			if(lib.config['extension_搬运自用_byzy_yydqjkd_tafang']==false) delete libmode.tafang;
 			if(lib.config['extension_搬运自用_byzy_yydqjkd_stone']==false) delete libmode.stone;
@@ -16644,8 +17124,20 @@ precontent:function(){
 		});
 	};
 	
-	// game.say1函数，搬运自扩展ol
-	game.say1=function(str,num){
+	// 原game.say1函数，搬运自扩展ol
+	// game.byzy_say1函数修改（by 棘手怀念摧毁）
+	/**
+	 * str：显示字符串
+	 * num：自定义宽度
+	 * time1,time2,time3,time4：显示时间，可自行调整满足显示需求（比如延时关闭、类似多框同步显示效果等）
+	 */
+	game.byzy_say1=function(str,num,time1,time2,time3,time4){
+		// 显示时间
+		if(time1==null)time1=250;
+		if(time2==null)time2=1500;
+		if(time3==null)time3=500;
+		if(time4==null)time4=100;
+		
 		if(game.game_say_dialog_height==undefined) game.game_say_dialog_height=-45;
 		if(game.game_say_dialog_num==undefined) game.game_say_dialog_num=0;
 		game.game_say_dialog_num++;
@@ -16662,7 +17154,11 @@ precontent:function(){
 			dialog.style['box-shadow']='rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 0, 0, 0.2) 0 3px 10px';
 			ui.window.appendChild(dialog);
 			var width=str.length*20;
-			if(num!=undefined) width-=num*20;
+			
+			// 自定义宽度
+			// if(num!=undefined) width-=num*20;
+			if(num!=undefined) width=num;
+			
 			dialog._mod_height=-16;
 			dialog.style.width=width+'px';
 			lib.placePoppedDialog(dialog,{
@@ -16694,11 +17190,11 @@ precontent:function(){
 				if(game.game_say_dialog_height>ui.window.offsetHeight*0.95-dialog.offsetHeight*2) game.game_say_dialog_height=-45;
 				setTimeout(function(){
 					if(game.game_say_dialog_num<=0) game.game_say_dialog_height=-45;
-				},250);
-			},1500);
+				},time1);
+			},time2);
 			setTimeout(function(){
 				delete game.game_say_dialog_onOpened;
-			},500);
+			},time3);
 		};
 		var interval=setInterval(function(){
 			if(game.game_say_dialog_onOpened==undefined){
@@ -16706,535 +17202,548 @@ precontent:function(){
 				game.game_say_dialog_num--;
 				clearInterval(interval);
 			};
-		},100);
+		},time4);
 	};
 	
-	// 设置AI禁将（参考自玄武江湖扩展）
-	if(lib.config.aijinjiangxingbie === undefined || lib.config.aijinjiangxingbie === null){
-		lib.config.aijinjiangxingbie = 'off';
-		game.saveConfig('aijinjiangxingbie','off');
-	}
-	if(lib.config.aijinjiangxingbie!='off' || lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen || lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye || lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics){
-		var savedFilter = lib.filter.characterDisabled;
-		lib.filter.characterDisabled = function(i,libCharacter){
-			// 仅保留男性武将
-			if(lib.config.aijinjiangxingbie=='male'){
+	// 应用当前AI禁将到
+	if(
+		(lib.config.mode == 'identity' && lib.config['extension_搬运自用_aijinjiang_identity']!=false) ||
+		(lib.config.mode == 'guozhan' && lib.config['extension_搬运自用_aijinjiang_guozhan']!=false) ||
+		(lib.config.mode == 'doudizhu' && lib.config['extension_搬运自用_aijinjiang_doudizhu']!=false) ||
+		(lib.config.mode == 'versus' && lib.config['extension_搬运自用_aijinjiang_versus']!=false) ||
+		(lib.config.mode == 'single' && lib.config['extension_搬运自用_aijinjiang_single']!=false) ||
+		(lib.config.mode == 'boss' && lib.config['extension_搬运自用_aijinjiang_boss']!=false) ||
+		(lib.config.mode == 'chess' && lib.config['extension_搬运自用_aijinjiang_chess']!=false) ||
+		(lib.config.mode == 'tafang' && lib.config['extension_搬运自用_aijinjiang_tafang']!=false) ||
+		(lib.config.mode == 'stone' && lib.config['extension_搬运自用_aijinjiang_stone']!=false)
+	){
+		// 设置AI禁将（参考自玄武江湖扩展）
+		if(lib.config.aijinjiangxingbie === undefined || lib.config.aijinjiangxingbie === null){
+			lib.config.aijinjiangxingbie = 'off';
+			game.saveConfig('aijinjiangxingbie','off');
+		}
+		if(lib.config.aijinjiangxingbie!='off' || lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen || lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye || lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics){
+			var savedFilter = lib.filter.characterDisabled;
+			lib.filter.characterDisabled = function(i,libCharacter){
+				// 仅保留男性武将
+				if(lib.config.aijinjiangxingbie=='male'){
+					if(i){
+						if(lib.character[i]){
+							if(lib.character[i][0]!='male'){
+								return true;
+							}
+						}
+					}
+				}
+				// 仅保留女性武将
+				if(lib.config.aijinjiangxingbie=='female'){
+					if(i){
+						if(lib.character[i]){
+							if(lib.character[i][0]!='female'){
+								return true;
+							}
+						}
+					}
+				}
+				// 仅保留双性武将
+				if(lib.config.aijinjiangxingbie=='double'){
+					if(i){
+						if(lib.character[i]){
+							if(lib.character[i][0]!='double'){
+								return true;
+							}
+						}
+					}
+				}
+				// 仅保留男性和女性武将
+				if(lib.config.aijinjiangxingbie=='malefemale'){
+					if(i){
+						if(lib.character[i]){
+							if(lib.character[i][0]=='double'){
+								return true;
+							}
+						}
+					}
+				}
+				// 仅保留男性和双性武将
+				if(lib.config.aijinjiangxingbie=='maledouble'){
+					if(i){
+						if(lib.character[i]){
+							if(lib.character[i][0]=='female'){
+								return true;
+							}
+						}
+					}
+				}
+				// 仅保留女性和双性武将
+				if(lib.config.aijinjiangxingbie=='femaledouble'){
+					if(i){
+						if(lib.character[i]){
+							if(lib.character[i][0]=='male'){
+								return true;
+							}
+						}
+					}
+				}
 				if(i){
 					if(lib.character[i]){
-						if(lib.character[i][0]!='male'){
+						// AI禁将-势力
+						if((lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen|| lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye) && !lib.config.aijinjiangpingjipf && !lib.config.aijinjiangpingjipt && !lib.config.aijinjiangpingjijp && !lib.config.aijinjiangpingjiss && !lib.config.aijinjiangpingjics){
+							// 保留魏势力武将
+							if(lib.config.aijinjiangshiliwei){
+								if(lib.character[i][1]=='wei'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留蜀势力武将
+							if(lib.config.aijinjiangshilishu){
+								if(lib.character[i][1]=='shu'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留吴势力武将
+							if(lib.config.aijinjiangshiliwu){
+								if(lib.character[i][1]=='wu'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留群势力武将
+							if(lib.config.aijinjiangshiliqun){
+								if(lib.character[i][1]=='qun'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留晋势力武将
+							if(lib.config.aijinjiangshilijin){
+								if(lib.character[i][1]=='jin'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留神势力武将
+							if(lib.config.aijinjiangshilishen){
+								if(lib.character[i][1]=='shen'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留双势力武将
+							if(lib.config.aijinjiangshilishuang){
+								if(get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留键势力武将
+							if(lib.config.aijinjiangshilikey){
+								if(lib.character[i][1]=='key'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留西势力武将
+							if(lib.config.aijinjiangshiliwestern){
+								if(lib.character[i][1]=='western'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留野势力武将（国战野心家武将）
+							if(lib.config.aijinjiangshiliye){
+								if(lib.character[i][1]=='ye'&&!get.is.double(i)){
+									return savedFilter(i,libCharacter);
+								}
+							}
+						}
+						// AI禁将-武将评级
+						if(!lib.config.aijinjiangshiliwei && !lib.config.aijinjiangshilishu && !lib.config.aijinjiangshiliwu && !lib.config.aijinjiangshiliqun && !lib.config.aijinjiangshilijin && !lib.config.aijinjiangshilishen && !lib.config.aijinjiangshilishuang && !lib.config.aijinjiangshilikey && !lib.config.aijinjiangshiliwestern && !lib.config.aijinjiangshiliye && (lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics)){
+							// 保留平凡武将A
+							if(lib.config.aijinjiangpingjipf){
+								if(game.getRarity(i)=='junk'){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+							if(lib.config.aijinjiangpingjipt){
+								if(game.getRarity(i)=='common'){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留精品武将S
+							if(lib.config.aijinjiangpingjijp){
+								if(game.getRarity(i)=='rare'){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留史诗武将SS
+							if(lib.config.aijinjiangpingjiss){
+								if(game.getRarity(i)=='epic'){
+									return savedFilter(i,libCharacter);
+								}
+							}
+							// 保留传说武将SSS
+							if(lib.config.aijinjiangpingjics){
+								if(game.getRarity(i)=='legend'){
+									return savedFilter(i,libCharacter);
+								}
+							}
+						}
+						// AI禁将-势力和AI禁将-武将评级同时开
+						if((lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen|| lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye) && (lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics)){
+							// 保留魏势力武将
+							if(lib.config.aijinjiangshiliwei){
+								if(lib.character[i][1]=='wei'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留蜀势力武将
+							if(lib.config.aijinjiangshilishu){
+								if(lib.character[i][1]=='shu'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留吴势力武将
+							if(lib.config.aijinjiangshiliwu){
+								if(lib.character[i][1]=='wu'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留群势力武将
+							if(lib.config.aijinjiangshiliqun){
+								if(lib.character[i][1]=='qun'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留晋势力武将
+							if(lib.config.aijinjiangshilijin){
+								if(lib.character[i][1]=='jin'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留神势力武将
+							if(lib.config.aijinjiangshilishen){
+								if(lib.character[i][1]=='shen'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留双势力武将
+							if(lib.config.aijinjiangshilishuang){
+								if(get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留键势力武将
+							if(lib.config.aijinjiangshilikey){
+								if(lib.character[i][1]=='key'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留西势力武将
+							if(lib.config.aijinjiangshiliwestern){
+								if(lib.character[i][1]=='western'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+							// 保留野势力武将（国战野心家武将）
+							if(lib.config.aijinjiangshiliye){
+								if(lib.character[i][1]=='ye'&&!get.is.double(i)){
+									// 保留平凡武将A
+									if(lib.config.aijinjiangpingjipf){
+										if(game.getRarity(i)=='junk'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留普通武将A+（若未为武将评级，则默认为普通武将）
+									if(lib.config.aijinjiangpingjipt){
+										if(game.getRarity(i)=='common'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留精品武将S
+									if(lib.config.aijinjiangpingjijp){
+										if(game.getRarity(i)=='rare'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留史诗武将SS
+									if(lib.config.aijinjiangpingjiss){
+										if(game.getRarity(i)=='epic'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+									// 保留传说武将SSS
+									if(lib.config.aijinjiangpingjics){
+										if(game.getRarity(i)=='legend'){
+											return savedFilter(i,libCharacter);
+										}
+									}
+								}
+							}
+						}
+						if(lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen ||lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye || lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics){
 							return true;
 						}
 					}
 				}
-			}
-			// 仅保留女性武将
-			if(lib.config.aijinjiangxingbie=='female'){
-				if(i){
-					if(lib.character[i]){
-						if(lib.character[i][0]!='female'){
-							return true;
-						}
-					}
-				}
-			}
-			// 仅保留双性武将
-			if(lib.config.aijinjiangxingbie=='double'){
-				if(i){
-					if(lib.character[i]){
-						if(lib.character[i][0]!='double'){
-							return true;
-						}
-					}
-				}
-			}
-			// 仅保留男性和女性武将
-			if(lib.config.aijinjiangxingbie=='malefemale'){
-				if(i){
-					if(lib.character[i]){
-						if(lib.character[i][0]=='double'){
-							return true;
-						}
-					}
-				}
-			}
-			// 仅保留男性和双性武将
-			if(lib.config.aijinjiangxingbie=='maledouble'){
-				if(i){
-					if(lib.character[i]){
-						if(lib.character[i][0]=='female'){
-							return true;
-						}
-					}
-				}
-			}
-			// 仅保留女性和双性武将
-			if(lib.config.aijinjiangxingbie=='femaledouble'){
-				if(i){
-					if(lib.character[i]){
-						if(lib.character[i][0]=='male'){
-							return true;
-						}
-					}
-				}
-			}
-			if(i){
-				if(lib.character[i]){
-					// AI禁将-势力
-					if((lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen|| lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye) && !lib.config.aijinjiangpingjipf && !lib.config.aijinjiangpingjipt && !lib.config.aijinjiangpingjijp && !lib.config.aijinjiangpingjiss && !lib.config.aijinjiangpingjics){
-						// 保留魏势力武将
-						if(lib.config.aijinjiangshiliwei){
-							if(lib.character[i][1]=='wei'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留蜀势力武将
-						if(lib.config.aijinjiangshilishu){
-							if(lib.character[i][1]=='shu'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留吴势力武将
-						if(lib.config.aijinjiangshiliwu){
-							if(lib.character[i][1]=='wu'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留群势力武将
-						if(lib.config.aijinjiangshiliqun){
-							if(lib.character[i][1]=='qun'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留晋势力武将
-						if(lib.config.aijinjiangshilijin){
-							if(lib.character[i][1]=='jin'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留神势力武将
-						if(lib.config.aijinjiangshilishen){
-							if(lib.character[i][1]=='shen'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留双势力武将
-						if(lib.config.aijinjiangshilishuang){
-							if(get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留键势力武将
-						if(lib.config.aijinjiangshilikey){
-							if(lib.character[i][1]=='key'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留西势力武将
-						if(lib.config.aijinjiangshiliwestern){
-							if(lib.character[i][1]=='western'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留野势力武将（国战野心家武将）
-						if(lib.config.aijinjiangshiliye){
-							if(lib.character[i][1]=='ye'&&!get.is.double(i)){
-								return savedFilter(i,libCharacter);
-							}
-						}
-					}
-					// AI禁将-武将评级
-					if(!lib.config.aijinjiangshiliwei && !lib.config.aijinjiangshilishu && !lib.config.aijinjiangshiliwu && !lib.config.aijinjiangshiliqun && !lib.config.aijinjiangshilijin && !lib.config.aijinjiangshilishen && !lib.config.aijinjiangshilishuang && !lib.config.aijinjiangshilikey && !lib.config.aijinjiangshiliwestern && !lib.config.aijinjiangshiliye && (lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics)){
-						// 保留平凡武将A
-						if(lib.config.aijinjiangpingjipf){
-							if(game.getRarity(i)=='junk'){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-						if(lib.config.aijinjiangpingjipt){
-							if(game.getRarity(i)=='common'){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留精品武将S
-						if(lib.config.aijinjiangpingjijp){
-							if(game.getRarity(i)=='rare'){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留史诗武将SS
-						if(lib.config.aijinjiangpingjiss){
-							if(game.getRarity(i)=='epic'){
-								return savedFilter(i,libCharacter);
-							}
-						}
-						// 保留传说武将SSS
-						if(lib.config.aijinjiangpingjics){
-							if(game.getRarity(i)=='legend'){
-								return savedFilter(i,libCharacter);
-							}
-						}
-					}
-					// AI禁将-势力和AI禁将-武将评级同时开
-					if((lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen|| lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye) && (lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics)){
-						// 保留魏势力武将
-						if(lib.config.aijinjiangshiliwei){
-							if(lib.character[i][1]=='wei'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留蜀势力武将
-						if(lib.config.aijinjiangshilishu){
-							if(lib.character[i][1]=='shu'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留吴势力武将
-						if(lib.config.aijinjiangshiliwu){
-							if(lib.character[i][1]=='wu'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留群势力武将
-						if(lib.config.aijinjiangshiliqun){
-							if(lib.character[i][1]=='qun'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留晋势力武将
-						if(lib.config.aijinjiangshilijin){
-							if(lib.character[i][1]=='jin'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留神势力武将
-						if(lib.config.aijinjiangshilishen){
-							if(lib.character[i][1]=='shen'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留双势力武将
-						if(lib.config.aijinjiangshilishuang){
-							if(get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留键势力武将
-						if(lib.config.aijinjiangshilikey){
-							if(lib.character[i][1]=='key'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留西势力武将
-						if(lib.config.aijinjiangshiliwestern){
-							if(lib.character[i][1]=='western'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-						// 保留野势力武将（国战野心家武将）
-						if(lib.config.aijinjiangshiliye){
-							if(lib.character[i][1]=='ye'&&!get.is.double(i)){
-								// 保留平凡武将A
-								if(lib.config.aijinjiangpingjipf){
-									if(game.getRarity(i)=='junk'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留普通武将A+（若未为武将评级，则默认为普通武将）
-								if(lib.config.aijinjiangpingjipt){
-									if(game.getRarity(i)=='common'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留精品武将S
-								if(lib.config.aijinjiangpingjijp){
-									if(game.getRarity(i)=='rare'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留史诗武将SS
-								if(lib.config.aijinjiangpingjiss){
-									if(game.getRarity(i)=='epic'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-								// 保留传说武将SSS
-								if(lib.config.aijinjiangpingjics){
-									if(game.getRarity(i)=='legend'){
-										return savedFilter(i,libCharacter);
-									}
-								}
-							}
-						}
-					}
-					if(lib.config.aijinjiangshiliwei || lib.config.aijinjiangshilishu || lib.config.aijinjiangshiliwu || lib.config.aijinjiangshiliqun || lib.config.aijinjiangshilijin || lib.config.aijinjiangshilishen ||lib.config.aijinjiangshilishuang || lib.config.aijinjiangshilikey || lib.config.aijinjiangshiliwestern || lib.config.aijinjiangshiliye || lib.config.aijinjiangpingjipf || lib.config.aijinjiangpingjipt || lib.config.aijinjiangpingjijp || lib.config.aijinjiangpingjiss || lib.config.aijinjiangpingjics){
-						return true;
-					}
-				}
-			}
-			return savedFilter(i,libCharacter);
-		};
+				return savedFilter(i,libCharacter);
+			};
+		}
 	}
 	
 },
@@ -17289,27 +17798,28 @@ config:{
 				'<br>'+
 				'<br>※ 手牌可视(即时生效)<br>- 开启后，玩家可以看到场上其他所有角色的手牌（手机端可长按/电脑端可右击武将牌查看，拆顺等选择手牌的界面可看到手牌），即时生效'+
 				'<br>'+
-				'<br>▷ 顶部菜单功能（参考自特效测试扩展）'+
-				'<br>※ “控”加入顶部左侧菜单<br>- 将控制台打开方式由界面的“控”字按钮改为加入顶部左侧菜单的“控”字按钮，设置为默认开启'+
-				'<br>※ “导”加入顶部左侧菜单<br>- 将“导”字按钮加入顶部左侧菜单栏，点击后快捷打开菜单-扩展-搬运自用-顶部，设置为默认开启'+
-				'<br>※ “切”加入顶部左侧菜单<br>将“切”字按钮加入顶部左侧菜单栏，点击后可切换「“切”功能配置」设置的需切换的功能，即时生效，设置为默认开启'+
-				'<br>※ “切”功能配置<br>- 可设置需切换的功能'+
-				'<br>※ “换”加入顶部左侧菜单<br>将“换”字按钮加入顶部左侧菜单栏，点击后可切换「“换”功能配置」设置的需切换的功能，即时生效，设置为默认开启'+
-				'<br>※ “换”功能配置<br>- 可设置需切换的功能'+
+				'<br>▷ 2-17人扩展'+
 				'<br>'+
-				'<br>▷ 2-17人扩展：整合自写并魔改的扩展，请点击展开下方2-17人扩展【使用说明】查看↓'+
+				'<br>- 整合自写并魔改的扩展，请点击展开下方2-17人扩展【使用说明】查看↓'+
+				'<br>'+
 				'<br>◇ 妙用：局局1v7，教程如下↓<br>① 本扩展八人场身份选择：1主0忠7反0内<br>② 屏蔽身份：忠臣内奸反贼<br>另：如果想自己1人打7个自己，进行同样的设置后，开乱斗-同将模式即可（设置是继承身份模式的）'+
 				'<br>'+
 				'<br>▷ AI禁将功能'+
-				'<br>- 参考自玄武江湖扩展，AI根据性别、势力或武将评级禁选武将，将AI根据势力、武将评级禁选武将改为开关设置，可更加自由地选择配置禁选组合'+
+				'<br>'+
+				'<br>（随机选将可用/仅点将可用）'+
+				'<br>※ 功能'+
+				'<br>- 所有武将随机选将可用：将武将资料卡-禁用-随机选将可用开关全部开启&武将包仅点将可用开关全部关闭，自动重启后生效'+
+				'<br>'+
+				'<br>（AI禁将）'+
+				'<br>※ 参考自玄武江湖扩展，AI根据性别、势力或武将评级禁选武将，将AI根据势力、武将评级禁选武将改为开关设置，可更加自由地选择配置禁选组合；还可将AI禁将应用到选项设置的模式（开启「应用当前AI禁将到......」内对应开关后该模式会禁选）'+
 				'<br><span style=\"color:red\">- 和其他扩展的AI禁将功能同时使用可能会导致无法选将，若遇冲突请关闭本选项！</span>'+
 				'<br>'+
 				'<br>▷ 禁将与解除禁将'+
+				'<br>'+
 				'<br>※ 禁将功能'+
 				'<br>- 解除所有游戏模式禁将：启用在武将-禁将里的武将（所有游戏模式），相当于将武将资料卡-禁用-所有游戏模式开关开启（全部启用），自动重启后生效'+
 				'<br>- 解除非当前模式禁将：启用在武将-禁将里的武将（非当前游戏模式），相当于将武将资料卡-禁用-非当前游戏模式开关开启，自动重启后生效'+
 				'<br>- 应用当前禁将到全部：将当前游戏模式禁将应用到非当前游戏模式，相当于将武将-禁将里的当前游戏模式已禁用的武将的资料卡-禁用-所有游戏模式开关关闭（全部禁用），自动重启后生效<br>注：还可应用当前禁将到「应用当前禁将到......」选项设置的模式'+
-				'<br>- 所有武将随机选将可用：将武将包仅点将可用开关全部关闭&武将资料卡-禁用-随机选将可用开关全部开启，自动重启后生效'+
 				'<br>- 场上所有角色禁将：在已有禁将的基础上继续场上所有角色禁将（当前游戏模式），即把场上所有角色的武将加入武将-禁将，相当于将武将资料卡-禁用-当前游戏模式开关关闭，手动重启后生效；若想解除禁将，请在未手动重启前使用“解除场上所有角色禁将”功能'+
 				'<br>- 解除场上所有角色禁将：在已有禁将的基础上解除场上所有角色禁将（当前游戏模式）【前提是已禁将但未手动重启】，即启用在武将-禁将里的武将，相当于将武将资料卡-禁用-当前游戏模式开关开启，手动重启后生效'+
 				'<br>- 场上其他角色禁将：在已有禁将的基础上继续场上其他角色禁将（当前游戏模式），即把场上其他角色的武将加入武将-禁将，相当于将武将资料卡-禁用-当前游戏模式开关关闭，手动重启后生效；若想解除禁将，请在未手动重启前使用“解除场上其他角色禁将”功能'+
@@ -17319,67 +17829,89 @@ config:{
 				'<br>'+
 				'<br>※ 解除当前模式禁将<br>- 在当前游戏模式下，在已有禁将的基础上解除禁用武将，即启用在武将-禁将里的武将，相当于将武将资料卡-禁用-当前游戏模式开关开启，点击选项后自动重启后生效<br>- 其他解除禁将的功能可使用禁将功能'+
 				'<br>'+
-				'<br>※ 当前模式快捷禁用武将<br>- 开启后，进入快捷禁将模式（要先打开资料卡修改开关才能生效）：武将菜单单击未禁用的武将即可禁将（单击已禁用的武将即可解除禁将），替换原有资料卡功能，默认关闭'+
-				'<br>'+
 				'<br>◇ 妙用：仅体验本体新增的武将（体验扩展新增的武将同理），教程如下↓'+
 				'<br>法1（本体扩展通用，扩展同理，在文件管理器中的操作略有差异）：<br>① 在文件管理器中操作：删除<span style=\"color:#0086FF\">游戏目录</span>/character内的文件，将旧版本体character里的文件放到对应位置<br>② 在无名杀中操作：本扩展点击当前模式禁将-全部禁将<br>③ 在文件管理器中操作：将新版本体character里的文件放到<span style=\"color:#0086FF\">游戏目录</span>/character内<br>④ 重启/重新打开无名杀'+
 				'<br>法2（仅适用于本体）：<br>① 安装衍生篇扩展<br>② 在无名杀中操作：衍生篇扩展-本体武将补丁-选择旧版本，本扩展点击当前模式禁将-全部禁将<br>③ 在无名杀中操作：衍生篇扩展-本体武将补丁-选择新版本<br>④ 重启/重新打开无名杀'+
 				'<br><span style="\color:red\">- 由于禁将等原因导致的报错，无需重置无名杀！<br>法一：关闭弹窗后，直接切换至其他的游戏模式（如挑战模式），再开启本体的武将重启即可<br>法二：直接退出游戏，然后从启动页重新进入其他的游戏模式（如挑战模式），再开启本体的武将重启即可</span>'+
 				'<br>'+
 				'<br>▷ 禁卡与解除禁卡'+
+				'<br>'+
 				'<br>※ 禁卡功能'+
-				'<br>- 解除所有游戏模式禁卡<br>- 说明略（与禁将功能类似）'+
-				'<br>- 解除非当前模式禁卡<br>- 说明略（与禁将功能类似）'+
-				'<br>- 应用当前禁卡到全部<br>- 说明略（与禁将功能类似）'+
+				'<br>- 解除所有游戏模式禁卡：说明略（与禁将功能类似）'+
+				'<br>- 解除非当前模式禁卡：说明略（与禁将功能类似）'+
+				'<br>- 应用当前禁卡到全部：说明略（与禁将功能类似）'+
 				'<br>'+
-				'<br>※ 当前模式禁卡<br>- 说明略（与禁将功能类似）'+
+				'<br>※ 当前模式禁卡：说明略（与禁将功能类似）'+
 				'<br>'+
-				'<br>※ 解除当前模式禁卡<br>- 说明略（与禁将功能类似）'+
-				'<br>'+
-				'<br>※ 当前模式快捷禁用卡牌<br>- 说明略（与禁将功能类似）'+
+				'<br>※ 解除当前模式禁卡：说明略（与禁将功能类似）'+
 				'<br>'+
 				'<br>▷ 资料卡功能（武将资料卡功能）'+
+				'<br>'+
 				'<br>※ 资料卡修改<br>- 修改本体的资料卡，具体请长按/右击选项查看<br><span style=\"color:red\">- 若遇冲突请关闭本选项！</span><br>- 新增是否开启千幻聆音扩展的判断，避免冲突弹窗（若开启千幻聆音扩展则本功能失效）'+
+				'<br>'+
 				'<br>※ 资料卡外观<br>- 设置资料卡的外观，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡样式<br>- 设置资料卡的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
+				'<br>※ 查看资料卡样式<br>- 设置双击查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
+				'<br>※ 选将时查看资料卡样式<br>- 设置选将时查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡显示武将简介<br>- 开启后显示武将介绍，关闭后不显示武将介绍，即时生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡显示台词<br>- 开启后显示台词，关闭后不显示台词，即时生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡显示原画<br>- 开启后显示原画，关闭后不显示原画，即时生效（要先打开资料卡修改开关才能生效）；可通过「显示原画配置」设置单原画武将显示原画/多原画武将显示原画'+
+				'<br>'+
 				'<br>※ 左下按钮显示<br>- 左下角区域（禁用按钮和收藏按钮）可左右滑动了<br>- 左下角区域新增按钮若干（可左右滑动然后点击使用），可通过「左下按钮显示」进行配置（默认开启，还可配置原版UI禁用和收藏按钮的显示），各按钮功能可长按/右击选项查看'+
+				'<br>'+
 				'<br>※ 选将时查看资料卡<br>- 默认开启，开启后，在选将时（或其他特殊情况）长按/右击武将头像，可查看资料卡；关闭后，恢复原有的长按/右击弹出菜单功能，即时生效（要先打开「长按/右击弹出菜单修改」开关才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡点击查看武将信息<br>- 开启后，点击武将名或武将名注解，可查看武将信息，包括：武将名ID、武将名翻译、所在武将包、所在武将包的分类、武将称号、[姓,名]、武将评级、是否主公武将、宗族、珠联璧合等（通过弹窗显示、命令框（其它-命令）或控制台查看），即时生效（要先打开资料卡修改开关和选项-显示-显示武将名注解才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡点击查看技能信息<br>- 搬运自金庸群侠传扩展（点击查看技能代码）<br>- 开启后，点击技能名注解，可查看技能信息，包括：技能名ID、技能名翻译、技能描述、技能代码等（通过弹窗显示、命令框（其它-命令）或控制台查看），即时生效（要先打开资料卡修改开关和选项-显示-显示技能名注解才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡查看多形态原画<br>- 开启后可查看切换后的双形态/多形态原画（含语音台词），关闭后仅可查看初始原画（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 查看不可见武将资料卡<br>- 开启后，可查看不可见武将的资料卡，包括隐匿的武将、暗置的武将等，即时生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 查看资料卡不暂停游戏<br>- 开启后，查看资料卡时不暂停游戏，即时生效（要先打开资料卡修改开关才能生效）'+
-				'<br>※ 允许选择并复制<br>- 开启后，允许选择并复制资料卡的文字，即时生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡试听衍生技能配音<br>- 开启后，点击技能介绍的技能名，可试听衍生技能配音（另：技能配音亦能试听），即时生效（要先打开资料卡修改开关才能生效）'+
+				'<br>'+
 				'<br>※ 资料卡试听阵亡配音<br>- 搬运自金庸群侠传扩展，已征得大熊小猫的修改许可<br>- 开启后，会在资料卡界面添加阵亡按钮，点击后可试听武将阵亡配音，要先打开资料卡修改开关才能生效（默认设为开启，暂不支持扩展阵亡配音试听）<br><span style=\"color:red\">- 若遇冲突请关闭本选项！</span><br>- 新增是否开启千幻聆音扩展的判断，避免冲突弹窗（若开启千幻聆音扩展则本功能失效）'+
+				'<br>'+
 				'<br>※ 资料卡试听胜利配音【暂不可用，等本体更新中】<br>- 开启后，会在资料卡界面添加胜利按钮，点击后可试听武将胜利配音（默认设为开启，暂不支持扩展胜利配音试听，要先打开资料卡修改开关才能生效）<br><span style=\"color:red\">- 若遇冲突请关闭本选项！</span><br>- 新增是否开启千幻聆音扩展的判断，避免冲突弹窗（若开启千幻聆音扩展则本功能失效）'+
 				'<br>'+
+				'<br><span style=\"color:red\">- 注意：由于资料卡和卡牌资料卡共用一个外观，如需关闭资料卡修改，还需额外关闭卡牌资料卡修改</span>'+
+				'<br>'+
 				'<br>▷ 卡牌资料卡功能'+
+				'<br>'+
 				'<br>※ 卡牌资料卡修改<br>- 参考武将资料卡新增卡牌资料卡修改（菜单-卡牌界面，点击卡牌即可查看；非菜单界面，设置后长按/右击卡牌亦可查看），具体请长按/右击选项查看<br><span style=\"color:red\">- 若遇冲突请关闭本选项！</span>'+
-				'<br>※ 其他说明略（与资料卡功能类似）'+
+				'<br>'+
+				'<br>※ 其他功能说明略（与资料卡功能类似）'+
+				'<br>'+
+				'<br><span style=\"color:red\">- 注意：由于卡牌资料卡和资料卡共用一个外观，如需关闭卡牌资料卡修改，还需额外关闭武将资料卡修改</span>'+
 				'<br>'+
 				'<br>▷ 右键菜单修改'+
 				'<br>'+
-				'<br>※ 长按/右击弹出菜单修改<br>- 修改本体的右键菜单，包括显示、功能，默认开启<br>修改手机端长按/电脑端右击武将头像后的武将信息查看界面菜单；新增武将引文接口，开启本开关后才能使用武将引文补充；新增选将时查看资料卡功能，开启本开关后才能使用；发送交互表情时间修改；允许选择并复制；其他修复<br><span style=\"color:red\">- 若遇冲突请关闭本选项！</span>'+
+				'<br>※ 长按/右击弹出菜单修改<br>- 修改本体的右键菜单，包括显示、功能，默认开启：'+
+				'修改手机端长按/电脑端右击武将头像后的武将信息查看界面菜单；新增武将引文接口，开启本开关后才能使用武将引文补充；新增选将时查看资料卡功能，开启本开关后才能使用；发送交互表情时间修改；双将的右键菜单收藏功能能分别收藏主将和副将了；其他修复<br><span style=\"color:red\">- 若遇冲突请关闭本选项！</span>'+
 				'<br>'+
 				'<br>※ 配置显示内容<br>- 可自行配置菜单显示内容'+
 				'<br>'+
 				'<br>▷ 武将称号&性别'+
+				'<br>'+
 				'<br>※ 武将称号补充<br>- 默认开启，开启后在手机端长按/电脑端右击武将头像后的武将信息查看界面显示武将称号（缓更中）'+
 				'<br>'+
 				'<br>※ 武将性别显示<br>- 默认开启，重启后生效。开启后关闭本体的显示角色性别开关，在手机端长按/电脑端右击武将头像后的武将信息查看界面显示武将性别（含扩展）；关闭后开启本体的显示角色性别开关（若不想显示武将性别，还需前往本体选项-显示-显示角色性别关闭）'+
 				'<br>'+
-				'<br>▷ 武将&卡牌引文：代码参考自群英荟萃乀摧林扩展'+
+				'<br>▷ 武将&卡牌引文'+
+				'<br>代码参考自群英荟萃乀摧林扩展'+
 				'<br>'+
 				'<br>※ 武将引文补充<br>- 默认开启，开启后在手机端长按/电脑端右击武将头像后的武将信息查看界面显示武将引文（缓更中），需先开启「长按/右击弹出菜单修改」开关'+
 				'<br>'+
 				'<br>※ 卡牌引文补充<br>- 默认开启，开启后在手机端长按/电脑端右击武将头像后的卡牌信息查看界面显示卡牌引文（缓更中）'+
-				'<br>'+
-				'<br>▷ 自由控制功能'+
-				'<br>※ 需开启自娱自乐功能，控制角色可配置：<br>- 控制玩家<br>- 控制玩家的队友<br>- 控制玩家的敌人'+
 				'<br>'+
 				'<br>▷ 自由选将增强'+
 				'<br>※ 自由选将-搜索功能<br>- 武将搜索代码摘抄自扩展ol（作者Aurora表示代码是公开的，谁都可以借用，无需征得修改许可）<br>- 默认开启，新增一个自由选将搜索框合并武将搜索功能，输入任意关键词即可搜索（无需细分搜索类别）；移动代码以解决自由选将搜索功能存在关闭扩展后不消失的问题；新增确定按钮以修复部分手机可能存在回车无法使用的bug；新增技能台词、阵亡台词、武将称号、武将介绍等搜索选项；新增搜索技能选项补充设置，在搜索技能时，可设置搜索技能、搜索衍生技能、搜索技能+衍生技能；新增任意关键字选项补充设置，可自行配置搜索选项'+
@@ -17388,64 +17920,131 @@ config:{
 				'<br>'+
 				'<br>※ 自由选将-随机按钮<br>- 由假装无敌扩展原功能【AI选将】分离而来，开启后，将在自由选将界面添加“随机”筛选按钮，点击该按钮可切换显示全部武将和随机武将，设置为默认开启'+
 				'<br>'+
-				'<br>▷ 调整卡牌功能'+
-				'<br>※ 调整手牌和牌堆功能<br>- 开启后，分发起始手牌后，玩家可以调整手牌和牌堆功能(限身份场、斗地主、国战)<br>- 调整选项（可自行设置）：调整手牌（玩家）、调整手牌（其他角色）、调整牌堆、调整弃牌堆'+
-				// '<br>※ 调整装备区和判定区的牌<br>- 开启后，在使用调整手牌和牌堆功能时，可调整区域内的牌（即额外装备区和判定区内的牌）'+
-				'<br>◇ 小技巧：如果误操作了，赶紧找到调整选项，随便开/关一个，回来点确定后无事发生'+
-				'<br>※ 所有角色使用手气卡<br>- 开启后，分发起始手牌后，玩家可令所有角色使用手气卡(限身份场、斗地主、国战)<br>- 调整选项（可自行设置）：配置玩家或场上其他角色使用手气卡；开启使用手气卡次数设置、所有角色使用手气卡次数（默认为无限次）、每位角色单独设置次数（默认为无限次，开启「自娱自乐」后生效）、使用手气卡顺序（默认为逆时针）'+
-				'<br>'+
-				'<br>▷ 模拟聊天功能：可模拟聊天（聊天表情随机发送、快捷语音随机发送）'+
-				'<br>'+
-				'<br>▷ 游戏模式：详情请点击下方【游戏模式介绍】折叠选项查看'+
-				'<br>'+
 				'<br>▷ 收藏&最近功能'+
+				'<br>'+
 				'<br>※ 加入收藏'+
 				'<br>- 最近武将加入收藏：将最近使用武将加入收藏武将列表里，即时生效'+
+				'<br>'+
 				'<br>※ 加入最近'+
 				'<br>- 收藏武将加入最近：将收藏武将加入最近使用武将列表里，即时生效'+
+				'<br>'+
 				'<br>※ 移出收藏'+
 				'<br>- 清空收藏武将：清空自由选将对话框“收藏”里的武将，即时生效；手动重启后移除武将-收藏里的所有武将'+
+				'<br>'+
 				'<br>※ 移出最近'+
 				'<br>- 清空最近使用武将：清空自由选将对话框“最近”里的武将，即时生效'+
 				'<br>'+
+				'<br>▷ 调整卡牌功能'+
+				'<br>'+
+				'<br>※ 调整手牌和牌堆功能<br>- 开启后，分发起始手牌后，玩家可以调整手牌和牌堆功能(限身份场、斗地主、国战)<br>- 调整选项（可自行设置）：调整手牌（玩家）、调整手牌（其他角色）、调整牌堆、调整弃牌堆'+
+				// '<br>※ 调整装备区和判定区的牌<br>- 开启后，在使用调整手牌和牌堆功能时，可调整区域内的牌（即额外装备区和判定区内的牌）'+
+				'<br>'+
+				'<br>◇ 小技巧：如果误操作了，赶紧找到调整选项，随便开/关一个，回来点确定后无事发生'+
+				'<br>'+
+				'<br>※ 所有角色使用手气卡'+
+				'<br>- 开启后，分发起始手牌后，玩家可令所有角色使用手气卡(限身份场、斗地主、国战)<br>- 调整选项（可自行设置）：配置玩家或场上其他角色使用手气卡；开启使用手气卡次数设置、所有角色使用手气卡次数（默认为无限次）、每位角色单独设置次数（默认为无限次，开启「自娱自乐」后生效）、使用手气卡顺序（默认为逆时针）'+
+				'<br>'+
+				'<br>▷ 自由控制功能'+
+				'<br>'+
+				'<br>※ 需开启自娱自乐功能，控制角色可配置：<br>- 控制玩家<br>- 控制玩家的队友<br>- 控制玩家的敌人'+
+				'<br>'+
+				'<br>'+
+				'<br>▷ 手牌可视功能'+
+				'<br>'+
+				'<br>※ 需开启手牌可视功能，手牌可视角色可配置：<br>- 队友手牌可视<br>- 敌人手牌可视'+
+				'<br>'+
+				'<br>▷ 游戏模式'+
+				'<br>详情请点击下方【游戏模式介绍】折叠选项查看'+
+				'<br>'+
+				'<br>▷ 模拟聊天功能'+
+				'<br>可模拟聊天（聊天表情随机发送、快捷语音随机发送）'+
+				'<br>'+
+				'<br>▷ 允许选择并复制'+
+				'<br>'+
+				'<br>- 资料卡/卡牌资料卡：开启后，允许选择并复制资料卡/卡牌资料卡的文字，即时生效（要先打开资料卡修改/卡牌资料卡修改开关才能生效）'+
+				'<br>- 右键菜单/菜单：开启后，允许选择并复制右键菜单/菜单的文字，即时生效'+
+				'<br>'+
+				'<br>▷ 顶部菜单功能'+
+				'<br>（参考自特效测试扩展）'+
+				'<br>'+
+				'<br>※ “控”加入顶部左侧菜单<br>- 将控制台打开方式由界面的“控”字按钮改为加入顶部左侧菜单的“控”字按钮，设置为默认开启'+
+				'<br>'+
+				'<br>※ “导”加入顶部左侧菜单<br>- 将“导”字按钮加入顶部左侧菜单栏，点击后快捷打开菜单-扩展-搬运自用-顶部，设置为默认开启'+
+				'<br>'+
+				'<br>※ “切”加入顶部左侧菜单<br>将“切”字按钮加入顶部左侧菜单栏，点击后可切换「“切”功能配置」设置的需切换的功能，即时生效，设置为默认开启'+
+				'<br>'+
+				'<br>※ “切”功能配置<br>- 可设置需切换的功能'+
+				'<br>'+
+				'<br>※ “换”加入顶部左侧菜单<br>将“换”字按钮加入顶部左侧菜单栏，点击后可切换「“换”功能配置」设置的需切换的功能，即时生效，设置为默认开启'+
+				'<br>'+
+				'<br>※ “换”功能配置<br>- 可设置需切换的功能'+
+				'<br>'+
+				'<br>▷ 快捷功能'+
+				'<br>'+
+				'<br>※ 当前模式快捷禁用武将<br>- 开启后，进入快捷禁将模式（要先打开资料卡修改开关才能生效）：武将菜单单击未禁用的武将即可禁将（单击已禁用的武将即可解除禁将），替换原有资料卡功能，默认关闭'+
+				'<br>'+
+				'<br>※ 快捷AI禁用武将'+
+				'<br>- 开启后，进入快捷AI禁将模式（要先打开资料卡修改开关才能生效）：武将菜单单击未AI禁用的武将即可AI禁将（单击已AI禁用的武将即可解除AI禁将），替换原有资料卡功能，默认关闭'+
+				'<br>'+
+				'<br>※ 快捷收藏功能'+
+				'<br>- 开启后，进入快捷收藏模式（要先打开资料卡修改开关才能生效）：武将菜单单击未加入收藏的武将即可加入收藏（单击已加入收藏的武将即可移出收藏），替换原有资料卡功能，默认关闭'+
+				'<br>'+
+				'<br>※ 快捷最近功能'+
+				'<br>- 开启后，进入快捷最近模式（要先打开资料卡修改开关才能生效）：武将菜单单击未加入最近的武将即可加入最近（单击已加入最近的武将即可移出最近），替换原有资料卡功能，默认关闭'+
+				'<br>'+
+				'<br>※ 当前模式快捷禁用卡牌<br>- 开启后，进入快捷禁卡模式（要先打开卡牌资料卡修改开关才能生效）：卡牌菜单单击未禁用的卡牌即可禁卡（单击已禁用的卡牌即可解除禁卡），替换原有卡牌资料卡功能，默认关闭'+
+				'<br>'+
+				'<br>※ 快捷开关功能<br>- 开启后在武将菜单添加“快捷开关功能”开关/开启后在卡牌菜单添加“快捷开关功能”开关'+
+				'<br>'+
 				'<br>▷ 开关扩展功能'+
+				'<br>'+
 				'<br>※ 开关扩展功能<br>- 一键开启或关闭扩展，自动重启后生效'+
+				'<br>'+
+				'<br>▷ 其他'+
 				'<br>'+
 				'<br>※ 绘制效果图（测试中）<br>- 利用控制台命令代码绘制效果图，即点即用'+
 				'<br>'+
 				'<br>PART Ⅱ 搬运功能（并魔改）'+
 				'<br>'+
 				'<br>▷ 导航功能'+
+				'<br>'+
 				'<br>※ 选项导航功能<br>- 搬运自扩展ol的选项导航（作者Aurora表示代码是公开的，谁都可以借用，无需征得修改许可）<br>- 输入后回车/确定返回搜索结果，再回车一下/再按一次确定跳转至下一个搜索结果'+
 				'<br>'+
 				'<br>※ 搜索设置<br>- 选项导航功能-搜索设置（搜索选项、搜索选项信息），关闭导航功能并重新打开后生效，设置为默认开启'+
 				'<br>'+
-				'<br>▷ 控制台功能'+
-				'<br>※ 控制台-功能加强版<br>- 原作者为诗笺，搬运自蜀汉中兴扩展，已征得修改许可<br>- 本体控制台（选项-其它-控制）的加强版，魔改并新增大量新功能（包括对话框大小位置调整、注释掉记住对话框位置代码、增加选择数值选项、将大量控制台命令代码写入扩展等）<br>- 开启：手动点击下方<span style="text-decoration: underline;">控制台-功能加强版</span>链接按钮开启；若开启加入顶部左侧菜单开关，还可点击顶部左侧菜单栏的“控”字按钮打开控制台<br>- 执行：对话框点击“执”按钮执行控制台命令代码<br>- 关闭：对话框点击“关”按钮关闭'+
-				'<br>- 温馨提示：控制台点击“执”按钮可更新玩家状态；可在非托管状态下通过控制台执行重新选将功能(限身份场、斗地主、国战)；自曝身份仅适用于身份模式，不影响AI；显示身份适用于身份模式（不影响AI）和国战模式；清空技能时，带有Charlotte标签的技能无法被清除；横置/翻面受技能限制，强制横置/强制翻面不受技能限制'+
+				'<br>▷ 选将禁用切换'+
+				'<br>'+
+				'<br>※ 选将时禁用武将切换功能<br>- 原作者为157，搬运自官将重修扩展<br>- 默认关闭此选项，开启后将在选将时禁用武将切换功能'+
+				'<br>'+
+				'<br>▷ 交换位置功能'+
+				'<br>'+
+				'<br>※ 交换位置功能<br>- 原作者为Helasisy星云，搬运自祖安武将扩展，已征得修改许可<br>- 分离自原功能【游戏自定义工具】，增加限身份场、斗地主、国战<br>- 开启后，游戏开始时玩家可以交换两名角色的座次，从而自定义场上所有角色的位置'+
 				'<br>'+
 				'<br>▷ 重新选将功能'+
-				'<br>※ 重新选将功能<br>- 原作者为清瑶的“徒弟”、神秘喵，搬运自假装无敌扩展，已征得修改许可<br>- 原功能名为【AI选将】，删除原版自由选将搜索功能以避免和自由选将-搜索功能冲突、“仙”势力及其筛选按钮，新增神武将选择势力（若开启）可点击取消了（棘手怀念摧毁一步到位懒人包专属魔改）、玩家托管后会随机选将和随机选势力了、修复使用控制台多选武将重新选将对话框的显示问题、重新选将功能可以点击取消按钮取消重新选将了、修复明忠模式点重新选将会暴露主公身份的bug、修复双势力武将无法重新选势力的bug等<br>- 开启后，游戏开始时玩家可以为AI或自己重新选将(限身份场、斗地主、国战)'+
+				'<br>'+
+				'<br>※ 重新选将功能<br>- 原作者为清瑶的“徒弟”、神秘喵，搬运自假装无敌扩展，已征得修改许可<br>- 原功能名为【AI选将】，删除原版自由选将搜索功能以避免和自由选将-搜索功能冲突、“仙”势力及其筛选按钮，新增神武将选择势力（若开启）可点击取消了（棘手怀念摧毁一步到位懒人包专属魔改）、玩家托管后会随机选将和随机选势力了、修复使用控制台多选武将重新选将对话框的显示问题、重新选将功能可以点击取消按钮取消重新选将了、修复双势力武将无法重新选势力的bug、明忠模式修复、谋攻模式修复、其他适配（适配不享受地主的额外技能等）等<br>- 开启后，游戏开始时玩家可以为AI或自己重新选将(限身份场、斗地主、国战)'+
 				'<br>'+
 				'<br>※ 重选单双将(即时生效)<br>- 游戏开始时或游戏中重新选将时可重选单双将了，即时生效(限身份场、斗地主)<br>- 例如可在单将模式重新选双将，或者在双将模式重新选单将'+
 				'<br>'+
-				'<br>▷ 交换位置功能'+
-				'<br>※ 交换位置功能<br>- 原作者为Helasisy星云，搬运自祖安武将扩展，已征得修改许可<br>- 分离自原功能【游戏自定义工具】，增加限身份场、斗地主、国战<br>- 开启后，游戏开始时玩家可以交换两名角色的座次，从而自定义场上所有角色的位置'+
+				'<br>▷ 控制台功能'+
 				'<br>'+
-				'<br>▷ 一键导入重启<br>- 原作者为永远的萌新，搬运自特效测试扩展，已征得修改许可<br><span style=\"color:red\">- 【超级好用，强烈推荐！！！】</span><br>- 删除原版导入助手的功能（更多导入方法可下载特效测试扩展体验）<br>- 新增自动一键导入重启功能，默认设为自动开启<br>- 新增当扩展文件夹内缺少extension.js时报错提示<br>- 新增重启后检测扩展文件夹名功能：扩展导入完成后，再次重启时，检测（开启的扩展的）扩展文件夹名是否正确，新增为防出现bug请修正的提示；玩家需按提示逐个修正扩展文件夹名，都修改完成后重启才不会出现弹窗提示<br>- 教程如下，请点击展开下方【一键导入重启】查看↓'+
+				'<br>※ 控制台-功能加强版<br>- 原作者为诗笺，搬运自蜀汉中兴扩展，已征得修改许可<br>- 本体控制台（选项-其它-控制）的加强版，魔改并新增大量新功能（包括对话框大小位置调整、注释掉记住对话框位置代码、增加选择数值选项、将大量控制台命令代码写入扩展等）<br>- 开启：手动点击下方<span style="text-decoration: underline;">控制台-功能加强版</span>链接按钮开启；若开启加入顶部左侧菜单开关，还可点击顶部左侧菜单栏的“控”字按钮打开控制台<br>- 执行：对话框点击“执”按钮执行控制台命令代码<br>- 关闭：对话框点击“关”按钮关闭'+
+				'<br>- 温馨提示：控制台点击“执”按钮可更新玩家状态；可在非托管状态下通过控制台执行重新选将功能(限身份场、斗地主、国战)；自曝身份仅适用于身份模式，不影响AI；显示身份适用于身份模式（不影响AI）和国战模式；清空技能时，带有Charlotte标签的技能无法被清除；横置/翻面受技能限制，强制横置/强制翻面不受技能限制'+
+				'<br>'+
+				'<br>▷ 一键导入重启'+
+				'<br>'+
+				'<br>- 原作者为永远的萌新，搬运自特效测试扩展，已征得修改许可<br><span style=\"color:red\">- 【超级好用，强烈推荐！！！】</span><br>- 删除原版导入助手的功能（更多导入方法可下载特效测试扩展体验）<br>- 新增自动一键导入重启功能，默认设为自动开启<br>- 新增当扩展文件夹内缺少extension.js时报错提示<br>- 新增重启后检测扩展文件夹名功能：扩展导入完成后，再次重启时，检测（开启的扩展的）扩展文件夹名是否正确，新增为防出现bug请修正的提示；玩家需按提示逐个修正扩展文件夹名，都修改完成后重启才不会出现弹窗提示<br>- 教程如下，请点击展开下方【一键导入重启】查看↓'+
 				'<br>'+
 				'<br>▷ 减少报错功能'+
+				'<br>'+
 				'<br>※ 取消弹窗警告<br>- 原作者为Sukincen，搬运自群英会扩展，已征得修改许可<br>- 默认关闭此选项，开启此项并重启后取消弹窗警告（自欺欺人），推荐用于忽略报错勉强能玩的场景等'+
 				'<br>'+
 				'<br>※ 图片懒加载<br>- 原作者为清瑶的“徒弟”、神秘喵，搬运自假装无敌扩展<br>- 开启后，游戏内的武将图片将会开启懒加载，不会一次性全部加载，只有在窗口显示了才会去加载，避免一次性加载太多图片导致游戏卡顿（在自由选将会闪退的时候打开，能解决该问题）'+
 				'<br>'+
-				'<br>▷ 禁用武将切换'+
-				'<br>※ 禁用武将切换功能<br>- 原作者为157，搬运自官将重修扩展<br>- 默认关闭此选项，开启后将在选将时禁用武将切换功能'+
+				'<br>※ 特效/界面错位修复<br>- 原作者为梨花喵🐱，搬运自特效修复扩展<br>- 开启后，修复特效错位/界面错位的问题，设置为默认开启<br><span style=\"color:red\">- 若遇冲突请关闭本选项！</span>'+
 				'<br>'+
-				'<br>▷ 其他<br>- 参考将灵重置版扩展、群英荟萃乀摧林扩展，实现选项菜单的折叠'+
-				'<br>'+
-				'<br>▷ 特效/界面错位解决方案'+
-				'<br>※ 特效错位修复<br>- 原作者为梨花喵🐱，搬运自特效修复扩展'+
+				'<br>▷ 其他'+
+				'<br>- 参考将灵重置版扩展、群英荟萃乀摧林扩展，实现选项菜单的折叠'+
 				'<br>'
 				);
 				this.parentNode.insertBefore(more,this.nextSibling);
@@ -17561,9 +18160,12 @@ config:{
 	
 	"byzy_shoupaikeshi":{
 		"name":"手牌可视(即时生效)",
-		"intro":"开启后，玩家可以看到场上其他所有角色的手牌（手机端可长按/电脑端可右击武将牌查看，拆顺等选择手牌的界面可看到手牌），即时生效。",
+		"intro":"开启后，玩家可以看到场上其他所有角色的手牌（手机端可长按/电脑端可右击武将牌查看，拆顺等选择手牌的界面可看到手牌），即时生效。<br>手牌可视的角色可通过下方「手牌可视功能-可视角色」进行配置。",
 		"init":lib.config.byzy_shoupaikeshi === undefined ? false : lib.config.byzy_shoupaikeshi,
 		onclick:function(item){
+			// 关闭手牌可视后再开启会重新将当前角色设为“玩家”（_status.byzy_spksrealMe）
+			_status.byzy_spksrealMe = game.me;
+			
 			game.saveConfig('byzy_shoupaikeshi',item);
 			game.saveConfig('extension_搬运自用_byzy_shoupaikeshi',item);
 		}
@@ -17692,21 +18294,21 @@ config:{
 											div_target.style['background-color']='';
 										},250);
 										this.searching_num++;
-										if(game.say1){
-											game.say1('搜索完成：'+(this.searching_num)+'/'+(this.searching_list.length));
+										if(game.byzy_say1){
+											game.byzy_say1('搜索完成：'+(this.searching_num)+'/'+(this.searching_list.length));
 										}else{
 											alert('搜索完成：'+(this.searching_num)+'/'+(this.searching_list.length));
 										};
 									}else{
-										if(game.say1){
-											game.say1('未找到相关内容');
+										if(game.byzy_say1){
+											game.byzy_say1('未找到相关内容');
 										}else{
 											alert('未找到相关内容');
 										};
 									};
 								}else{
-									if(game.say1){
-										game.say1('请输入关键字进行搜索');
+									if(game.byzy_say1){
+										game.byzy_say1('请输入关键字进行搜索');
 									}else{
 										alert('请输入关键字进行搜索');
 									};
@@ -17750,21 +18352,21 @@ config:{
 								div_target.style['background-color']='';
 							},250);
 							this.searching_num++;
-							if(game.say1){
-								game.say1('搜索完成：'+(this.searching_num)+'/'+(this.searching_list.length));
+							if(game.byzy_say1){
+								game.byzy_say1('搜索完成：'+(this.searching_num)+'/'+(this.searching_list.length));
 							}else{
 								alert('搜索完成：'+(this.searching_num)+'/'+(this.searching_list.length));
 							};
 						}else{
-							if(game.say1){
-								game.say1('未找到相关内容');
+							if(game.byzy_say1){
+								game.byzy_say1('未找到相关内容');
 							}else{
 								alert('未找到相关内容');
 							};
 						};
 					}else{
-						if(game.say1){
-							game.say1('请输入关键字进行搜索');
+						if(game.byzy_say1){
+							game.byzy_say1('请输入关键字进行搜索');
 						}else{
 							alert('请输入关键字进行搜索');
 						};
@@ -17923,110 +18525,6 @@ config:{
 	
 	// 分割线
 	"byzyfgx2":{
-		"name":"<font size='4'>-----顶部菜单功能-----</font>",
-		"clear":true,
-	},
-	
-	byzy_kztgn_part:{
-		clear:true,
-		name:"<font size='3'><li>控制台功能</font>",
-	},
-	
-	"byzy_showkongmenu": {
-		"name": "“控”加入顶部左侧菜单",
-		"init": true,
-		"intro": "将“控”字按钮加入顶部左侧菜单栏，点击后可快捷打开控制台（即控制台功能的「控制台-功能加强版」）。",
-	},
-	
-	byzy_dhgn_part:{
-		clear:true,
-		name:"<font size='3'><li>导航功能</font>",
-	},
-	
-	"byzy_showdaomenu": {
-		"name": "“导”加入顶部左侧菜单",
-		"init": true,
-		"intro": "将“导”字按钮加入顶部左侧菜单栏，点击后快捷打开菜单-扩展-搬运自用-顶部。",
-	},
-	
-	byzy_zlkgn_part:{
-		clear:true,
-		name:"<font size='3'><li>资料卡功能/快捷禁将功能</font>",
-	},
-	
-	"byzy_showqiemenu": {
-		"name": "“切”加入顶部左侧菜单",
-		"init": true,
-		"intro": "将“切”字按钮加入顶部左侧菜单栏，点击后可切换「“切”功能配置」设置的需切换的功能，即时生效。",
-	},
-	
-	"byzy_qiefunction":{
-		"name":"“切”功能配置",
-		"intro":"可设置需切换的功能。<li>资料卡：<br>在选将时（或其他特殊情况）长按/右击武将显示的是资料卡还是原有的弹出菜单（功能同「选将时查看资料卡」），“切”高亮则显示资料卡<li>快捷禁将：<br>「当前模式快捷禁用武将」和打开资料卡功能切换，“切”高亮则进入快捷禁将模式",
-		"init":lib.config.byzy_qiefunction === undefined ? "0" : lib.config.byzy_qiefunction,
-		"item":{
-			"0":"资料卡",
-			"1":"快捷禁将",
-		},
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_qiefunction',item);
-			game.saveConfig('byzy_qiefunction',item);
-			if(ui.leftmenuqie){
-				// 切换后进入快捷禁将模式
-				if(lib.config['extension_搬运自用_byzy_qiefunction']=='1') {
-					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(true);
-				} else {
-					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(false);
-					
-					// “切”高亮则显示资料卡
-					if(lib.config['extension_搬运自用_byzy_xjsckzlk']){
-						ui.leftmenuqie.classList.add("glow");
-					} else ui.leftmenuqie.classList.remove("glow");
-				}
-			}
-		},
-	},
-	
-	byzy_kpzlkgn_part:{
-		clear:true,
-		name:"<font size='3'><li>卡牌资料卡功能/快捷禁卡功能</font>",
-	},
-	
-	"byzy_showhuanmenu": {
-		"name": "“换”加入顶部左侧菜单",
-		"init": true,
-		"intro": "将“换”字按钮加入顶部左侧菜单栏，点击后可切换「“换”功能配置」设置的需切换的功能，即时生效。",
-	},
-	
-	"byzy_huanfunction":{
-		"name":"“换”功能配置",
-		"intro":"可设置需切换的功能。<li>卡牌资料卡：<br>非菜单界面长按/右击卡牌显示的是卡牌资料卡还是原有的弹出菜单（功能同「长按/右击查看资料卡」），“换”高亮则显示卡牌资料卡<li>快捷禁卡：<br>「当前模式快捷禁用卡牌」和打开卡牌资料卡功能切换，“换”高亮则进入快捷禁卡模式",
-		"init":lib.config.byzy_huanfunction === undefined ? "0" : lib.config.byzy_huanfunction,
-		"item":{
-			"0":"卡牌资料卡",
-			"1":"快捷禁卡",
-		},
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_huanfunction',item);
-			game.saveConfig('byzy_huanfunction',item);
-			if(ui.leftmenuhuan){
-				// 切换后进入快捷禁将模式
-				if(lib.config['extension_搬运自用_byzy_huanfunction']=='1') {
-					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjykp.onclick(true);
-				} else {
-					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjykp.onclick(false);
-					
-					// “换”高亮则显示卡牌资料卡
-					if(lib.config['extension_搬运自用_byzy_yjckkpzlk']){
-						ui.leftmenuhuan.classList.add("glow");
-					} else ui.leftmenuhuan.classList.remove("glow");
-				}
-			}
-		},
-	},
-	
-	// 分割线
-	"byzyfgx3":{
 		"name":"<font size='4'>------2-17人扩展------</font>",
 		"clear":true,
 	},
@@ -18279,9 +18777,41 @@ config:{
 	},
 	
 	// 分割线
-	"byzyfgx4":{
+	"byzyfgx3":{
 		"name":"<font size='4'>------AI禁将功能------</font>",
 		"clear":true,
+	},
+	
+	byzy_sjxjky_sub_part:{
+		clear:true,
+		name:"<font size='3'>1. 随机选将可用/仅点将可用</font>",
+	},
+	
+	byzy_kjaijywj_kuaijie_part:{
+		clear:true,
+		name:"<font size='2'>「快捷AI禁用武将」在快捷功能</font>",
+	},
+	
+	"byzy_aijjgn":{
+		"name":"功能",
+		"intro":"将控制台命令代码写入扩展，详情请点击上方更新说明查看。<br>点击选项后请认真看弹窗说明，然后选择【确定】或【取消】。",
+		"init":"1",
+		"item":{
+			"1":"所有武将随机选将可用",
+		},
+		onclick:function(item){
+			if(item == '1'){
+				if(confirm("是否设置所有武将随机选将可用，即将武将资料卡-禁用-随机选将可用开关全部开启&武将包仅点将可用开关全部关闭。\n\r继续请点击【确定】，自动重启后生效。")){
+					game.zxgn(901);
+					game.reload();
+				};
+			}
+		},
+	},
+	
+	byzy_aijinjiang_sub_part:{
+		clear:true,
+		name:"<font size='3'>2. AI禁将</font>",
 	},
 	
 	aijinjiang_fenjiexian1:{
@@ -18502,10 +19032,86 @@ config:{
 		}
 	},
 	
+	aijinjiang_fenjiexian4:{
+		clear:true,
+		name:"<li>应用当前AI禁将到...... 　 　 ▽",
+		onclick:function(){
+			if(lib.config.aijinjiang_fenjiexian4==undefined){
+				lib.config.aijinjiang_fenjiexian4=[
+					this.nextSibling,
+					this.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+				];
+				this.innerHTML="<li>应用当前AI禁将到...... 　 　 ▷";
+				lib.config.aijinjiang_fenjiexian4.forEach(function(element) {element.hide()});
+			}else{
+				this.innerHTML="<li>应用当前AI禁将到...... 　 　 ▽";
+				lib.config.aijinjiang_fenjiexian4.forEach(function(element) {element.show()});
+				delete lib.config.aijinjiang_fenjiexian4;
+			}
+		}
+	},
+	aijinjiang_identity: {
+		name: "| 身份模式",
+		intro: "开启后将应用当前AI禁将到身份模式。",
+		init: true,
+	},
+	aijinjiang_guozhan: {
+		name: "| 国战模式",
+		intro: "开启后将应用当前AI禁将到国战模式。",
+		init: true,
+	},
+	aijinjiang_doudizhu: {
+		name: "| 斗地主模式",
+		intro: "开启后将应用当前AI禁将到斗地主模式。",
+		init: true,
+	},
+	aijinjiang_versus: {
+		name: "| 对决模式",
+		intro: "开启后将应用当前AI禁将到对决模式。",
+		init: true,
+	},
+	aijinjiang_single: {
+		name: "| 单挑模式",
+		intro: "开启后将应用当前AI禁将到单挑模式。",
+		init: true,
+	},
+	aijinjiang_boss: {
+		name: "| 挑战模式",
+		intro: "开启后将应用当前AI禁将到挑战模式。",
+		init: true,
+	},
+	aijinjiang_chess: {
+		name: "| 战棋模式",
+		intro: "开启后将应用当前AI禁将到战棋模式。",
+		init: true,
+	},
+	aijinjiang_tafang: {
+		name: "| 塔防模式",
+		intro: "开启后将应用当前AI禁将到塔防模式。",
+		init: true,
+	},
+	aijinjiang_stone: {
+		name: "| 炉石模式",
+		intro: "开启后将应用当前AI禁将到炉石模式。",
+		init: true,
+	},
+	
 	// 分割线
-	"byzyfgx5":{
+	"byzyfgx4":{
 		"name":"<font size='4'>----禁将与解除禁将-----</font>",
 		"clear":true,
+	},
+	
+	byzy_dqmskjjywj_kuaijie_part:{
+		clear:true,
+		name:"<font size='2'>「当前模式快捷禁用武将」在快捷功能</font>",
 	},
 	
 	"byzy_jjgn":{
@@ -18516,11 +19122,10 @@ config:{
 			"1":"解除所有游戏模式禁将",
 			"2":"解除非当前模式禁将",
 			"3":"应用当前禁将到全部",
-			"4":"所有武将随机选将可用",
-			"5":"场上所有角色禁将",
-			"6":"解除场上所有角色禁将",
-			"7":"场上其他角色禁将",
-			"8":"解除场上其他角色禁将",
+			"4":"场上所有角色禁将",
+			"5":"解除场上所有角色禁将",
+			"6":"场上其他角色禁将",
+			"7":"解除场上其他角色禁将",
 		},
 		onclick:function(item){
 			if(item == '1'){
@@ -18542,29 +19147,23 @@ config:{
 				};
 			}
 			if(item == '4'){
-				if(confirm("是否设置所有武将随机选将可用，即将武将包仅点将可用开关全部关闭&武将资料卡-禁用-随机选将可用开关全部开启。\n\r继续请点击【确定】，自动重启后生效。")){
+				if(confirm("是否在已有禁将的基础上继续场上所有角色禁将（当前游戏模式），即把场上所有角色的武将加入武将-禁将，相当于将武将资料卡-禁用-当前游戏模式开关关闭。\n\r继续请点击【确定】，手动重启后生效；若想解除禁将，请在未手动重启前使用“解除场上所有角色禁将”功能。")){
 					game.zxgn(1004);
-					game.reload();
 				};
 			}
 			if(item == '5'){
-				if(confirm("是否在已有禁将的基础上继续场上所有角色禁将（当前游戏模式），即把场上所有角色的武将加入武将-禁将，相当于将武将资料卡-禁用-当前游戏模式开关关闭。\n\r继续请点击【确定】，手动重启后生效；若想解除禁将，请在未手动重启前使用“解除场上所有角色禁将”功能。")){
+				if(confirm("是否在已有禁将的基础上解除场上所有角色禁将（当前游戏模式）【前提是已禁将但未手动重启】，即启用在武将-禁将里的武将，相当于将武将资料卡-禁用-当前游戏模式开关开启。\n\r继续请点击【确定】，手动重启后生效。")){
 					game.zxgn(1005);
 				};
 			}
 			if(item == '6'){
-				if(confirm("是否在已有禁将的基础上解除场上所有角色禁将（当前游戏模式）【前提是已禁将但未手动重启】，即启用在武将-禁将里的武将，相当于将武将资料卡-禁用-当前游戏模式开关开启。\n\r继续请点击【确定】，手动重启后生效。")){
+				if(confirm("是否在已有禁将的基础上继续场上其他角色禁将（当前游戏模式），即把场上其他角色的武将加入武将-禁将，相当于将武将资料卡-禁用-当前游戏模式开关关闭。\n\r继续请点击【确定】，手动重启后生效；若想解除禁将，请在未手动重启前使用“解除场上其他角色禁将”功能。")){
 					game.zxgn(1006);
 				};
 			}
 			if(item == '7'){
-				if(confirm("是否在已有禁将的基础上继续场上其他角色禁将（当前游戏模式），即把场上其他角色的武将加入武将-禁将，相当于将武将资料卡-禁用-当前游戏模式开关关闭。\n\r继续请点击【确定】，手动重启后生效；若想解除禁将，请在未手动重启前使用“解除场上其他角色禁将”功能。")){
-					game.zxgn(1007);
-				};
-			}
-			if(item == '8'){
 				if(confirm("是否在已有禁将的基础上解除场上其他角色禁将（当前游戏模式）【前提是已禁将但未手动重启】，即启用在武将-禁将里的武将，相当于将武将资料卡-禁用-当前游戏模式开关开启。\n\r继续请点击【确定】，手动重启后生效。")){
-					game.zxgn(1008);
+					game.zxgn(1007);
 				};
 			}
 		},
@@ -18674,22 +19273,6 @@ config:{
 		},
 	},
 	
-	"byzy_dqmskjjywj":{
-		"name": "当前模式快捷禁用武将",
-		"intro": "开启后，进入快捷禁将模式（要先打开资料卡修改开关才能生效）：武将菜单单击未禁用的武将即可禁将（单击已禁用的武将即可解除禁将），替换原有资料卡功能。<br><br>注：若需和打开资料卡功能快速切换，可设置顶部菜单功能的「“切”功能配置-快捷禁将」",
-		"init":lib.config.byzy_dqmskjjywj === undefined ? false : lib.config.byzy_dqmskjjywj,
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_dqmskjjywj',item);
-			game.saveConfig('byzy_dqmskjjywj',item);
-			if(ui.leftmenuqie && lib.config['extension_搬运自用_byzy_qiefunction']=='1'){
-				// “切”高亮则进入快捷禁将模式
-				if(lib.config['extension_搬运自用_byzy_dqmskjjywj']){
-					ui.leftmenuqie.classList.add("glow");
-				} else ui.leftmenuqie.classList.remove("glow");
-			}
-		},
-	},
-	
 	byzy_yydqjjd_fenjiexian:{
 		clear:true,
 		name:"<li>应用当前禁将到......　 　 　 ▽",
@@ -18725,24 +19308,24 @@ config:{
 		intro: "开启后将应用当前禁将到国战模式。",
 		init: true,
 	},
-	byzy_yydqjjd_versus: {
-		name: "| 对决模式",
-		intro: "开启后将应用当前禁将到对决模式。",
-		init: true,
-	},
-	byzy_yydqjjd_boss: {
-		name: "| 挑战模式",
-		intro: "开启后将应用当前禁将到挑战模式。",
-		init: true,
-	},
 	byzy_yydqjjd_doudizhu: {
 		name: "| 斗地主模式",
 		intro: "开启后将应用当前禁将到斗地主模式。",
 		init: true,
 	},
+	byzy_yydqjjd_versus: {
+		name: "| 对决模式",
+		intro: "开启后将应用当前禁将到对决模式。",
+		init: true,
+	},
 	byzy_yydqjjd_single: {
 		name: "| 单挑模式",
 		intro: "开启后将应用当前禁将到单挑模式。",
+		init: true,
+	},
+	byzy_yydqjjd_boss: {
+		name: "| 挑战模式",
+		intro: "开启后将应用当前禁将到挑战模式。",
 		init: true,
 	},
 	byzy_yydqjjd_chess: {
@@ -18762,9 +19345,14 @@ config:{
 	},
 	
 	// 分割线
-	"byzyfgx6":{
+	"byzyfgx5":{
 		"name":"<font size='4'>----禁卡与解除禁卡-----</font>",
 		"clear":true,
+	},
+	
+	byzy_dqmskjjykp_kuaijie_part:{
+		clear:true,
+		name:"<font size='2'>「当前模式快捷禁用卡牌」在快捷功能</font>",
 	},
 	
 	"byzy_jkgn":{
@@ -18822,22 +19410,6 @@ config:{
 		},
 	},
 	
-	"byzy_dqmskjjykp":{
-		"name": "当前模式快捷禁用卡牌",
-		"intro": "开启后，进入快捷禁卡模式（要先打开卡牌资料卡修改开关才能生效）：卡牌菜单单击未禁用的卡牌即可禁卡（单击已禁用的卡牌即可解除禁卡），替换原有卡牌资料卡功能。<br><br>注：若需和打开卡牌资料卡功能快速切换，可设置顶部菜单功能的「“切”功能配置-快捷禁卡」",
-		"init":lib.config.byzy_dqmskjjykp === undefined ? false : lib.config.byzy_dqmskjjykp,
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_dqmskjjykp',item);
-			game.saveConfig('byzy_dqmskjjykp',item);
-			if(ui.leftmenuhuan && lib.config['extension_搬运自用_byzy_huanfunction']=='1'){
-				// “换”高亮则进入快捷禁卡模式
-				if(lib.config['extension_搬运自用_byzy_dqmskjjykp']){
-					ui.leftmenuhuan.classList.add("glow");
-				} else ui.leftmenuhuan.classList.remove("glow");
-			}
-		},
-	},
-	
 	byzy_yydqjkd_fenjiexian:{
 		clear:true,
 		name:"<li>应用当前禁卡到......　 　 　 ▽",
@@ -18873,24 +19445,24 @@ config:{
 		intro: "开启后将应用当前禁卡到国战模式。",
 		init: true,
 	},
-	byzy_yydqjkd_versus: {
-		name: "| 对决模式",
-		intro: "开启后将应用当前禁卡到对决模式。",
-		init: true,
-	},
-	byzy_yydqjkd_boss: {
-		name: "| 挑战模式",
-		intro: "开启后将应用当前禁卡到挑战模式。",
-		init: true,
-	},
 	byzy_yydqjkd_doudizhu: {
 		name: "| 斗地主模式",
 		intro: "开启后将应用当前禁卡到斗地主模式。",
 		init: true,
 	},
+	byzy_yydqjkd_versus: {
+		name: "| 对决模式",
+		intro: "开启后将应用当前禁卡到对决模式。",
+		init: true,
+	},
 	byzy_yydqjkd_single: {
 		name: "| 单挑模式",
 		intro: "开启后将应用当前禁卡到单挑模式。",
+		init: true,
+	},
+	byzy_yydqjkd_boss: {
+		name: "| 挑战模式",
+		intro: "开启后将应用当前禁卡到挑战模式。",
 		init: true,
 	},
 	byzy_yydqjkd_chess: {
@@ -18910,7 +19482,7 @@ config:{
 	},
 	
 	// 分割线
-	"byzyfgx7":{
+	"byzyfgx6":{
 		"name":"<font size='4'>------资料卡功能------</font><br><font size='2'>（此资料卡功能默认指武将资料卡功能）</font>",
 		"clear":true,
 	},
@@ -18957,6 +19529,36 @@ config:{
 		onclick:function(item){
 			game.saveConfig('extension_搬运自用_byzy_zlkys',item);
 			game.saveConfig('byzy_zlkys',item);
+		},
+	},
+	
+	"byzy_ckzlkys":{
+		"name": "查看资料卡样式",
+		"intro": "设置双击查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）。",
+		"init":lib.config.byzy_ckzlkys === undefined ? "0" : lib.config.byzy_ckzlkys,
+		"item":{
+			"0":"无",
+			"1":"模糊效果1",
+			"2":"模糊效果2",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_ckzlkys',item);
+			game.saveConfig('byzy_ckzlkys',item);
+		},
+	},
+	
+	"byzy_xjsckzlkys":{
+		"name": "选将时查看资料卡样式",
+		"intro": "设置选将时查看资料卡背景的样式，关闭并重新打开资料卡生效（要先打开资料卡修改开关才能生效）。",
+		"init":lib.config.byzy_xjsckzlkys === undefined ? "0" : lib.config.byzy_xjsckzlkys,
+		"item":{
+			"0":"无",
+			"1":"模糊效果1",
+			"2":"模糊效果2",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_xjsckzlkys',item);
+			game.saveConfig('byzy_xjsckzlkys',item);
 		},
 	},
 	
@@ -19172,16 +19774,6 @@ config:{
 		"init": false,
 	},
 	
-	"byzy_zlkyxxzbfz":{
-		"name": "允许选择并复制",
-		"intro": "开启后，允许选择并复制资料卡的文字，即时生效（要先打开资料卡修改开关才能生效）。<br><br>操作技巧<li>手机端：<br>① 长按选择需要复制的内容，弹出复制选项后，不要放手而是直接拖动选择（因为放手后通过光标选择有时会失效）<br>② 点击复制选项复制<li>电脑端：<br>① 鼠标选择需要复制的内容（注意：右键菜单选择时鼠标左键不要放开）<br>② 按Ctrl+C复制",
-		"init":lib.config.byzy_zlkyxxzbfz === undefined ? true : lib.config.byzy_zlkyxxzbfz,
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_zlkyxxzbfz',item);
-			game.saveConfig('byzy_zlkyxxzbfz',item);
-		},
-	},
-	
 	byzy_zlkpeiyin_part:{
 		clear:true,
 		name:"<font size='3'><li>配音</font>",
@@ -19210,7 +19802,7 @@ config:{
 	},
 	
 	// 分割线
-	"byzyfgx8":{
+	"byzyfgx7":{
 		"name":"<font size='4'>----卡牌资料卡功能-----</font>",
 		"clear":true,
 	},
@@ -19252,6 +19844,21 @@ config:{
 		onclick:function(item){
 			game.saveConfig('extension_搬运自用_byzy_kpzlkys',item);
 			game.saveConfig('byzy_kpzlkys',item);
+		},
+	},
+	
+	"byzy_ckkpzlkys":{
+		"name": "查看卡牌资料卡样式",
+		"intro": "设置查看卡牌资料卡背景的样式，关闭并重新打开卡牌资料卡生效（要先打开卡牌资料卡修改开关才能生效）。",
+		"init":lib.config.byzy_ckkpzlkys === undefined ? "0" : lib.config.byzy_ckkpzlkys,
+		"item":{
+			"0":"无",
+			"1":"模糊效果1",
+			"2":"模糊效果2",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_ckkpzlkys',item);
+			game.saveConfig('byzy_ckkpzlkys',item);
 		},
 	},
 	
@@ -19352,24 +19959,20 @@ config:{
 		},
 	},
 	
+	"byzy_ckbkjkpzlk": {
+		"name": "查看不可见卡牌资料卡",
+		"intro": "开启后，可查看不可见卡牌的卡牌资料卡，如刘璋的〖暗弱〗，即时生效（要先打开卡牌资料卡修改开关才能生效）；关闭后不会查看卡牌资料卡（显示的是原有的弹出菜单）。",
+		"init": false,
+	},
+	
 	"byzy_ckkpzlkbztyx": {
 		"name": "查看资料卡不暂停游戏",
 		"intro": "开启后，查看卡牌资料卡时不暂停游戏，即时生效（要先打开卡牌资料卡修改开关才能生效）。",
 		"init": false,
 	},
 	
-	"byzy_kpzlkyxxzbfz":{
-		"name": "允许选择并复制",
-		"intro": "开启后，允许选择并复制卡牌资料卡的文字，即时生效（要先打开卡牌资料卡修改开关才能生效）。<br><br>操作技巧<li>手机端：<br>① 长按选择需要复制的内容，弹出复制选项后，不要放手而是直接拖动选择（因为放手后通过光标选择有时会失效）<br>② 点击复制选项复制<li>电脑端：<br>① 鼠标选择需要复制的内容（注意：右键菜单选择时鼠标左键不要放开）<br>② 按Ctrl+C复制",
-		"init":lib.config.byzy_kpzlkyxxzbfz === undefined ? true : lib.config.byzy_kpzlkyxxzbfz,
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_kpzlkyxxzbfz',item);
-			game.saveConfig('byzy_kpzlkyxxzbfz',item);
-		},
-	},
-	
 	// 分割线
-	"byzyfgx9":{
+	"byzyfgx8":{
 		"name":"<font size='4'>-----右键菜单修改-----</font>",
 		"clear":true,
 	},
@@ -19377,7 +19980,7 @@ config:{
 	// PS：右键菜单只是这种菜单的简称，电脑端还等同于鼠标悬停弹出的菜单，此外还包括左击标记弹出的菜单等
 	youjiancaidan: {
 		name: '长按/右击弹出菜单修改',
-		intro: "修改本体的右键菜单，包括显示、功能：<br>修改手机端长按/电脑端右击武将头像后的武将信息查看界面菜单；<br>新增武将引文接口，开启本开关后才能使用武将引文补充；<br>新增选将时查看资料卡功能，开启本开关后才能使用；<br>发送交互表情时间修改；<br>允许选择并复制；<br>其他修复。<br>若遇冲突请关闭本选项！",
+		intro: "修改本体的右键菜单，包括显示、功能：<br>修改手机端长按/电脑端右击武将头像后的武将信息查看界面菜单；<br>新增武将引文接口，开启本开关后才能使用武将引文补充；<br>新增选将时查看资料卡功能，开启本开关后才能使用；<br>发送交互表情时间修改；<br>双将的右键菜单收藏功能能分别收藏主将和副将了；<br>其他修复。<br>若遇冲突请关闭本选项！",
 		init: true,
 	},
 	
@@ -19515,24 +20118,8 @@ config:{
 		init: true,
 	},
 	
-	byzy_yjcdxggongneng_part:{
-		clear:true,
-		name:"<font size='3'><li>功能</font>",
-	},
-	
-	"byzy_yjcdyxxzbfz":{
-		"name": "允许选择并复制",
-		"intro": "开启后，允许选择并复制右键菜单的文字，即时生效（要先打开「长按/右击弹出菜单修改」开关才能生效）。<br><br>操作技巧<li>手机端：<br>① 长按选择需要复制的内容，弹出复制选项后，不要放手而是直接拖动选择（因为放手后通过光标选择有时会失效）<br>② 点击复制选项复制<li>电脑端：<br>① 鼠标选择需要复制的内容（注意：右键菜单选择时鼠标左键不要放开）<br>② 按Ctrl+C复制",
-		"init":lib.config.byzy_yjcdyxxzbfz === undefined ? true : lib.config.byzy_yjcdyxxzbfz,
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_yjcdyxxzbfz',item);
-			game.saveConfig('byzy_yjcdyxxzbfz',item);
-			if(window.byzy_yunxuxuanzebingxiugai) window.byzy_yunxuxuanzebingxiugai();
-		},
-	},
-	
 	// 分割线
-	"byzyfgx10":{
+	"byzyfgx9":{
 		"name":"<font size='4'>----武将称号&性别-----</font>",
 		"clear":true,
 	},
@@ -19560,7 +20147,7 @@ config:{
 	},
 	
 	// 分割线
-	"byzyfgx11":{
+	"byzyfgx10":{
 		"name":"<font size='4'>----武将&卡牌引文-----</font>",
 		"clear":true,
 	},
@@ -19583,72 +20170,24 @@ config:{
 	},
 	
 	// 分割线
+	"byzyfgx11":{
+		"name":"<font size='4'>-----选将禁用切换-----</font>",
+		"clear":true,
+	},
+	
+	byzy_fenjiexian12:{
+		clear:true,
+		name:"<font size='3'><li>鸣谢：官将重修</font>",
+	},
+	
+	"byzy_jywjqhgn": {
+		name: '选将时禁用武将切换功能',
+		init: false,
+		intro: '开启后，将在选将时禁用武将切换功能。<br>若遇冲突请关闭本选项！',
+	},
+	
+	// 分割线
 	"byzyfgx12":{
-		"name":"<font size='4'>------控制台功能------</font>",
-		"clear":true,
-	},
-	
-	byzy_fenjiexian4:{
-		clear:true,
-		name:"<font size='3'><li>鸣谢：蜀汉中兴</font>",
-	},
-	
-	"byzy_kongzhitaiplus": {
-		"name": "<span style='text-decoration: underline;'>控制台-功能加强版</span>",
-		"clear": true,
-		onclick: function() {
-			consoleopen();
-		},
-	},
-	
-	// 分割线
-	"byzyfgx13":{
-		"name":"<font size='4'>-----自由控制功能-----</font>",
-		"clear":true,
-	},
-	
-	byzy_fenjiexian5:{
-		clear:true,
-		name:"<font size='3'><li>鸣谢：攻心为上</font><br><font size='2'>需开启顶部的「自娱自乐」功能</font>",
-	},
-	
-	ziyuzilekzjs_fenjiexian1:{
-		clear:true,
-		name:"<li>控制角色（点击后折叠）▽",
-		onclick:function(){
-			if(lib.config.ziyuzilekzjs_fenjiexian1==undefined){
-				lib.config.ziyuzilekzjs_fenjiexian1=[
-					this.nextSibling,
-					this.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling,
-				];
-				this.innerHTML="<li>控制角色（点击后展开）▷";
-				lib.config.ziyuzilekzjs_fenjiexian1.forEach(function(element) {element.hide()});
-			}else{
-				this.innerHTML="<li>控制角色（点击后折叠）▽";
-				lib.config.ziyuzilekzjs_fenjiexian1.forEach(function(element) {element.show()});
-				delete lib.config.ziyuzilekzjs_fenjiexian1;
-			}
-		}
-	},
-	byzy_ziyuzile_me: {
-		name: "| 控制玩家",
-		intro: "自娱自乐设置：开启本开关后，可控制“玩家”角色（即“我”）行动，即时生效。<br>关闭自娱自乐后再开启会重新将当前角色设为“玩家”。",
-		init: true,
-	},
-	byzy_ziyuzile_kzdy: {
-		name: "| 控制玩家的队友",
-		intro: "自娱自乐设置：开启本开关后，玩家将代替所有场上“玩家的队友”角色行动，即时生效。",
-		init: true,
-	},
-	byzy_ziyuzile_kzdr: {
-		name: "| 控制玩家的敌人",
-		intro: "自娱自乐设置：开启本开关后，玩家将代替所有场上“玩家的敌人”角色行动，即时生效。",
-		init: true,
-	},
-	
-	// 分割线
-	"byzyfgx14":{
 		"name":"<font size='4'>-----自由选将增强-----</font>",
 		"clear":true,
 	},
@@ -19773,6 +20312,104 @@ config:{
 	},
 	
 	// 分割线
+	"byzyfgx13":{
+		"name":"<font size='4'>----收藏&最近功能-----</font>",
+		"clear":true,
+	},
+	
+	byzy_shoucangzuijingongneng_part:{
+		clear:true,
+		name:"<font size='3'><li>功能</font>",
+	},
+	
+	byzy_kjscgn_kuaijie_part:{
+		clear:true,
+		name:"<font size='2'>「快捷收藏功能」在快捷功能</font>",
+	},
+	
+	byzy_kjzjgn_kuaijie_part:{
+		clear:true,
+		name:"<font size='2'>「快捷最近功能」在快捷功能</font>",
+	},
+	
+	byzy_jiarushoucang_part:{
+		clear:true,
+		name:"<font size='3'><li>加入收藏</font>",
+	},
+	
+	"byzy_zjwjjrsc": {
+		"name": "<span style='text-decoration: underline;'>最近武将加入收藏</span>",
+		"clear": true,
+		onclick: function() {
+			if(confirm("是否将最近使用武将加入收藏武将列表里。\n\r继续请点击【确定】，即时生效。")){
+				game.zxgn(2001);
+			}
+		},
+	},
+	
+	byzy_jiaruzuijin_part:{
+		clear:true,
+		name:"<font size='3'><li>加入最近</font>",
+	},
+	
+	"byzy_scwjjrzj": {
+		"name": "<span style='text-decoration: underline;'>收藏武将加入最近</span>",
+		"clear": true,
+		onclick: function() {
+			if(confirm("是否将收藏武将加入最近使用武将列表里。\n\r继续请点击【确定】，即时生效。")){
+				game.zxgn(2002);
+			}
+		},
+	},
+	
+	byzy_yichushoucang_part:{
+		clear:true,
+		name:"<font size='3'><li>移出收藏</font>",
+	},
+	
+	"byzy_qkscwj": {
+		"name": "<span style='text-decoration: underline;'>清空收藏武将</span>",
+		"clear": true,
+		onclick: function() {
+			if(confirm("是否清空收藏武将，即自由选将对话框“收藏”里的武将，即时生效（手动重启后移除武将-收藏里的所有武将）。\n\r继续请点击【确定】。")){
+				game.zxgn(2003);
+			}
+		},
+	},
+	
+	byzy_yichuzuijin_part:{
+		clear:true,
+		name:"<font size='3'><li>移出最近</font>",
+	},
+	
+	"byzy_qkzjsywj": {
+		"name": "<span style='text-decoration: underline;'>清空最近使用武将</span>",
+		"clear": true,
+		onclick: function() {
+			if(confirm("是否清空最近使用武将，即自由选将对话框“最近”里的武将。\n\r继续请点击【确定】，即时生效。")){
+				game.zxgn(2004);
+			}
+		},
+	},
+	
+	// 分割线
+	"byzyfgx14":{
+		"name":"<font size='4'>-----交换位置功能-----</font>",
+		"clear":true,
+	},
+	
+	byzy_fenjiexian7:{
+		clear:true,
+		name:"<font size='3'><li>鸣谢：祖安武将</font><br><font size='2'>「点击可交换一次位置」功能在顶部</font>",
+	},
+	
+	"byzy_diycharacterskill": {
+		name: '交换位置功能',
+		init: false,
+		intro: '分离自原功能【游戏自定义工具】，开启后，游戏开始时玩家可以交换两名角色的座次，从而自定义场上所有角色的位置。(限身份场、斗地主、国战)',
+	},
+	
+	// 分割线
 	"byzyfgx15":{
 		"name":"<font size='4'>-----重新选将功能-----</font>",
 		"clear":true,
@@ -19806,23 +20443,6 @@ config:{
 	
 	// 分割线
 	"byzyfgx16":{
-		"name":"<font size='4'>-----交换位置功能-----</font>",
-		"clear":true,
-	},
-	
-	byzy_fenjiexian7:{
-		clear:true,
-		name:"<font size='3'><li>鸣谢：祖安武将</font><br><font size='2'>「点击可交换一次位置」功能在顶部</font>",
-	},
-	
-	"byzy_diycharacterskill": {
-		name: '交换位置功能',
-		init: false,
-		intro: '分离自原功能【游戏自定义工具】，开启后，游戏开始时玩家可以交换两名角色的座次，从而自定义场上所有角色的位置。(限身份场、斗地主、国战)',
-	},
-	
-	// 分割线
-	"byzyfgx17":{
 		"name":"<font size='4'>-----调整卡牌功能-----</font><br><font size='2'>「点击可调整手牌和牌堆功能」在顶部</font>",
 		"clear":true,
 	},
@@ -20009,7 +20629,107 @@ config:{
 	},
 	
 	// 分割线
+	"byzyfgx17":{
+		"name":"<font size='4'>-----自由控制功能-----</font>",
+		"clear":true,
+	},
+	
+	byzy_fenjiexian5:{
+		clear:true,
+		name:"<font size='3'><li>鸣谢：攻心为上</font><br><font size='2'>需开启顶部的「自娱自乐」功能</font>",
+	},
+	
+	ziyuzilekzjs_fenjiexian1:{
+		clear:true,
+		name:"<li>控制角色（点击后折叠）▽",
+		onclick:function(){
+			if(lib.config.ziyuzilekzjs_fenjiexian1==undefined){
+				lib.config.ziyuzilekzjs_fenjiexian1=[
+					this.nextSibling,
+					this.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling,
+				];
+				this.innerHTML="<li>控制角色（点击后展开）▷";
+				lib.config.ziyuzilekzjs_fenjiexian1.forEach(function(element) {element.hide()});
+			}else{
+				this.innerHTML="<li>控制角色（点击后折叠）▽";
+				lib.config.ziyuzilekzjs_fenjiexian1.forEach(function(element) {element.show()});
+				delete lib.config.ziyuzilekzjs_fenjiexian1;
+			}
+		}
+	},
+	byzy_ziyuzile_me: {
+		name: "| 控制玩家",
+		intro: "自娱自乐设置：开启本开关后，可控制“玩家”角色（即“我”）行动，即时生效。<br>关闭自娱自乐后再开启会重新将当前角色设为“玩家”。",
+		init: true,
+	},
+	byzy_ziyuzile_kzdy: {
+		name: "| 控制玩家的队友",
+		intro: "自娱自乐设置：开启本开关后，玩家将代替所有场上“玩家的队友”角色行动，即时生效。",
+		init: true,
+	},
+	byzy_ziyuzile_kzdr: {
+		name: "| 控制玩家的敌人",
+		intro: "自娱自乐设置：开启本开关后，玩家将代替所有场上“玩家的敌人”角色行动，即时生效。",
+		init: true,
+	},
+	
+	// 分割线
 	"byzyfgx18":{
+		"name":"<font size='4'>-----手牌可视功能-----</font><br><font size='2'>需开启顶部的「手牌可视」功能</font>",
+		"clear":true,
+	},
+	
+	shoupaikeshi_fenjiexian1:{
+		clear:true,
+		name:"<li>可视角色（点击后折叠）▽",
+		onclick:function(){
+			if(lib.config.shoupaikeshi_fenjiexian1==undefined){
+				lib.config.shoupaikeshi_fenjiexian1=[
+					this.nextSibling,
+					this.nextSibling.nextSibling,
+				];
+				this.innerHTML="<li>可视角色（点击后展开）▷";
+				lib.config.shoupaikeshi_fenjiexian1.forEach(function(element) {element.hide()});
+			}else{
+				this.innerHTML="<li>可视角色（点击后折叠）▽";
+				lib.config.shoupaikeshi_fenjiexian1.forEach(function(element) {element.show()});
+				delete lib.config.shoupaikeshi_fenjiexian1;
+			}
+		}
+	},
+	byzy_shoupaikeshi_dyspks: {
+		name: "| 队友手牌可视",
+		intro: "手牌可视设置：开启本开关后，玩家的队友的手牌可视，即时生效。",
+		init: true,
+	},
+	byzy_shoupaikeshi_drspks: {
+		name: "| 敌人手牌可视",
+		intro: "手牌可视设置：开启本开关后，玩家的敌人的手牌可视，即时生效。",
+		init: true,
+	},
+	
+	// 分割线
+	"byzyfgx19":{
+		"name":"<font size='4'>------控制台功能------</font>",
+		"clear":true,
+	},
+	
+	byzy_fenjiexian4:{
+		clear:true,
+		name:"<font size='3'><li>鸣谢：蜀汉中兴</font>",
+	},
+	
+	"byzy_kongzhitaiplus": {
+		"name": "<span style='text-decoration: underline;'>控制台-功能加强版</span>",
+		"clear": true,
+		onclick: function() {
+			consoleopen();
+		},
+	},
+	
+	// 分割线
+	"byzyfgx20":{
 		"name":"<font size='4'>-----一键导入重启-----</font>",
 		"clear":true,
 	},
@@ -20078,7 +20798,7 @@ config:{
 	},
 	
 	// 分割线
-	"byzyfgx19":{
+	"byzyfgx21":{
 		"name":"<font size='4'>-----减少报错功能-----</font><br><font size='2'>1. 建议优先选用棘手怀念摧毁的懒人包<br>2. 通常可开启这些设置减少报错弹窗：<br>① 选项-通用-兼容模式<br>② 选项-通用-无视扩展报错</font>",
 		"clear":true,
 	},
@@ -20105,8 +20825,298 @@ config:{
 		intro: '开启后，游戏内的武将图片将会开启懒加载，不会一次性全部加载，只有在窗口显示了才会去加载，避免一次性加载太多图片导致游戏卡顿（在自由选将会闪退的时候打开，能解决该问题）。',
 	},
 	
+	byzy_fenjiexian11:{
+		clear:true,
+		name:"<font size='3'><li>鸣谢：特效修复</font>",
+	},
+	
+	"byzy_texiaoorjiemianxiufu": {
+		name: '特效/界面错位修复',
+		init: true,
+		intro: '开启后，修复特效错位/界面错位的问题。<br>若遇冲突请关闭本选项！',
+	},
+	
 	// 分割线
-	"byzyfgx20":{
+	"byzyfgx22":{
+		"name":"<font size='4'>------游戏模式-------</font>",
+		"clear":true,
+	},
+	
+	byzy_yxmsjieshao: {
+		name:'<div class="hth_menu">▶游戏模式介绍（点击后展开）</div>',
+		clear:true,
+		onclick:function(){
+			if(this.hth_more==undefined){
+				var more=ui.create.div('.hth_more',
+				'<div style="border: 1px solid white;text-align:left"><div style="color:rgb(210,210,000); font-size:12px; line-height:14px; text-shadow: 0 0 2px black">'+
+				'※ 功能(即时生效)：即点即用'+
+				'<br>'+
+				'<br>※ 游戏模式：游戏开始时进入该模式，重启后生效'+
+				'<br>- 复刻模式：场上所有非玩家角色更换武将牌、调整体力和体力上限、改变势力，与“我”（玩家）相同'+
+				'<br>- 清空模式：清空场上除“我”（玩家）外的所有角色的技能（带有Charlotte标签的技能无法被清除）'+
+				'<br>- 全清空模式：清空场上所有角色的技能（带有Charlotte标签的技能无法被清除）'+
+				'<br>- 混乱模式：除“我”（玩家）外，场上其他角色陷入混乱<br>【世人皆“疯”我独醒】'+
+				'<br>- 解除混乱模式：场上所有角色解除混乱'+
+				'<br>- 破防模式：除“我”（玩家）外，场上其他角色防具技能失效'+
+				'<br>- 全破防模式：场上所有角色防具技能失效'+
+				'<br>- 解除破防模式：恢复场上所有角色防具技能'+
+				'<br>- 封印模式：除“我”（玩家）外，场上其他角色非锁定技失效'+
+				'<br>- 全封印模式：场上所有角色非锁定技失效'+
+				'<br>- 解除封印模式：恢复场上所有角色的非锁定技'+
+				'<br>- 白板模式：除“我”（玩家）外，场上其他角色全变成白板（带有Charlotte标签、持恒技标签的技能不失效）'+
+				'<br>- 全白板模式：场上所有角色全变成白板（带有Charlotte标签、持恒技标签的技能不失效）'+
+				'<br>- 解除白板模式：恢复场上所有角色技能'+
+				'<br>- 潜行模式：“我”（玩家）不能成为其他角色的卡牌的目标（锁定技）'+
+				'<br>- 解除潜行模式：场上所有角色可以成为其他角色的卡牌的目标'+
+				'<br>- 免疫模式：“我”（玩家）防止一切伤害'+
+				'<br>- 解除免疫模式：场上所有角色不再防止一切伤害'+
+				'<br>'+
+				'<br>※ 同人模式：将场上所有角色的武将牌替换为同一人，限身份场、斗地主，灵感来自“蜀国无大将，狂出诸葛亮”'+
+				'<br>'
+				);
+				this.parentNode.insertBefore(more,this.nextSibling);
+				this.hth_more=more;
+				this.innerHTML='<div class="hth_menu">▼游戏模式介绍（点击后折叠）</div>';
+			}
+			else{
+				this.parentNode.removeChild(this.hth_more);
+				delete this.hth_more;
+				this.innerHTML='<div class="hth_menu">▶游戏模式介绍（点击后展开）</div>';
+			};
+		},
+	},
+	
+	"byzy_jdjy":{
+		"name":"功能(即时生效)",
+		"intro":"游戏模式即点即用的功能，将控制台命令代码写入扩展，详情请点击上方游戏模式介绍查看。",
+		"init":"501",
+		"item":{
+			"501":"复刻模式",
+			"502":"清空模式",
+			"503":"全清空模式",
+			"504":"混乱模式",
+			"505":"解除混乱模式",
+			"506":"破防模式",
+			"507":"全破防模式",
+			"508":"解除破防模式",
+			"509":"封印模式",
+			"510":"全封印模式",
+			"511":"解除封印模式",
+			"512":"白板模式",
+			"513":"全白板模式",
+			"514":"解除白板模式",
+			"515":"潜行模式",
+			"516":"解除潜行模式",
+			"517":"免疫模式",
+			"518":"解除免疫模式",
+		},
+		onclick:function(item){
+			game.zxgn(Number(item));
+		},
+	},
+	
+	byzy_youximoshi:{
+		clear:true,
+		name:"<li>游戏模式（点击后折叠）▽",
+		onclick:function(){
+			if(lib.config.byzy_youximoshi==undefined){
+				lib.config.byzy_youximoshi=[
+					this.nextSibling,
+					this.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+				];
+				this.innerHTML="<li>游戏模式（点击后展开）▷";
+				lib.config.byzy_youximoshi.forEach(function(element) {element.hide()});
+			}else{
+				this.innerHTML="<li>游戏模式（点击后折叠）▽";
+				lib.config.byzy_youximoshi.forEach(function(element) {element.show()});
+				delete lib.config.byzy_youximoshi;
+			}
+		}
+	},
+	
+	"byzy_fukemode":{
+		name:"复刻模式",
+		intro:"见上方游戏模式介绍(游戏开始时进入该模式，限身份场、斗地主)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_qingkongmode":{
+		name:"清空模式",
+		intro:"见上方游戏模式介绍(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_quanqingkongmode":{
+		name:"全清空模式",
+		intro:"见上方游戏模式介绍(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_hunluanmode":{
+		name:"混乱模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_pofangmode":{
+		name:"破防模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_quanpofangmode":{
+		name:"全破防模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_fengyinmode":{
+		name:"封印模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_quanfengyinmode":{
+		name:"全封印模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_baibanmode":{
+		name:"白板模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_quanbaibanmode":{
+		name:"全白板模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_qianxingmode":{
+		name:"潜行模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_mianyimode":{
+		name:"免疫模式",
+		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
+		init:false,
+	},
+	
+	byzy_youximoshitjms:{
+		clear:true,
+		name:"<li>同人模式（点击后折叠）▽",
+		onclick:function(){
+			if(lib.config.byzy_youximoshitjms==undefined){
+				lib.config.byzy_youximoshitjms=[
+					this.nextSibling,
+					this.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
+				];
+				this.innerHTML="<li>同人模式（点击后展开）▷";
+				lib.config.byzy_youximoshitjms.forEach(function(element) {element.hide()});
+			}else{
+				this.innerHTML="<li>同人模式（点击后折叠）▽";
+				lib.config.byzy_youximoshitjms.forEach(function(element) {element.show()});
+				delete lib.config.byzy_youximoshitjms;
+			}
+		}
+	},
+	
+	"byzy_tongrenmoshi":{
+		"name": "同人模式(即时生效)",
+		"intro": "关闭和开启选项是同人模式总开关，使用前先点击开启选项开启，手动重启后生效；生效后，点击开启选项，开启即玩诸葛亮的同人模式。<br>可点击选择其他武将，即点即用，详情请点击上方游戏模式介绍查看。",
+		"init":lib.config.byzy_tongrenmoshi === undefined ? "0" : lib.config.byzy_tongrenmoshi,
+		"item":{
+			"0":"关闭",
+			"1":"开启",
+		},
+		onclick:function(item){
+			if (lib.config.byzy_tongrenmoshi!="0"&&lib.config.byzy_tongrenmoshi!=undefined) { game.byzy_tongrenmoshi(item); }
+			game.saveConfig('byzy_tongrenmoshi',item);
+			game.saveConfig('extension_搬运自用_byzy_tongrenmoshi',item);
+		}
+	},
+	
+	"byzy_tongrenmoshikaiguan":{
+		name:"同人模式",
+		intro:"使用前要先点击同人模式(即时生效)的开启选项开启。<br>本选项开关开启后，游戏开始时进入该模式，限身份场、斗地主，重启后生效。",
+		init:false,
+	},
+	
+	"byzy_tongrenmoshixuanjiang":{
+		"name":"选将范围",
+		"intro":"设置同人模式选将范围，可与“选将范围-AI禁将可选”和“选将范围-禁将可选”搭配使用，手动重启后生效。",
+		"init":lib.config.byzy_tongrenmoshixuanjiang === undefined ? "0" : lib.config.byzy_tongrenmoshixuanjiang,
+		"item": {
+			"0":"武将包开启的武将",
+			"1":"所有的武将包武将",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_tongrenmoshixuanjiang',item);
+			game.saveConfig('byzy_tongrenmoshixuanjiang',item);
+		},
+	},
+	
+	"byzy_tongrenmoshiaijinjiang":{
+		name:"| 选将范围-AI禁将可选",
+		intro:"同人模式选将范围补充设置：开启本开关后，被设为AI禁选的武将可选，即时生效。<br>注：此处“被设为AI禁选的武将”指通过[关闭武将资料卡-禁用-随机选将可用开关]/[开启“仅点将可用”开关]/[AI禁将]等方式设为AI禁选的武将",
+		init:false,
+	},
+	
+	"byzy_tongrenmoshijinjiang":{
+		name:"| 选将范围-禁将可选",
+		intro:"同人模式选将范围补充设置：开启本开关后，被设为禁用的武将可选，即时生效。<br>注：此处“被设为禁用的武将”指通过[关闭武将资料卡-禁用-相应游戏模式开关（即加入相应游戏模式武将-禁将）]等方式设为禁用的武将",
+		init:false,
+	},
+	
+	"byzy_tongrenmoshifenpei":{
+		"name":"武将分配",
+		"intro":"设置同人模式武将分配规则，手动重启后生效。<br>▶按规则随机分配（设为默认）：<br>从“我”（玩家）开始，依次分配武将牌。<br>① 同人武将个数<=场上角色数：当“我”（玩家）从全部同人武将中随机抽取武将牌后，下一名角色从剩下的同人武将中随机抽取武将牌，以此类推；<br>② 同人武将个数>场上角色数：当全部同人武将牌已取完，重新取一套全部同人武将牌，根据规则①，重新开始分配。<br>▶全部随机分配：从“我”（玩家）开始，依次分配武将牌，每名角色均从全部同人武将中随机抽取武将牌。",
+		"init":lib.config.byzy_tongrenmoshifenpei === undefined ? "0" : lib.config.byzy_tongrenmoshifenpei,
+		"item": {
+			"0":"按规则随机分配",
+			"1":"全部随机分配",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_tongrenmoshifenpei',item);
+			game.saveConfig('byzy_tongrenmoshifenpei',item);
+		},
+	},
+	
+	"byzy_tongrenmoshixuanxiang":{
+		"name":"选项显示",
+		"intro":"设置同人模式(即时生效)选项的显示：一人单选项方便选择；一人多选项可查看武将名ID。",
+		"init":lib.config.byzy_tongrenmoshixuanxiang === undefined ? "0" : lib.config.byzy_tongrenmoshixuanxiang,
+		"item": {
+			"0":"一人单选项",
+			"1":"一人多选项[武将名ID]",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_tongrenmoshixuanxiang',item);
+			game.saveConfig('byzy_tongrenmoshixuanxiang',item);
+		},
+	},
+	
+	// 分割线
+	"byzyfgx23":{
 		"name":"<font size='4'>-----模拟聊天功能-----</font>",
 		"clear":true,
 	},
@@ -20382,286 +21392,431 @@ config:{
 	},
 	
 	// 分割线
-	"byzyfgx21":{
-		"name":"<font size='4'>------游戏模式-------</font>",
+	"byzyfgx24":{
+		"name":"<font size='4'>----允许选择并复制-----</font>",
 		"clear":true,
 	},
 	
-	byzy_yxmsjieshao: {
-		name:'<div class="hth_menu">▶游戏模式介绍（点击后展开）</div>',
+	byzy_zxfzziliaoka_part:{
 		clear:true,
-		onclick:function(){
-			if(this.hth_more==undefined){
-				var more=ui.create.div('.hth_more',
-				'<div style="border: 1px solid white;text-align:left"><div style="color:rgb(210,210,000); font-size:12px; line-height:14px; text-shadow: 0 0 2px black">'+
-				'※ 功能(即时生效)：即点即用'+
-				'<br>'+
-				'<br>※ 游戏模式：游戏开始时进入该模式，重启后生效'+
-				'<br>- 复刻模式：场上所有非玩家角色更换武将牌、调整体力和体力上限、改变势力，与“我”（玩家）相同'+
-				'<br>- 清空模式：清空场上除“我”（玩家）外的所有角色的技能（带有Charlotte标签的技能无法被清除）'+
-				'<br>- 全清空模式：清空场上所有角色的技能（带有Charlotte标签的技能无法被清除）'+
-				'<br>- 混乱模式：除“我”（玩家）外，场上其他角色陷入混乱<br>【世人皆“疯”我独醒】'+
-				'<br>- 解除混乱模式：场上所有角色解除混乱'+
-				'<br>- 破防模式：除“我”（玩家）外，场上其他角色防具技能失效'+
-				'<br>- 全破防模式：场上所有角色防具技能失效'+
-				'<br>- 解除破防模式：恢复场上所有角色防具技能'+
-				'<br>- 封印模式：除“我”（玩家）外，场上其他角色非锁定技失效'+
-				'<br>- 全封印模式：场上所有角色非锁定技失效'+
-				'<br>- 解除封印模式：恢复场上所有角色的非锁定技'+
-				'<br>- 白板模式：除“我”（玩家）外，场上其他角色全变成白板（带有Charlotte标签、持恒技标签的技能不失效）'+
-				'<br>- 全白板模式：场上所有角色全变成白板（带有Charlotte标签、持恒技标签的技能不失效）'+
-				'<br>- 解除白板模式：恢复场上所有角色技能'+
-				'<br>- 潜行模式：“我”（玩家）不能成为其他角色的卡牌的目标（锁定技）'+
-				'<br>- 解除潜行模式：场上所有角色可以成为其他角色的卡牌的目标'+
-				'<br>- 免疫模式：“我”（玩家）防止一切伤害'+
-				'<br>- 解除免疫模式：场上所有角色不再防止一切伤害'+
-				'<br>'+
-				'<br>※ 同人模式：将场上所有角色的武将牌替换为同一人，限身份场、斗地主，灵感来自“蜀国无大将，狂出诸葛亮”'+
-				'<br>'
-				);
-				this.parentNode.insertBefore(more,this.nextSibling);
-				this.hth_more=more;
-				this.innerHTML='<div class="hth_menu">▼游戏模式介绍（点击后折叠）</div>';
-			}
-			else{
-				this.parentNode.removeChild(this.hth_more);
-				delete this.hth_more;
-				this.innerHTML='<div class="hth_menu">▶游戏模式介绍（点击后展开）</div>';
-			};
+		name:"<font size='3'><li>资料卡</font>",
+	},
+	
+	"byzy_zlkyxxzbfz":{
+		"name": "允许选择并复制",
+		"intro": "开启后，允许选择并复制资料卡的文字，即时生效（要先打开资料卡修改开关才能生效）。<br><br>操作技巧<li>手机端：<br>① 长按选择需要复制的内容（初步选择），不要放手而是直接拖动选择（进一步选择），放手后通过光标调整选择的内容（注意：通过光标选择有时会失效，可能要重新选择）<br>② 通常选择内容后会自动弹出复制选项（若无复制选项，长按选定的内容就会弹出复制选项）<br>③ 点击复制选项复制<li>电脑端：<br>① 鼠标选择需要复制的内容（注意：右键菜单选择时鼠标左键不要放开）<br>② 按Ctrl+C复制",
+		"init":lib.config.byzy_zlkyxxzbfz === undefined ? true : lib.config.byzy_zlkyxxzbfz,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_zlkyxxzbfz',item);
+			game.saveConfig('byzy_zlkyxxzbfz',item);
 		},
 	},
 	
-	"byzy_jdjy":{
-		"name":"功能(即时生效)",
-		"intro":"游戏模式即点即用的功能，将控制台命令代码写入扩展，详情请点击上方游戏模式介绍查看。",
-		"init":"501",
+	byzy_zxfzkapaiziliaoka_part:{
+		clear:true,
+		name:"<font size='3'><li>卡牌资料卡</font>",
+	},
+	
+	"byzy_kpzlkyxxzbfz":{
+		"name": "允许选择并复制",
+		"intro": "开启后，允许选择并复制卡牌资料卡的文字，即时生效（要先打开卡牌资料卡修改开关才能生效）。<br><br>操作技巧<li>手机端：<br>① 长按选择需要复制的内容（初步选择），不要放手而是直接拖动选择（进一步选择），放手后通过光标调整选择的内容（注意：通过光标选择有时会失效，可能要重新选择）<br>② 通常选择内容后会自动弹出复制选项（若无复制选项，长按选定的内容就会弹出复制选项）<br>③ 点击复制选项复制<li>电脑端：<br>① 鼠标选择需要复制的内容（注意：右键菜单选择时鼠标左键不要放开）<br>② 按Ctrl+C复制",
+		"init":lib.config.byzy_kpzlkyxxzbfz === undefined ? true : lib.config.byzy_kpzlkyxxzbfz,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_kpzlkyxxzbfz',item);
+			game.saveConfig('byzy_kpzlkyxxzbfz',item);
+		},
+	},
+	
+	byzy_zxfzyoujiancaidan_part:{
+		clear:true,
+		name:"<font size='3'><li>右键菜单</font>",
+	},
+	
+	"byzy_yjcdyxxzbfz":{
+		"name": "允许选择并复制",
+		"intro": "开启后，允许选择并复制右键菜单的文字，即时生效。<br><br>操作技巧<li>手机端：<br>① 长按选择需要复制的内容（初步选择），不要放手而是直接拖动选择（进一步选择），放手后通过光标调整选择的内容（注意：通过光标选择有时会失效，可能要重新选择）<br>② 通常选择内容后会自动弹出复制选项（若无复制选项，长按选定的内容就会弹出复制选项）<br>③ 点击复制选项复制<li>电脑端：<br>① 鼠标选择需要复制的内容（注意：右键菜单选择时鼠标左键不要放开）<br>② 按Ctrl+C复制",
+		"init":lib.config.byzy_yjcdyxxzbfz === undefined ? true : lib.config.byzy_yjcdyxxzbfz,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_yjcdyxxzbfz',item);
+			game.saveConfig('byzy_yjcdyxxzbfz',item);
+			
+			window.byzy_yunxuxuanzebingfuzhimenu();
+		},
+	},
+	
+	byzy_zxfzcaidan_part:{
+		clear:true,
+		name:"<font size='3'><li>菜单</font>",
+	},
+	
+	"byzy_cdyxxzbfz":{
+		"name": "允许选择并复制",
+		"intro": "开启后，允许选择并复制菜单的文字，即时生效。<br><br>操作技巧1<li>手机端：<br>① 长按选择需要复制的内容（初步选择），不要放手而是直接拖动选择（进一步选择），放手后通过光标调整选择的内容（注意：通过光标选择有时会失效，可能要重新选择）<br>② 通常选择内容后会自动弹出复制选项（若无复制选项，长按选定的内容就会弹出复制选项）<br>③ 点击复制选项复制<li>电脑端：<br>① 鼠标选择需要复制的内容（注意：右键菜单选择时鼠标左键不要放开）<br>② 按Ctrl+C复制<br><br>操作技巧2<li>手机端若不需要选择并复制菜单的文字，长按时尽量不要点到文字（不然会选择文字并弹出右键菜单，此时可点击弹出的右键菜单取消选择文字）<li>手机端若需要选择并复制菜单的文字，如果选择文字时弹出右键菜单，需先点击菜单外其他地方关闭弹出的右键菜单，之后按操作技巧1操作",
+		"init":lib.config.byzy_cdyxxzbfz === undefined ? false : lib.config.byzy_cdyxxzbfz,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_cdyxxzbfz',item);
+			game.saveConfig('byzy_cdyxxzbfz',item);
+			
+			window.byzy_yunxuxuanzebingfuzhimenu();
+		},
+	},
+	"byzy_sjdcdyxxzbfz":{
+		"name": "手机端简化选择并复制",
+		"intro": "开启后，手机端会关闭长按弹出的右键菜单，简化选择并复制操作（临时修复手机端菜单允许选择并复制与长按弹出菜单冲突），即时生效；重启后，手机端自动恢复长按弹出的右键菜单。",
+		"init":lib.config.byzy_sjdcdyxxzbfz === undefined ? false : lib.config.byzy_sjdcdyxxzbfz,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_sjdcdyxxzbfz',item);
+			game.saveConfig('byzy_sjdcdyxxzbfz',item);
+			
+			// 临时修复手机端菜单允许选择并复制与长按弹出菜单冲突
+			if(lib.config.byzy_cdyxxzbfz && lib.config.byzy_sjdcdyxxzbfz && lib.device) {
+				get.nodeintro=function(node,simple,evt){};
+				
+				// 自动恢复默认关闭的按钮
+				game.saveConfig('extension_搬运自用_byzy_sjdcdyxxzbfz',false);
+				game.saveConfig('byzy_sjdcdyxxzbfz',false);
+			}
+		},
+	},
+	
+	// 分割线
+	"byzyfgx25":{
+		"name":"<font size='4'>-----顶部菜单功能-----</font>",
+		"clear":true,
+	},
+	
+	byzy_kztgn_part:{
+		clear:true,
+		name:"<font size='3'><li>控制台功能</font>",
+	},
+	
+	"byzy_showkongmenu": {
+		"name": "“控”加入顶部左侧菜单",
+		"init": true,
+		"intro": "将“控”字按钮加入顶部左侧菜单栏，点击后可快捷打开控制台（即控制台功能的「控制台-功能加强版」）。",
+	},
+	
+	byzy_dhgn_part:{
+		clear:true,
+		name:"<font size='3'><li>导航功能</font>",
+	},
+	
+	"byzy_showdaomenu": {
+		"name": "“导”加入顶部左侧菜单",
+		"init": true,
+		"intro": "将“导”字按钮加入顶部左侧菜单栏，点击后快捷打开菜单-扩展-搬运自用-顶部。",
+	},
+	
+	byzy_zlkgn_part:{
+		clear:true,
+		name:"<font size='3'><li>资料卡功能/快捷功能</font>",
+	},
+	
+	"byzy_showqiemenu": {
+		"name": "“切”加入顶部左侧菜单",
+		"init": true,
+		"intro": "将“切”字按钮加入顶部左侧菜单栏，点击后可切换「“切”功能配置」设置的需切换的功能，即时生效。",
+	},
+	
+	"byzy_qiefunction":{
+		"name":"“切”功能配置",
+		"intro":"可设置需切换的功能。<li>资料卡：<br>在选将时（或其他特殊情况）长按/右击武将显示的是资料卡还是原有的弹出菜单（功能同「选将时查看资料卡」），“切”高亮则显示资料卡<li>快捷禁将：<br>「当前模式快捷禁用武将」和打开资料卡功能切换，“切”高亮则进入快捷禁将模式<li>快捷AI禁将：<br>「快捷AI禁用武将」和打开资料卡功能切换，“切”高亮则进入快捷AI禁将模式<li>快捷收藏功能：<br>「快捷收藏功能」和打开资料卡功能切换，“切”高亮则进入快捷收藏模式<li>快捷最近功能：<br>「快捷最近功能」和打开资料卡功能切换，“切”高亮则进入快捷最近模式",
+		"init":lib.config.byzy_qiefunction === undefined ? "0" : lib.config.byzy_qiefunction,
 		"item":{
-			"501":"复刻模式",
-			"502":"清空模式",
-			"503":"全清空模式",
-			"504":"混乱模式",
-			"505":"解除混乱模式",
-			"506":"破防模式",
-			"507":"全破防模式",
-			"508":"解除破防模式",
-			"509":"封印模式",
-			"510":"全封印模式",
-			"511":"解除封印模式",
-			"512":"白板模式",
-			"513":"全白板模式",
-			"514":"解除白板模式",
-			"515":"潜行模式",
-			"516":"解除潜行模式",
-			"517":"免疫模式",
-			"518":"解除免疫模式",
+			"0":"资料卡",
+			"1":"快捷禁将",
+			"2":"快捷AI禁将",
+			"3":"快捷收藏功能",
+			"4":"快捷最近功能",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_qiefunction',item);
+			game.saveConfig('byzy_qiefunction',item);
+			if(ui.leftmenuqie){
+				if(lib.config['extension_搬运自用_byzy_qiefunction']=='1') {
+					// 切换后进入快捷禁将模式
+					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(true);
+				} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='2') {
+					// 切换后进入快捷AI禁将模式
+					lib.extensionMenu.extension_搬运自用.byzy_kjaijywj.onclick(true);
+				} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='3') {
+					// 切换后进入快捷收藏功能
+					lib.extensionMenu.extension_搬运自用.byzy_kuaijieshoucang.onclick(true);
+				} else if(lib.config['extension_搬运自用_byzy_qiefunction']=='4') {
+					// 切换后进入快捷最近功能
+					lib.extensionMenu.extension_搬运自用.byzy_kuaijiezuijin.onclick(true);
+				} else {
+					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(false);
+					lib.extensionMenu.extension_搬运自用.byzy_kjaijywj.onclick(false);
+					lib.extensionMenu.extension_搬运自用.byzy_kuaijieshoucang.onclick(false);
+					lib.extensionMenu.extension_搬运自用.byzy_kuaijiezuijin.onclick(false);
+					
+					// “切”高亮则显示资料卡
+					if(lib.config['extension_搬运自用_byzy_xjsckzlk']){
+						ui.leftmenuqie.classList.add("glow");
+					} else ui.leftmenuqie.classList.remove("glow");
+				}
+			}
+		},
+	},
+	
+	byzy_kpzlkgn_part:{
+		clear:true,
+		name:"<font size='3'><li>卡牌资料卡功能/快捷禁卡功能</font>",
+	},
+	
+	"byzy_showhuanmenu": {
+		"name": "“换”加入顶部左侧菜单",
+		"init": true,
+		"intro": "将“换”字按钮加入顶部左侧菜单栏，点击后可切换「“换”功能配置」设置的需切换的功能，即时生效。",
+	},
+	
+	"byzy_huanfunction":{
+		"name":"“换”功能配置",
+		"intro":"可设置需切换的功能。<li>卡牌资料卡：<br>非菜单界面长按/右击卡牌显示的是卡牌资料卡还是原有的弹出菜单（功能同「长按/右击查看资料卡」），“换”高亮则显示卡牌资料卡<li>快捷禁卡：<br>「当前模式快捷禁用卡牌」和打开卡牌资料卡功能切换，“换”高亮则进入快捷禁卡模式",
+		"init":lib.config.byzy_huanfunction === undefined ? "0" : lib.config.byzy_huanfunction,
+		"item":{
+			"0":"卡牌资料卡",
+			"1":"快捷禁卡",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_huanfunction',item);
+			game.saveConfig('byzy_huanfunction',item);
+			if(ui.leftmenuhuan){
+				// 切换后进入快捷禁将模式
+				if(lib.config['extension_搬运自用_byzy_huanfunction']=='1') {
+					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjykp.onclick(true);
+				} else {
+					lib.extensionMenu.extension_搬运自用.byzy_dqmskjjykp.onclick(false);
+					
+					// “换”高亮则显示卡牌资料卡
+					if(lib.config['extension_搬运自用_byzy_yjckkpzlk']){
+						ui.leftmenuhuan.classList.add("glow");
+					} else ui.leftmenuhuan.classList.remove("glow");
+				}
+			}
+		},
+	},
+	
+	// 分割线
+	"byzyfgx26":{
+		"name":"<font size='4'>------快捷功能------</font>",
+		"clear":true,
+	},
+	
+	byzy_kjgnwj_sub_part:{
+		clear:true,
+		name:"<font size='3'>1. 武将相关功能</font>",
+	},
+	
+	byzy_kjgnjinjiang_part:{
+		clear:true,
+		name:"<font size='3'><li>快捷禁将</font>",
+	},
+	
+	"byzy_dqmskjjywj":{
+		"name": "当前模式快捷禁用武将",
+		"intro": "开启后，进入快捷禁将模式（要先打开资料卡修改开关才能生效）：武将菜单单击未禁用的武将即可禁将（单击已禁用的武将即可解除禁将），替换原有资料卡功能。<br><br>注1：若需和打开资料卡功能快速切换，可设置顶部菜单功能的「“切”功能配置-快捷禁将」<br><br>注2：点亮的武将是未禁用的武将",
+		"init":lib.config.byzy_dqmskjjywj === undefined ? false : lib.config.byzy_dqmskjjywj,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_dqmskjjywj',item);
+			game.saveConfig('byzy_dqmskjjywj',item);
+			if(ui.leftmenuqie && lib.config['extension_搬运自用_byzy_qiefunction']=='1'){
+				// “切”高亮则进入快捷禁将模式
+				if(lib.config['extension_搬运自用_byzy_dqmskjjywj']){
+					ui.leftmenuqie.classList.add("glow");
+				} else ui.leftmenuqie.classList.remove("glow");
+			}
+			// 关闭其他快捷功能
+			if(lib.config.byzy_dqmskjjywj){
+				lib.extensionMenu.extension_搬运自用.byzy_kjaijywj.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_kuaijieshoucang.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_kuaijiezuijin.onclick(false);
+			}
+		},
+	},
+	
+	byzy_kjgnaijinjiang_part:{
+		clear:true,
+		name:"<font size='3'><li>快捷AI禁将</font>",
+	},
+	
+	"byzy_kjaijywj":{
+		"name": "快捷AI禁用武将",
+		"intro": "开启后，进入快捷AI禁将模式（要先打开资料卡修改开关才能生效）：武将菜单单击未AI禁用的武将即可AI禁将（单击已AI禁用的武将即可解除AI禁将），替换原有资料卡功能。<br><br>注1：若需和打开资料卡功能快速切换，可设置顶部菜单功能的「“切”功能配置-快捷AI禁将」<br><br>注2：此处“AI禁用的武将”指通过[关闭武将资料卡-禁用-随机选将可用开关]/[开启“仅点将可用”开关]方式设为AI禁选的武将<br><br>注3：点亮的武将是未AI禁用的武将（仅棘手怀念摧毁懒人包适配本功能）",
+		"init":lib.config.byzy_kjaijywj === undefined ? false : lib.config.byzy_kjaijywj,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_kjaijywj',item);
+			game.saveConfig('byzy_kjaijywj',item);
+			if(ui.leftmenuqie && lib.config['extension_搬运自用_byzy_qiefunction']=='2'){
+				// “切”高亮则进入快捷AI禁将模式
+				if(lib.config['extension_搬运自用_byzy_qiefunction']){
+					ui.leftmenuqie.classList.add("glow");
+				} else ui.leftmenuqie.classList.remove("glow");
+			}
+			// 关闭其他快捷功能
+			if(lib.config.byzy_kjaijywj){
+				lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_kuaijieshoucang.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_kuaijiezuijin.onclick(false);
+			}
+		},
+	},
+	
+	byzy_kjgnshoucang_part:{
+		clear:true,
+		name:"<font size='3'><li>快捷收藏功能</font>",
+	},
+	
+	"byzy_kuaijieshoucang":{
+		"name": "快捷收藏功能",
+		"intro": "开启后，进入快捷收藏模式（要先打开资料卡修改开关才能生效）：武将菜单单击未加入收藏的武将即可加入收藏（单击已加入收藏的武将即可移出收藏），替换原有资料卡功能。<br><br>注1：若需和打开资料卡功能快速切换，可设置顶部菜单功能的「“切”功能配置-快捷收藏功能」<br><br>注2：点亮的武将是未加入收藏的武将（仅棘手怀念摧毁懒人包适配本功能）",
+		"init":lib.config.byzy_kuaijieshoucang === undefined ? false : lib.config.byzy_kuaijieshoucang,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_kuaijieshoucang',item);
+			game.saveConfig('byzy_kuaijieshoucang',item);
+			if(ui.leftmenuqie && lib.config['extension_搬运自用_byzy_qiefunction']=='3'){
+				// “切”高亮则进入快捷收藏模式
+				if(lib.config['extension_搬运自用_byzy_qiefunction']){
+					ui.leftmenuqie.classList.add("glow");
+				} else ui.leftmenuqie.classList.remove("glow");
+			}
+			// 关闭其他快捷功能
+			if(lib.config.byzy_kuaijieshoucang){
+				lib.extensionMenu.extension_搬运自用.byzy_kjaijywj.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_kuaijiezuijin.onclick(false);
+			}
+		},
+	},
+	
+	byzy_kjgnzuijin_part:{
+		clear:true,
+		name:"<font size='3'><li>快捷最近功能</font>",
+	},
+	
+	"byzy_kuaijiezuijin":{
+		"name": "快捷最近功能",
+		"intro": "开启后，进入快捷最近模式（要先打开资料卡修改开关才能生效）：武将菜单单击未加入最近的武将即可加入最近（单击已加入最近的武将即可移出最近），替换原有资料卡功能。<br><br>注1：若需和打开资料卡功能快速切换，可设置顶部菜单功能的「“切”功能配置-快捷最近功能」<br><br>注2：点亮的武将是未加入最近的武将（仅棘手怀念摧毁懒人包适配本功能）",
+		"init":lib.config.byzy_kuaijiezuijin === undefined ? false : lib.config.byzy_kuaijiezuijin,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_kuaijiezuijin',item);
+			game.saveConfig('byzy_kuaijiezuijin',item);
+			if(ui.leftmenuqie && lib.config['extension_搬运自用_byzy_qiefunction']=='4'){
+				// “切”高亮则进入快捷最近模式
+				if(lib.config['extension_搬运自用_byzy_qiefunction']){
+					ui.leftmenuqie.classList.add("glow");
+				} else ui.leftmenuqie.classList.remove("glow");
+			}
+			// 关闭其他快捷功能
+			if(lib.config.byzy_kuaijiezuijin){
+				lib.extensionMenu.extension_搬运自用.byzy_kjaijywj.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_dqmskjjywj.onclick(false);
+				lib.extensionMenu.extension_搬运自用.byzy_kuaijieshoucang.onclick(false);
+			}
+		},
+	},
+	
+	byzy_kjgnkp_sub_part:{
+		clear:true,
+		name:"<font size='3'>2. 卡牌相关功能</font>",
+	},
+	
+	byzy_kjgnjinka_part:{
+		clear:true,
+		name:"<font size='3'><li>快捷禁卡</font>",
+	},
+	
+	"byzy_dqmskjjykp":{
+		"name": "当前模式快捷禁用卡牌",
+		"intro": "开启后，进入快捷禁卡模式（要先打开卡牌资料卡修改开关才能生效）：卡牌菜单单击未禁用的卡牌即可禁卡（单击已禁用的卡牌即可解除禁卡），替换原有卡牌资料卡功能。<br><br>注1：若需和打开卡牌资料卡功能快速切换，可设置顶部菜单功能的「“切”功能配置-快捷禁卡」<br><br>注2：点亮的卡牌是未禁用的卡牌",
+		"init":lib.config.byzy_dqmskjjykp === undefined ? false : lib.config.byzy_dqmskjjykp,
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_dqmskjjykp',item);
+			game.saveConfig('byzy_dqmskjjykp',item);
+			if(ui.leftmenuhuan && lib.config['extension_搬运自用_byzy_huanfunction']=='1'){
+				// “换”高亮则进入快捷禁卡模式
+				if(lib.config['extension_搬运自用_byzy_dqmskjjykp']){
+					ui.leftmenuhuan.classList.add("glow");
+				} else ui.leftmenuhuan.classList.remove("glow");
+			}
+		},
+	},
+	
+	byzy_kjgnkg_sub_part:{
+		clear:true,
+		name:"<font size='3'>3. 开关功能</font>",
+	},
+	
+	byzy_kjkggn_part:{
+		clear:true,
+		name:"<font size='3'><li>快捷开关功能</font>",
+	},
+	
+	"byzy_wjkuaijiekaiguangongneng":{
+		"name":"配置(武将)",
+		"intro":"开启后在武将菜单添加“快捷开关功能”开关，需开启对应的快捷功能才能点亮显示，建议搭配棘手怀念摧毁的懒人包（十周年UI扩展）使用。",
+		"init":lib.config.byzy_wjkuaijiekaiguangongneng === undefined ? "1" : lib.config.byzy_wjkuaijiekaiguangongneng,
+		"item":{
+			"0":"关闭",
+			"1":"当前模式快捷禁将",
+			// "2":"当前模式快捷AI禁将", // 功能同“仅点将可用”
+			"3":"快捷收藏功能",
+			"4":"快捷最近功能",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_wjkuaijiekaiguangongneng',item);
+			game.saveConfig('byzy_wjkuaijiekaiguangongneng',item);
+		},
+	},
+	
+	"byzy_kpkuaijiekaiguangongneng":{
+		"name":"配置(卡牌)",
+		"intro":"开启后在卡牌菜单添加“快捷开关功能”开关，需开启对应的快捷功能才能点亮显示，建议搭配棘手怀念摧毁的懒人包（十周年UI扩展）使用。",
+		"init":lib.config.byzy_kpkuaijiekaiguangongneng === undefined ? "1" : lib.config.byzy_kpkuaijiekaiguangongneng,
+		"item":{
+			"0":"关闭",
+			"1":"当前模式快捷禁卡",
+		},
+		onclick:function(item){
+			game.saveConfig('extension_搬运自用_byzy_kpkuaijiekaiguangongneng',item);
+			game.saveConfig('byzy_kpkuaijiekaiguangongneng',item);
+		},
+	},
+	
+	// 分割线
+	"byzyfgx27":{
+		"name":"<font size='4'>-----开关扩展功能-----</font>",
+		"clear":true,
+	},
+	
+	"byzy_kgkzgn":{
+		"name":"开关扩展功能",
+		"intro":"一键开启或关闭扩展，自动重启后生效。<br>本扩展不关闭。所有扩展（不含搬运自用）如下：<li>官方扩展：诸神降临、牌堆补充、五行生克、富甲天下<li>懒人包扩展：十周年UI、手杀ui<li>其他扩展",
+		"init":"1501",
+		"item":{
+			"1501":"关闭所有扩展",
+			"1502":"开启所有扩展",
+			"1503":"关闭所有[官方扩展]",
+			"1504":"开启所有[官方扩展]",
+			"1505":"关闭所有[懒人包扩展]",
+			"1506":"开启所有[懒人包扩展]",
+			"1507":"关闭所有[其他扩展]",
+			"1508":"开启所有[其他扩展]",
+			"1509":"关闭所有[官方扩展和懒人包扩展]",
+			"1510":"开启所有[官方扩展和懒人包扩展]",
+			"1511":"关闭所有[官方扩展和其他扩展]",
+			"1512":"开启所有[官方扩展和其他扩展]",
+			"1513":"关闭所有[懒人包扩展和其他扩展]",
+			"1514":"开启所有[懒人包扩展和其他扩展]",
 		},
 		onclick:function(item){
 			game.zxgn(Number(item));
 		},
 	},
 	
-	byzy_youximoshi:{
-		clear:true,
-		name:"<li>游戏模式（点击后折叠）▽",
-		onclick:function(){
-			if(lib.config.byzy_youximoshi==undefined){
-				lib.config.byzy_youximoshi=[
-					this.nextSibling,
-					this.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-				];
-				this.innerHTML="<li>游戏模式（点击后展开）▷";
-				lib.config.byzy_youximoshi.forEach(function(element) {element.hide()});
-			}else{
-				this.innerHTML="<li>游戏模式（点击后折叠）▽";
-				lib.config.byzy_youximoshi.forEach(function(element) {element.show()});
-				delete lib.config.byzy_youximoshi;
-			}
-		}
-	},
-	
-	"byzy_fukemode":{
-		name:"复刻模式",
-		intro:"见上方游戏模式介绍(游戏开始时进入该模式，限身份场、斗地主)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_qingkongmode":{
-		name:"清空模式",
-		intro:"见上方游戏模式介绍(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_quanqingkongmode":{
-		name:"全清空模式",
-		intro:"见上方游戏模式介绍(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_hunluanmode":{
-		name:"混乱模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_pofangmode":{
-		name:"破防模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_quanpofangmode":{
-		name:"全破防模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_fengyinmode":{
-		name:"封印模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_quanfengyinmode":{
-		name:"全封印模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_baibanmode":{
-		name:"白板模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_quanbaibanmode":{
-		name:"全白板模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_qianxingmode":{
-		name:"潜行模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_mianyimode":{
-		name:"免疫模式",
-		intro:"见上方游戏模式介绍，可使用游戏模式功能(即时生效)解除(游戏开始时进入该模式，限身份场、斗地主、国战)，重启后生效。",
-		init:false,
-	},
-	
-	byzy_youximoshitjms:{
-		clear:true,
-		name:"<li>同人模式（点击后折叠）▽",
-		onclick:function(){
-			if(lib.config.byzy_youximoshitjms==undefined){
-				lib.config.byzy_youximoshitjms=[
-					this.nextSibling,
-					this.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-					this.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling,
-				];
-				this.innerHTML="<li>同人模式（点击后展开）▷";
-				lib.config.byzy_youximoshitjms.forEach(function(element) {element.hide()});
-			}else{
-				this.innerHTML="<li>同人模式（点击后折叠）▽";
-				lib.config.byzy_youximoshitjms.forEach(function(element) {element.show()});
-				delete lib.config.byzy_youximoshitjms;
-			}
-		}
-	},
-	
-	"byzy_tongrenmoshi":{
-		"name": "同人模式(即时生效)",
-		"intro": "关闭和开启选项是同人模式总开关，使用前先点击开启选项开启，手动重启后生效；生效后，点击开启选项，开启即玩诸葛亮的同人模式。<br>可点击选择其他武将，即点即用，详情请点击上方游戏模式介绍查看。",
-		"init":lib.config.byzy_tongrenmoshi === undefined ? "0" : lib.config.byzy_tongrenmoshi,
-		"item":{
-			"0":"关闭",
-			"1":"开启",
-		},
-		onclick:function(item){
-			if (lib.config.byzy_tongrenmoshi!="0"&&lib.config.byzy_tongrenmoshi!=undefined) { game.byzy_tongrenmoshi(item); }
-			game.saveConfig('byzy_tongrenmoshi',item);
-			game.saveConfig('extension_搬运自用_byzy_tongrenmoshi',item);
-		}
-	},
-	
-	"byzy_tongrenmoshikaiguan":{
-		name:"同人模式",
-		intro:"使用前要先点击同人模式(即时生效)的开启选项开启。<br>本选项开关开启后，游戏开始时进入该模式，限身份场、斗地主，重启后生效。",
-		init:false,
-	},
-	
-	"byzy_tongrenmoshixuanjiang":{
-		"name":"选将范围",
-		"intro":"设置同人模式选将范围，可与“选将范围-AI禁将可选”和“选将范围-禁将可选”搭配使用，手动重启后生效。",
-		"init":lib.config.byzy_tongrenmoshixuanjiang === undefined ? "0" : lib.config.byzy_tongrenmoshixuanjiang,
-		"item": {
-			"0":"武将包开启的武将",
-			"1":"所有的武将包武将",
-		},
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_tongrenmoshixuanjiang',item);
-			game.saveConfig('byzy_tongrenmoshixuanjiang',item);
-		},
-	},
-	
-	"byzy_tongrenmoshiaijinjiang":{
-		name:"| 选将范围-AI禁将可选",
-		intro:"同人模式选将范围补充设置：开启本开关后，被设为AI禁选的武将可选，即时生效。<br>注：此处“被设为AI禁选的武将”指通过开启“仅点将可用”开关（即关闭武将资料卡-禁用-随机选将可用开关）等方式设为AI禁选的武将",
-		init:false,
-	},
-	
-	"byzy_tongrenmoshijinjiang":{
-		name:"| 选将范围-禁将可选",
-		intro:"同人模式选将范围补充设置：开启本开关后，被设为禁用的武将可选，即时生效。<br>注：此处“被设为禁用的武将”指通过关闭武将资料卡-禁用-相应游戏模式开关（即加入相应游戏模式武将-禁将）等方式设为禁用的武将",
-		init:false,
-	},
-	
-	"byzy_tongrenmoshifenpei":{
-		"name":"武将分配",
-		"intro":"设置同人模式武将分配规则，手动重启后生效。<br>▶按规则随机分配（设为默认）：<br>从“我”（玩家）开始，依次分配武将牌。<br>① 同人武将个数<=场上角色数：当“我”（玩家）从全部同人武将中随机抽取武将牌后，下一名角色从剩下的同人武将中随机抽取武将牌，以此类推；<br>② 同人武将个数>场上角色数：当全部同人武将牌已取完，重新取一套全部同人武将牌，根据规则①，重新开始分配。<br>▶全部随机分配：从“我”（玩家）开始，依次分配武将牌，每名角色均从全部同人武将中随机抽取武将牌。",
-		"init":lib.config.byzy_tongrenmoshifenpei === undefined ? "0" : lib.config.byzy_tongrenmoshifenpei,
-		"item": {
-			"0":"按规则随机分配",
-			"1":"全部随机分配",
-		},
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_tongrenmoshifenpei',item);
-			game.saveConfig('byzy_tongrenmoshifenpei',item);
-		},
-	},
-	
-	"byzy_tongrenmoshixuanxiang":{
-		"name":"选项显示",
-		"intro":"设置同人模式(即时生效)选项的显示：一人单选项方便选择；一人多选项可查看武将名ID。",
-		"init":lib.config.byzy_tongrenmoshixuanxiang === undefined ? "0" : lib.config.byzy_tongrenmoshixuanxiang,
-		"item": {
-			"0":"一人单选项",
-			"1":"一人多选项[武将名ID]",
-		},
-		onclick:function(item){
-			game.saveConfig('extension_搬运自用_byzy_tongrenmoshixuanxiang',item);
-			game.saveConfig('byzy_tongrenmoshixuanxiang',item);
-		},
-	},
-	
 	// 分割线
-	"byzyfgx22":{
+	"byzyfgx28":{
 		"name":"<font size='4'>-----测试中的功能-----</font>",
 		"clear":true,
 	},
@@ -20683,7 +21838,7 @@ config:{
 			"5":"懒人包-女将图(幼年形态)",
 			// "6":"懒人包-女将图(双将双形态)",
 			"7":"三国24名将-虚拟天团",
-			"8":"自定义-可自行添加代码",
+			// "8":"自定义-可自行添加代码",
 		},
 		onclick:function(item){
 			var gameplayers0=game.me;
@@ -20833,7 +21988,7 @@ config:{
 					}
 				}
 				
-				// 暂时先这么写吧，后续会加曹金玉caojinyu 4、张星彩zhangxingcai 10、羊徽瑜yanghuiyu 5、吴苋wuxian 5、杨婉sp_yangwan 3、曹节caojie 8、袁姬yuanji 4、孙茹sunru 1，用map？，改随机生成、同名武将解锁
+				// 暂时先这么写吧，后续会加曹金玉caojinyu 4、张星彩zhangxingcai 10、羊徽瑜yanghuiyu 5、吴苋wuxian 5、杨婉sp_yangwan 3、曹节caojie 8、袁姬yuanji 4、孙茹sunru 1、乐蔡文姬yue_caiwenji 6，用map？，改随机生成、同名武将解锁
 				var name0="guanyinping",num0=10;
 				gameplayers0.node.avatar.setBackgroundImage("image/skin/" + name0 + "/" + num0 + ".jpg");
 				var name1="zhangqiying",num1=13;
@@ -20917,120 +22072,6 @@ config:{
 		},
 	},
 	
-	// 分割线
-	"byzyfgx23":{
-		"name":"<font size='4'>----收藏&最近功能-----</font>",
-		"clear":true,
-	},
-	
-	byzy_jiarushoucang_part:{
-		clear:true,
-		name:"<font size='3'><li>加入收藏</font>",
-	},
-	
-	"byzy_zjwjjrsc": {
-		"name": "<span style='text-decoration: underline;'>最近武将加入收藏</span>",
-		"clear": true,
-		onclick: function() {
-			if(confirm("是否将最近使用武将加入收藏武将列表里。\n\r继续请点击【确定】，即时生效。")){
-				game.zxgn(2001);
-			}
-		},
-	},
-	
-	byzy_jiaruzuijin_part:{
-		clear:true,
-		name:"<font size='3'><li>加入最近</font>",
-	},
-	
-	"byzy_scwjjrzj": {
-		"name": "<span style='text-decoration: underline;'>收藏武将加入最近</span>",
-		"clear": true,
-		onclick: function() {
-			if(confirm("是否将收藏武将加入最近使用武将列表里。\n\r继续请点击【确定】，即时生效。")){
-				game.zxgn(2002);
-			}
-		},
-	},
-	
-	byzy_yichushoucang_part:{
-		clear:true,
-		name:"<font size='3'><li>移出收藏</font>",
-	},
-	
-	"byzy_qkscwj": {
-		"name": "<span style='text-decoration: underline;'>清空收藏武将</span>",
-		"clear": true,
-		onclick: function() {
-			if(confirm("是否清空收藏武将，即自由选将对话框“收藏”里的武将，即时生效（手动重启后移除武将-收藏里的所有武将）。\n\r继续请点击【确定】。")){
-				game.zxgn(2003);
-			}
-		},
-	},
-	
-	byzy_yichuzuijin_part:{
-		clear:true,
-		name:"<font size='3'><li>移出最近</font>",
-	},
-	
-	"byzy_qkzjsywj": {
-		"name": "<span style='text-decoration: underline;'>清空最近使用武将</span>",
-		"clear": true,
-		onclick: function() {
-			if(confirm("是否清空最近使用武将，即自由选将对话框“最近”里的武将。\n\r继续请点击【确定】，即时生效。")){
-				game.zxgn(2004);
-			}
-		},
-	},
-	
-	// 分割线
-	"byzyfgx24":{
-		"name":"<font size='4'>-----禁用武将切换-----</font>",
-		"clear":true,
-	},
-	
-	byzy_fenjiexian11:{
-		clear:true,
-		name:"<font size='3'><li>鸣谢：官将重修</font>",
-	},
-	
-	"byzy_jywjqhgn": {
-		name: '禁用武将切换功能',
-		init: false,
-		intro: '开启后，将在选将时禁用武将切换功能。<br>若遇冲突请关闭本选项！',
-	},
-	
-	// 分割线
-	"byzyfgx25":{
-		"name":"<font size='4'>-----开关扩展功能-----</font>",
-		"clear":true,
-	},
-	
-	"byzy_kgkzgn":{
-		"name":"开关扩展功能",
-		"intro":"一键开启或关闭扩展，自动重启后生效。<br>本扩展不关闭。所有扩展（不含搬运自用）如下：<li>官方扩展：诸神降临、牌堆补充、五行生克、富甲天下<li>懒人包扩展：十周年UI、手杀ui<li>其他扩展",
-		"init":"1501",
-		"item":{
-			"1501":"关闭所有扩展",
-			"1502":"开启所有扩展",
-			"1503":"关闭所有[官方扩展]",
-			"1504":"开启所有[官方扩展]",
-			"1505":"关闭所有[懒人包扩展]",
-			"1506":"开启所有[懒人包扩展]",
-			"1507":"关闭所有[其他扩展]",
-			"1508":"开启所有[其他扩展]",
-			"1509":"关闭所有[官方扩展和懒人包扩展]",
-			"1510":"开启所有[官方扩展和懒人包扩展]",
-			"1511":"关闭所有[官方扩展和其他扩展]",
-			"1512":"开启所有[官方扩展和其他扩展]",
-			"1513":"关闭所有[懒人包扩展和其他扩展]",
-			"1514":"开启所有[懒人包扩展和其他扩展]",
-		},
-		onclick:function(item){
-			game.zxgn(Number(item));
-		},
-	},
-	
 	// byzy_dev_part:{
 		// clear:true,
 		// name:"<font size='3'><li>新功能开发中，敬请期待......</font>",
@@ -21110,8 +22151,11 @@ files:{"character":[],"card":[],"skill":[]}}})
 // window.setKaPaiYinWenTranslation 卡牌引文接口【应用扩展举例：怪物猎人】
 // 备注2：
 // 本扩展对本体换肤功能修改说明（暂仅支持旧版本体）
-// 资料卡修改、右键菜单修改：支持多形态皮肤切换（多形态原画的武将添加皮肤同原画一样，参考棘手懒人包image/skin/mb_caomao、image/skin/mb_caomao_shadow）
+// 资料卡修改、右键菜单修改：支持多形态皮肤切换（多形态原画的武将添加皮肤同原画一样，参考棘手懒人包 image/skin/mb_caomao、image/skin/mb_caomao_shadow、image/skin/mb_caomao_dead）
 // 自动换肤函数修改：支持多形态皮肤切换（资料卡修改/右键菜单修改 开启后生效）
+// 国战皮肤能单独添加了：棘手懒人包能独立换肤了（举例：能单独添加 image/skin/gz_xiaoqiao 了）
+// 备注3：
+// game.byzy_say1函数修改（原game.say1函数）
 
 // 武将称号、引文等来自：
 // 三国杀官方规则集，链接：https://m.weibo.cn/detail/4341518321802913
@@ -21132,6 +22176,9 @@ files:{"character":[],"card":[],"skill":[]}}})
 // 【禁将/禁卡即时生效】
 // lib.config.banned替换为lib.config[lib.config.mode + "_banned"] || []
 // lib.config.bannedcards替换为lib.config[lib.config.mode + "_bannedcards"] || []
+// 【国战皮肤能单独添加了】
+// 旧版本体国战部分不显示皮肤的武将可通过加素材临时修复（已放弃）：卞夫人bianfuren、糜夫人mifuren、邹氏zoushi等
+// 旧版本体国战武将皮肤和非国战武将皮肤绑定，不能独立换肤
 
 // 同人模式后续更新计划及待处理的问题：
 // 同人模式及其他游戏模式加入其他模式（如对决-欢乐等）
@@ -21160,14 +22207,16 @@ files:{"character":[],"card":[],"skill":[]}}})
 // 文丑 颜良文丑
 // ...
 
-// 来自群友的需求/反馈：
-// 复盘模式：类似再战，身份座位武将不变，重开一局（灵感来自群友）
+// 来自群友/吧友的需求/反馈：
+// 复盘模式：类似再战，身份座位武将不变，重开一局（灵感来自群友）；再战屏蔽身份（例如斗地主地主再战会一直保持地主身份）
 // 资料卡可双击原画/皮肤后放大看
 // 悔棋功能
 // 武将胜率（参考本体胜率功能和胜负统计扩展，提示加上菜单-其它-战绩）
 // 右键看武将技能不暂停游戏
-// 自由控制功能：任意控制，设置谁算队友/敌人（参考攻心为上扩展-谁算队友）；部分情况自娱自乐控制会有问题
-// 国战/双将的右键菜单加入/移出收藏功能有问题？只能收藏主将？再添加一个按钮收藏副将
+// 国战右键菜单添加收藏
+// 自由控制功能：部分情况自娱自乐控制会有问题，如：
+// - AI神貂蝉控制你控制的队友时，你仍可控制你的队友，之后还会反控制AI貂蝉（欢乐成双控制队友行动也有这个问题）
+// - OL蒲元协力/妨碍锻造没法控制
 
 // 其他优秀功能搬运（并魔改）：
 // 体力翻倍
@@ -21194,7 +22243,7 @@ files:{"character":[],"card":[],"skill":[]}}})
 // 手机端双击武将弹出资料卡会容易多点出武将信息弹窗
 // 手机端搬运自用扩展选项点击不会点击到导航功能操作技巧：短长按（介于短按和长按之间）
 // 阵亡配音/台词待适配die_audio:ext:或die:ext:
-// 炉石模式开自娱自乐报错
+// 挑战、炉石等模式开自娱自乐布局错误、报错、无法控制，控制中如果关掉自娱自乐会中断控制？
 
 // 资料卡点击查看技能信息的alert显示有问题（部分代码显示错误/显示不全），请到控制台查看没有问题的代码
 // 自由选将等搜索框弹窗后无法输入，电脑端问题（Electron中使用alert和comfirm等弹窗后input无法获得焦点）
@@ -21208,23 +22257,23 @@ files:{"character":[],"card":[],"skill":[]}}})
 // 完善重新选将功能（其他模式）
 // 重新选将未开启的武将包可选开启、开启后的排序
 // 完善一键导入重启功能：检测到扩展文件夹名不正确时，直接修正
-// 点导后开启导航功能开关（默认开启）
-// 升级为选项/武将/卡牌导航功能（其他扩展选项也能导航；添加武将/卡牌搜索导航的功能，搜一下就能跳转到武将/卡牌那里）
-// game.say1适配界面缩放
+// game.byzy_say1适配界面缩放
 // 交换位置AI（参考败移？）
 // 电脑端扩充界面缩放比例和游戏人数
 // 2-17人教程待完善；多人场布局优化
 // 2-17人addPlayer会自动安排布局
 // 自由选将-搜索功能、选项导航功能保留搜索历史（可通过选项选择）
 // 任意关键字加代码搜索？
+// 自由选将搜索和筛选修改成能二次/多次筛选
 // 自由选将-筛选按钮加宗族筛选
+// 自由选将筛选按钮加不享受主公的额外体力上限、不享受地主的额外技能
 // 自由选将-筛选按钮扩充可设置（分国战和非国战）
 // 禁将功能-禁用AI禁用的武将、禁用或启用：无原画武将（剪影原画武将）、多形态原画武将（已放弃）
 // 控制台获得技能按钮，参考神孙权
 // 资料卡试听胜利配音【暂不可用，等本体更新中】。思路1：更改游戏结束音效读取路径（随机播放一名胜利阵营角色的胜利配音，优先播放存活的角色）；思路2：更改阵亡配音为胜利配音（但在一些特殊模式无法识别）。可参考假装无敌MVP？
 // 资料卡点击查看武将信息增加其他rank信息（武将、技能）、场上技能和技能ID查看
 // 资料卡左下角区域按钮可调整显示顺序；新增动皮按钮（切换动皮）
-// 资料卡新增形态按钮，切换原画/多形态；切换按钮改成即时生效（目前需先关闭资料卡，然后重新打开资料卡）
+// 资料卡新增形态按钮，切换原画/多形态；切换按钮改成即时生效（目前需先关闭资料卡，然后重新打开资料卡） or 通过快捷功能切换
 // 编辑代码功能（资料卡编辑按钮）
 // 资料卡加换肤功能接口，可自定义路径（但格式同本体）
 // 资料卡左下按钮加“信息”
@@ -21235,16 +22284,21 @@ files:{"character":[],"card":[],"skill":[]}}})
 // 右键菜单修改仅留更改皮肤时显示优化
 // 加发送交互表情；聊天表情随机发送/快捷语音随机发送选项：发送者可选（如非当前角色/空闲角色）、游戏开始后运行
 // AI优化：卡牌价值修改
-// 收藏&最近：链接按钮改选项？；收藏武将移出最近、最近武将移出收藏；显示最近使用武将数限制修改；可设置将前X个武将加入；可设置清空数；场上武将加入/移出最近/收藏；AI禁将/禁将（部分功能位于收藏&最近功能）：收藏/非收藏武将，最近/非最近武将；禁将加入收藏/最近，收藏/最近加入禁将；男将/女将加入/移出收藏/最近
 // 完善武将及卡牌统计功能（包括其他势力武将统计、多形态等）
 // 弹框查看存在list里的各种武将（可视化）
 // 禁将禁武将包、武将分包（自动识别）
-// 一键关闭/禁将：国战武将、诸神降临的剑阁和挑战
 // 禁卡与解除禁卡：继续完善禁用卡牌功能（类似禁用武将功能），基本（普杀、属性杀、各属性杀分开、闪、桃、酒）、锦囊（普通、延时）、装备（1-6）等
-// 武将/卡牌数统计可在菜单里右键/长按查看
 // 自由选将可切换成卡牌、搜索功能也改成卡牌搜索；炉石模式-卡组管理搜索继续适配
 // 控制台加炉石模式行动值、塔防模式行动点相关命令
+// 添加皮肤共享功能（本体皮肤）
+// 点导后开启导航功能开关（默认开启）
+// 导航功能搜索设置加子选项
+// 升级为选项/武将/卡牌导航功能（其他扩展选项也能导航；添加武将/卡牌搜索导航的功能，搜一下就能跳转到武将/卡牌那里）
+// 武将/卡牌数统计可在菜单里右键/长按查看，导航功能查看
+// 快捷开关功能结合导航功能定位跳转各分包、结合统计功能
+// 收藏&最近：显示最近使用武将数限制修改？；链接按钮改选项？；收藏武将移出最近、最近武将移出收藏；可设置将前X个武将加入；可设置清空数；场上武将加入/移出最近/收藏；AI禁将/禁将（部分功能位于收藏&最近功能）：收藏/非收藏武将，最近/非最近武将；禁将加入收藏/最近，收藏/最近加入禁将；男将/女将加入/移出收藏/最近
 
+// 无距离模式（gk真没马了）
 // 无双模式：全武将皆有无双技能
 // 伤害值或回复值+1模式（例：暴击模式，伤害随机加1到3点）、无次数和距离限制模式、不可被响应模式（灵感来自神邓艾）
 // 夫妻协战模式：双将cp；父子协战模式:双将父子/父女【等三国杀更新中，等无名杀后续加入类似珠联璧合的相关函数】
@@ -21268,12 +22322,16 @@ files:{"character":[],"card":[],"skill":[]}}})
 // 判定区对应实体牌/虚拟牌待懒人包本体跟进后更新（后续可修改用间曹操当做兵粮寸断使用、手杀孙茹视为使用兵粮寸断测试）
 // 跟进新版本体多形态原画切换？新版本体换肤待适配？
 // 资料卡外观适配新版本体？
-// 国战换肤修改？（资料卡/右键菜单换肤）：使用国战皮肤开启后，国战武将支持换肤（参考棘手懒人包周瑜image/skin/gz_zhouyu、小乔image/skin/gz_xiaoqiao）
 // 武将/卡牌资料卡禁用不暂停游戏
 // 卡牌资料卡TODO
 // 注音功能：输入汉字输出注音（类似资料卡样式一、可通过弹窗显示、命令框（其它-命令）或控制台查看）
-// 菜单：允许选择并复制（放测试中的功能？）
 // 右键菜单单独外观修改：简约、玻璃；武将node、卡牌node、其他node
+// 对话框单独外观修改：简约、玻璃
 // 资料卡可换肤可隐去（直接点击可换肤隐藏/显示？左下按钮加“可换肤”？）
-// 切换功能改快捷禁将/禁卡按钮？或加边框/改名以示区别？其他按钮名修改？
+// 资料卡复制功能切换（例如点击注解直接复制ID）
+// 自由控制功能、手牌可视功能，设置谁算队友/敌人（参考攻心为上扩展-谁算队友）
+// 选将分敌方友方（如敌方会大概率选到弱将、友方会大概率选到强将）
 // 武将称号待补充
+
+// 新版WebView的<li>显示有问题（已实测144等版本）
+// 特效/界面错位待修复？：收到群友反馈新版WebView146版本有问题

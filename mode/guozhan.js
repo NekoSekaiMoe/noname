@@ -191,6 +191,86 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					game.players[i].node.name2.hide();
 					game.players[i].getId();
 				}
+				
+				// 势力禁用
+				// 临时修改（by 棘手怀念摧毁）
+				let groups = ["wei", "shu", "wu", "qun", "jin"];
+				const chosen = lib.config.continue_name || [];
+				// 使用国战武将开启且群雄割据关闭后生效
+				if (!_status.separatism && get.config("onlyguozhan") && (get.config("banGroup") == "one" || get.config("banGroup") == "two" || get.config("banGroup") == "three")) {
+					// 再战（不会禁用再战武将的势力）
+					if (chosen?.length) {
+						// 再战武将的势力临时修复（by 棘手怀念摧毁）
+						var double1 = get.is.double(chosen[0], true);
+						var double2 = get.is.double(chosen[1], true);
+						if(!double1 && !double2) {
+							if(groups.includes(lib.character[chosen[0]][1])) {
+								groups.remove(lib.character[chosen[0]][1]);
+							} else if(groups.includes(lib.character[chosen[1]][1])) {
+								groups.remove(lib.character[chosen[1]][1]);
+							}
+						}
+						if(!double1 && double2) {
+							if(groups.includes(lib.character[chosen[0]][1])) {
+								groups.remove(lib.character[chosen[0]][1]);
+							} else {
+								for (var i = 0; i < double2.length; i++) {
+									if (groups.includes(double2[i])) groups.remove(double2[i]);
+								}
+							}
+						}
+						if(!double2 && double1) {
+							if(groups.includes(lib.character[chosen[1]][1])) {
+								groups.remove(lib.character[chosen[1]][1]);
+							} else {
+								for (var i = 0; i < double1.length; i++) {
+									if (groups.includes(double1[i])) groups.remove(double1[i]);
+								}
+							}
+						}
+						if(double1 && double2) {
+							for (var i = 0; i < double1.length; i++) {
+								if (groups.includes(double1[i]) && double2.includes(double1[i])) groups.remove(double1[i]);
+							}
+						}
+					}
+					
+					let num = 0;
+					if (get.config("banGroup") == "one") num = 1;
+					if (get.config("banGroup") == "two") num = 2;
+					if (get.config("banGroup") == "three") num = 3;
+					let group = "";
+					
+					for (var j = 0; j < num; j++) {
+						if (groups.length > 2) {
+							if(num > 1) groups.remove(group);
+							group = groups.randomGet();
+							
+							console.log("本局" + `${get.translation(group)}势力` + "遭到了禁用");
+							game.print("本局" + `${get.translation(group)}势力` + "遭到了禁用");
+							game.log("本局", `<span data-nature=${get.groupnature(group, "raw")}m>${get.translation(group)}势力</span>`, "遭到了禁用");
+							if(game.byzy_say1) game.byzy_say1("本局" + `<span data-nature=${get.groupnature(group, "raw")}m>${get.translation(group)}势力</span>` + "遭到了禁用",310,250,2000,50,100);
+							
+							for (var i in lib.character) {
+								var double = get.is.double(i, true);
+								// 双势力武将禁用规则简化（by 棘手怀念摧毁）
+								// 为方便起见，禁用规则简化为：若双/多势力中含禁用势力则禁用该武将（但会降低双势力武将被选到的概率）
+								if (double && double.includes(group)) {
+									// 改为随机选将禁用
+									// lib.character[i][4].push("unseen");
+									lib.config.forbidai_user.add(i);
+								}
+								if (!double && lib.character[i][1] == group) {
+									if (!lib.character[i][4]) lib.character[i][4] = [];
+									// 改为随机选将禁用
+									// lib.character[i][4].push("unseen");
+									lib.config.forbidai_user.add(i);
+								}
+							}
+						}
+					}
+				}
+				
 				if (_status.brawl && _status.brawl.chooseCharacterBefore) {
 					_status.brawl.chooseCharacterBefore();
 				}
@@ -638,6 +718,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					"gz_yuanshu",
 					"gz_zhangxiu",
 				],
+				guozhan_jun: ["gz_jun_caocao", "gz_jun_sunquan", "gz_jun_liubei", "gz_jun_zhangjiao"],
 				guozhan_single: [
 					"gz_re_xushu",
 					"gz_yanbaihu",
@@ -648,8 +729,6 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					"gz_liuba",
 					"gz_zhuling",
 				],
-				guozhan_jun: ["gz_jun_caocao", "gz_jun_sunquan", "gz_jun_liubei", "gz_jun_zhangjiao"],
-				guozhan_yexinjia: ["gz_zhonghui", "gz_simazhao", "gz_gongsunyuan", "gz_sunchen"],
 				guozhan_double: [
 					"gz_tangzi",
 					"gz_liuqi",
@@ -664,6 +743,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					"gz_wenqin",
 					"gz_pengyang",
 				],
+				guozhan_yexinjia: ["gz_zhonghui", "gz_simazhao", "gz_gongsunyuan", "gz_sunchen"],
 				// guozhan_online: ["gz_re_xusheng"],
 				guozhan_jin: [
 					"gz_jin_simayi",
@@ -685,7 +765,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					"gz_xuangongzhu",
 					"gz_yangzhi",
 				],
-				guozhan_zongheng: [
+				guozhan_decade2: [
 					"gz_jianggan",
 					"gz_huaxin",
 					"gz_luyusheng",
@@ -22499,7 +22579,14 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						event.ai(game.me, list);
 						lib.init.onfree();
 					} else if (chosen.length) {
-						game.me.init(chosen[0], chosen[1], false);
+						// game.me.init(chosen[0], chosen[1], false);
+						// lib.init.onfree();
+						
+						// 再战武将的势力临时修复（by 棘手怀念摧毁）
+						result.buttons = [
+							{link:chosen[0]},
+							{link:chosen[1]}
+						];
 						lib.init.onfree();
 					} else {
 						var dialog = ui.create.dialog("选择角色", "hidden", [list, "character"]);
@@ -24199,23 +24286,30 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			gz_re_xusheng_prefix: "界",
 
 			guozhan_default: "国战标准",
+			
 			guozhan_zhen: "君临天下·阵",
 			guozhan_shi: "君临天下·势",
 			guozhan_bian: "君临天下·变",
 			guozhan_quan: "君临天下·权",
-			guozhan_single: "君临天下EX",
 			guozhan_jun: "君主武将",
-			guozhan_yexinjia: "野心家武将",
+			
+			guozhan_single: "不臣篇",//君临天下EX
 			guozhan_double: "双势力武将",
-			// 暂不更新
-			// guozhan_online: "Online专属",
+			guozhan_yexinjia: "野心家武将",
+			
+			guozhan_online: "Online专属",
 			guozhan_jin: "文德武备",
-			guozhan_zongheng: "纵横捭阖",
+			guozhan_decade2: "纵横捭阖",//十周年专属
 			guozhan_decade: "十年踪迹十年心",
 			guozhan_mobile: "移动版专属",
 			guozhan_tw: "海外服专属",
-			guozhan_others: "线下版",
+			guozhan_others: "线下版",//国战限定
 			guozhan_qunxiong: "群雄割据",
+			
+			guozhan_jinEX1: "紫气东来·受命于天",
+			//guozhan_jinEX2: "受命于天",
+			guozhan_wushuang: "国战无双",
+			guozhan_shen: "国战·神将",
 		},
 		junList: ["liubei", "zhangjiao", "sunquan", "caocao"],
 		guozhanPile_yingbian: [
@@ -25819,7 +25913,22 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				'<div style="margin:10px">双势力武将</div><ul style="margin-top:0"><li>双势力武将牌可以和野心家武将牌/包含势力单武将牌/含有重叠势力的其他双势力武将牌组合，若你的主将为双势力武将，则：若你的副将为单势力武将牌，你的势力视为此势力；若你的副将为双势力武将，你的势力视为两张武将牌上的重叠势力（若重叠势力不止一个则需在游戏开始时选择一个作为自己的势力）；野心家武将牌为主将，双势力武将牌为副将时，游戏开始时需选择一个副将所含势力作为副将的势力。<br><li>变更副将时，可以选择包含原势力的双势力武将牌。左慈发动〖役鬼〗时，可以使用双势力武将牌同时指定两个不同势力的角色为目标。<br><li>特殊地，“冈崎汐”作为多势力武将牌，结算流程和规则与其他双势力武将相同。</ul>' +
 				'<div style="margin:10px">野心家武将</div><ul style="margin-top:0"><li>野心家武将只能放在主将位置。副将可以为任意非野心家武将牌。<br><li>选择了野心家武将牌的角色（以下简称“野心家角色”）仅明置副将时，若副将为单势力武将牌，则势力暂时视为与该武将牌相同。若副将为双势力武将牌，则势力视为游戏开始时选择的副将代表的势力。<br><li>野心家角色明置主将时，其势力改为野心家。若其是首次明置该武将牌，则其获得一个“野心家”标记。<br><li>“野心家”标记可以当做“先驱”标记，“阴阳鱼”标记或是“珠联璧合”标记使用。当同时拥有两种标记时，优先弃置原装标记，下次发动时才弃置“野心家”标记。<br><li>野心家角色变更副将时，若其主将未明置过，则按照副将的势力进行变更。若主将已经明置过，则可以选择所有的非野心家武将牌。左慈发动〖役鬼〗时，可以使用野心家武将牌同时指定所有势力的角色为目标。' +
 				"<br><li>当场上触发了胜利条件时，若这些角色中存在未明置过主将的野心家角色，则这些野心家角色选择是否“暴露野心”。若无人选择“是”且场上存在非野心家角色存活，则所有非野心家角色胜利，野心家角色失败。若有人选择“是”，则这些角色明置主将，然后选择是否发起“拉拢人心”。<br><li>选择发起“拉拢人心”的野心家角色选择一个新的势力作为自己的势力，弃置“野心家”标记，令所有其他非野心家角色且非君主且非已“结盟”角色依次选择是否和该野心家角色“结盟”。选择“是”的角色将势力改为和该野心家势力相同。此次“拉拢人心”对所有其他角色询问结束后，所有选择“否”的角色将手牌摸至四张并回复1点体力。</ul>" +
-				'<div style="margin:10px">纵横捭阖</div><ul style="margin-top:0"><li>当一名角色对目标角色发动具有拥有“纵横”衍生技的技能时，其可以令对方获得“纵横”衍生技直到其下回合结束。</ul>',
+				'<div style="margin:10px">君主武将</div>'+
+				'<ul style="margin-top:0">'+
+					'<li>玩家必须将君主武将牌设置主将。<br /></li>'+
+					'<li>玩家在自己回合开始时，必须将君主武将牌明置，君主武将牌一旦被明置后，不可被暗置。<br /></li>'+
+					'<li>君主武将和所有本势力武将均有“珠联璧合”的关系。<br /></li>'+
+					'<li>君主武将牌明置时，若势力不为对应势力，变更为对应势力；然后令所有与此君主势力相同的野心家角色恢复其原有势力。<br /></li>'+
+					'<li>君主武将作为主将存活时，所有与君主势力相同的角色均不会成为野心家。<br /></li>'+
+					'<li>君主武将作为主将死亡后，其他与君主势力相同的角色均成为野心家。<br /></li>'+
+				'</ul>'+
+				'<div style="margin:10px">主将技</div><ul style="margin-top:0"><li>此武将牌为主武将时方能使用的技能。</ul>'+
+				'<div style="margin:10px">副将技</div><ul style="margin-top:0"><li>此武将牌为副武将时才能使用的技能。</ul>'+
+				'<div style="margin:10px">队列</div><ul style="margin-top:0"><li>座次连续的至少两名同势力角色成为一条队列。</ul>'+
+				'<div style="margin:10px">围攻</div><ul style="margin-top:0"><li>一名角色的上家和下家为同势力角色、且与该角色势力不同时，该角色被围攻，称为“被围攻角色”，其上家和下家称为“围攻角色”，这些角色处于同一“围攻关系”。</ul>'+
+				'<div style="margin:10px">阵法技</div><ul style="margin-top:0"><li>在存活角色数不小于4时锁定生效的技能。拥有阵法技的角色可以发起阵法召唤，令满足该技能条件的未确定势力角色可按逆时针顺序依次明置一张武将牌。</ul>'+
+				'<div style="margin:10px">纵横</div><ul style="margin-top:0"><li>一名角色对目标角色发动具有“纵横”标签的技能后，可以令其获得具有对应“纵横”效果的此技能直到其下回合结束。</ul>'+
+				'<div style="margin:10px">易位</div><ul style="margin-top:0"><li>发起武将易位后，若目标角色选择执行，则易位双方交换对应武将。<br><li>一名角色只能对相同势力的其他角色发起武将易位。<br><li>易位武将不会影响你的体力上限，也不会获得珠联壁合、阴阳鱼标记。<br><li>易位武将不会移除武将牌上的牌，如“田”等，也不会影响技能失效状态。</ul>',
 		},
 	};
 });

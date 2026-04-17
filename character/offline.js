@@ -3286,11 +3286,15 @@ game.import("character", function () {
 				},
 			},
 			tyxihun: {
-				trigger: { global: "roundStart" },
+				// 临时修改（by 棘手怀念摧毁）
+				trigger: { global: "roundEnd" },
+				// trigger: { global: "roundStart" },
 				forced: true,
 				filter(event, player) {
-					const curLen = player.actionHistory.length;
-					if (curLen <= 2) return false;
+					// 临时修改（by 棘手怀念摧毁）
+					// const curLen = player.actionHistory.length;
+					// if (curLen <= 2) return false;
+					
 					return true;
 				},
 				async content(event, trigger, player) {
@@ -3448,7 +3452,7 @@ game.import("character", function () {
 						direct:true,
 						content(){
 							if(!player.getStorage("tyansha_range").length){
-								player.when({global:"roundStart"}).then(()=>{
+								player.when({global:"roundEnd"}).then(()=>{
 									player.unmarkAuto("tyansha_range",player.getStorage("tyansha_range"));
 								});
 							}
@@ -3503,7 +3507,7 @@ game.import("character", function () {
 					return event.card.name=="sha";
 				},
 				async content(event,trigger,player){
-					player.tempBanSkill("tycangshen","roundStart");
+					player.tempBanSkill("tycangshen","roundEnd");
 				},
 				mod:{
 					globalTo(from, to, num) {
@@ -4447,6 +4451,7 @@ game.import("character", function () {
 						direct: true,
 						async content(event, trigger, player) {
 							trigger.directHit.addArray(game.players);
+							game.log(trigger.card, "不可被响应");
 						},
 					},
 				},
@@ -4998,7 +5003,7 @@ game.import("character", function () {
 				},
 				async content(event, trigger, player) {
 					await player.discard(event.cards);
-					player.addTempSkill("tyzhaowu_wusheng", "roundStart");
+					player.addTempSkill("tyzhaowu_wusheng", "roundEnd");
 					player.markAuto("tyzhaowu_wusheng", event.targets);
 				},
 				subSkill: {
@@ -8398,15 +8403,12 @@ game.import("character", function () {
 					target.markAuto("jdfengtu_phase", [trigger.player]);
 				},
 				onRound(event) {
-					return (event.relatedEvent || event.getParent(2)).name != "jdfengtu_phase";
+					return event.getParent().skill != "jdfengtu_phase" && (event.relatedEvent || event.getParent(2)).name != "jdfengtu_phase";
 				},
 				check(source, player) {
 					const players = game.players
 						.slice()
 						.concat(game.dead)
-						.filter(target => {
-							return target.isAlive() || [source, player].includes(target);
-						})
 						.sort((a, b) => parseInt(a.dataset.position) - parseInt(b.dataset.position));
 					const num = players.indexOf(source),
 						num2 = players.indexOf(player);
@@ -8418,7 +8420,7 @@ game.import("character", function () {
 						trigger: { global: "phaseOver" },
 						filter(event, player) {
 							return player.getStorage("jdfengtu_phase").some(target => {
-								return lib.skill.jdfengtu.check(event.player, target);
+								return !game.players.includes(target) && lib.skill.jdfengtu.check(event.player, target);
 							});
 						},
 						forced: true,
@@ -8932,7 +8934,7 @@ game.import("character", function () {
 					}
 					if (card1 && card2) {
 						const skill = get.color(card1, player) == get.color(card2, target) ? "psdaohe" : "pszhiyi";
-						await player.addTempSkills(skill, "roundStart");
+						await player.addTempSkills(skill, "roundEnd");
 					}
 				},
 				derivation: ["psdaohe", "pszhiyi"],
@@ -13153,6 +13155,11 @@ game.import("character", function () {
 			},
 			//孙綝
 			zyshilu: {
+				init() {
+					if (!_status.characterlist) {
+						game.initCharacterList();
+					}
+				},
 				// 配音临时修改（by 棘手怀念摧毁）
 				audio: ["gzshilu", 2],
 				// audio: ["gzshilu1.mp3", "gzshilu2.mp3"],
@@ -17088,8 +17095,9 @@ game.import("character", function () {
 				filter: function (event, player) {
 					return (
 						player._mouduan_mark &&
-						player._mouduan_mark.name == "文" &&
-						player.countCards("h") > 2
+						player._mouduan_mark.name == "文"
+						// 村规
+						&& player.countCards("h") > 2
 					);
 				},
 				direct: true,
@@ -18999,7 +19007,7 @@ game.import("character", function () {
 			tyshencai_info: "①你可以将一张无色牌当作【杀】使用或打出。②出牌阶段限一次，你可以令一名其他角色进行判定。你获得此判定牌，然后若此判定牌：包含以下要素中的任意一个，则其失去已有的下列效果，并获得对应的效果：{⒈体力：当其受到伤害后，其失去等量的体力、⒉武器：其不能使用牌响应【杀】、⒊打出：当其失去手牌后，其再随机弃置一张手牌（不嵌套触发）、⒋距离：其的结束阶段开始时，其翻面}；若均不包含，你获得其区域里的一张牌，其获得一枚“死”并获得如下效果：其的角色手牌上限-X、其的回合结束时，若X大于场上存活人数，则其死亡（X为其“死”标记数）。",
 			tyshencai_wusheng: "神裁·杀",
 			tyxunshi: "巡使",
-			tyxunshi_info: "锁定技。①你手牌中的的多目标锦囊牌花色视为none。②你使用颜色为none的牌无距离和次数限制。③当你使用无颜色的牌选择目标后，你令你的〖神裁〗的发动次数上限+1（至多为5），然后可以为此牌增加任意个目标。",
+			tyxunshi_info: "锁定技。①你手牌中的多目标锦囊牌花色视为none。②你使用颜色为none的牌无距离和次数限制。③当你使用无颜色的牌选择目标后，你令你的〖神裁〗的发动次数上限+1（至多为5），然后可以为此牌增加任意个目标。",
 			tyxunshi_tag: "无色牌",
 			ty_shen_guanyu: "桃神关羽",
 			ty_shen_guanyu_prefix: "桃神",

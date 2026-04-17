@@ -1,6 +1,6 @@
 'use strict';
 decadeModule.import(function(lib, game, ui, get, ai, _status){
-	// 临时修复扩展的武将包在武将界面不显示的bug
+	// 临时修复扩展的武将包在武将界面不显示的bug，示例：
 	// 活动武将
 	// if (lib.config.extensions && lib.config.extensions.contains('活动武将') && lib.config['extension_活动武将_enable']) {
 		// lib.config.all.characters.push('FaDongCharacter');
@@ -896,7 +896,9 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 						init: true,
 						type: 'autoskill',
 						onclick: clickAutoSkill,
-						intro: lib.translate[i + '_info']
+						// 选项-技能-自动发动加技能名ID
+						intro: "技能名ID：<br>"+i+"<br>技能描述:<br>"+(lib.translate[i + '_info']?lib.translate[i + '_info']:"/")
+						// intro: lib.translate[i + '_info']
 					};
 				}
 			}
@@ -927,7 +929,9 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					}
 					str += get.translation(forbid[i][j]) + '+';
 					str2 += forbid[i][j] + '+';
-					str3 += get.translation(forbid[i][j]) + '：' + lib.translate[forbid[i][j] + '_info'];
+					// 选项-技能-双将禁配加技能名ID
+					str3 += get.translation(forbid[i][j]) +" ["+forbid[i][j]+ ']：<br>' + lib.translate[forbid[i][j] + '_info'];
+					// str3 += get.translation(forbid[i][j]) + '：' + lib.translate[forbid[i][j] + '_info'];
 					if (j < forbid[i].length - 1) {
 						str3 += '<div class="placeholder slim" style="display:block;height:8px"></div>';
 					}
@@ -2108,6 +2112,11 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 								}
 							}
 							game.saveConfig('forbidai_user', lib.config.forbidai_user);
+							// 适配搬运自用扩展的快捷功能
+							if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kjaijywj']){
+								// 快捷AI禁用武将
+								updateActive();
+							}
 						},
 					});
 					if (!mode.startsWith('mode_')) {
@@ -2156,6 +2165,129 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					else {
 						page.style.paddingTop = '8px';
 					}
+					
+					// 适配搬运自用扩展的快捷开关功能
+					if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']!="0"){
+						var cfgnodekjkggnwj = createConfig({
+							name: '快捷开关功能',
+							intro: '搬运自用扩展的「快捷功能-快捷开关功能」，仅对本武将包所有武将生效',
+							_name: mode,
+							init: (() => {
+								if(lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']=="3") {
+									return lib.config["cfgnodekjkggnwj3" + mode] != false;
+								} else if(lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']=="4") {
+									return lib.config["cfgnodekjkggnwj4" + mode] != false;
+								} else
+								if (lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']=="1" || lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']==undefined) {
+									return lib.config[get.mode() + "cfgnodekjkggnwj1" + mode] != false;
+								}
+							})(),
+							onclick(bool) {
+								updateActive = function (node) {
+									if (!node) {
+										node = start.firstChild.querySelector('.active');
+										if (!node) {
+											return;
+										}
+									}
+									if (!node.link) {
+										node._initLink();
+									}
+									for (var i = 0; i < node.link.childElementCount; i++) {
+										if (node.link.childNodes[i].updateBanned) {
+											node.link.childNodes[i].updateBanned();
+										}
+									}
+								};
+								if(lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']=="3") {
+									// 快捷收藏功能
+									var banned = lib.config.favouriteCharacter || [];
+									var listx = list;
+									if (bool) {
+										for (var i = 0; i < listx.length; i++) {
+											banned.remove(listx[i]);
+										}
+									}
+									else {
+										for (var i = 0; i < listx.length; i++) {
+											banned.add(listx[i]);
+										}
+									}
+									game.saveConfig('favouriteCharacter', banned);
+									
+									updateActive();
+									
+									game.saveConfig("cfgnodekjkggnwj3" + mode, bool);
+								} else if(lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']=="4") {
+									// 快捷最近功能
+									var banned = get.config("recentCharacter") || [];
+									var listx = list;
+									if (bool) {
+										for (var i = 0; i < listx.length; i++) {
+											banned.remove(listx[i]);
+										}
+									}
+									else {
+										for (var i = 0; i < listx.length; i++) {
+											banned.add(listx[i]);
+										}
+									}
+									game.saveConfig('recentCharacter', banned, true);
+									
+									updateActive();
+									
+									game.saveConfig("cfgnodekjkggnwj4" + mode, bool);
+								} else if (lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']=="1" || lib.config['extension_搬运自用_byzy_wjkuaijiekaiguangongneng']==undefined) {
+									// 当前模式快捷禁用武将（默认功能）
+									var banned = [];
+									if (connectMenu) {
+										var modex = menux.pages[0].firstChild.querySelector('.active');
+										if (modex && modex.mode) {
+											banned = lib.config['connect_' + modex.mode + '_banned'];
+										}
+									}
+									else if (_status.connectMode) return;
+									else banned = lib.config[get.mode() + '_banned'] || [];
+									var listx = list;
+									if (bool) {
+										for (var i = 0; i < listx.length; i++) {
+											banned.remove(listx[i]);
+										}
+									}
+									else {
+										for (var i = 0; i < listx.length; i++) {
+											banned.add(listx[i]);
+										}
+									}
+									game.saveConfig(connectMenu ? ('connect_' + modex.mode + '_banned') : (get.mode() + '_banned'), banned);
+									
+									updateActive();
+									
+									game.saveConfig(get.mode() + "cfgnodekjkggnwj1" + mode, bool);
+								}
+							},
+						});
+						
+						// 不加开关
+						if(
+							mode != 'mode_versus' &&
+							mode != 'mode_boss' &&
+							mode != 'mode_chess' &&
+							mode != 'mode_tafang' &&
+							mode != 'mode_stone' &&
+							mode != 'mode_favourite' &&
+							mode != 'mode_banned'
+						) {
+							page.appendChild(cfgnodekjkggnwj);
+						}
+						
+						if (mode.startsWith('mode_') && !mode.startsWith('mode_extension')) {
+							cfgnodekjkggnwj.style.marginTop = '7px';
+						} else {
+							cfgnodekjkggnwj.style.marginTop = '0px';
+						}
+					}
+					
 					var banCharacter = function (e) {
 						if (_status.clicked) {
 							_status.clicked = false;
@@ -2188,6 +2320,18 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 							}
 						}
 						else {
+							// 适配搬运自用扩展的快捷功能
+							if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kjaijywj']){
+								// 快捷AI禁用武将
+								_list = lib.config.forbidai_user;
+							} else if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kuaijieshoucang']){
+								// 快捷收藏功能
+								_list = lib.config.favouriteCharacter;
+							} else if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kuaijiezuijin']){
+								// 快捷最近功能
+								_list = get.config("recentCharacter");
+							} else 
+							// 当前模式快捷禁用武将（默认功能）
 							_list = lib.config[get.mode() + '_banned'];
 						}
 						if (_list && _list.includes(this.link)) {
@@ -2472,7 +2616,7 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 				};
 				
 				lib.config.nocharacters=[];
-				lib.config.defaultcharacters=['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan','collab','xianding','huicui','shiji','jsrg','sxrm','onlyOL','sixiang','bingshi','sbfm','mdtx','shengxiao','old'];
+				lib.config.defaultcharacters=['standard','shenhua','sp','sp2','yijiang','refresh','xinghuoliaoyuan','mobile','extra','yingbian','sb','tw','offline','clan','collab','xianding','huicui','shiji','jsrg','sxrm','onlyOL','sixiang','bingshi','sbfm','mdtx','wztx','shengxiao','old'];
 				lib.config.notdefaultcharacters=['diy','ddd','key','yxs','hearth','gwent','mtg','ow','swd','gujian','xianjian'];
 				lib.config.benticharacters=lib.config.defaultcharacters.concat(lib.config.notdefaultcharacters);
 				var node1 = ui.create.div('.lefttext', '全部开启', start.firstChild, function () {
@@ -2746,6 +2890,95 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 					else {
 						page.style.paddingTop = '8px';
 					}
+					
+					// 适配搬运自用扩展的快捷开关功能
+					if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable'] && lib.config['extension_搬运自用_byzy_kpkuaijiekaiguangongneng']!="0"){
+						var cfgnodekjkggnkp = createConfig({
+							name: '快捷开关功能',
+							intro: '搬运自用扩展的「快捷功能-快捷开关功能」，仅对本卡牌包所有卡牌生效',
+							_name: mode,
+							init: (() => {
+								if (lib.config['extension_搬运自用_byzy_kpkuaijiekaiguangongneng']=="1" || lib.config['extension_搬运自用_byzy_kpkuaijiekaiguangongneng']==undefined) {
+									return lib.config[get.mode() + "cfgnodekjkggnkp" + mode] != false;
+								}
+							})(),
+							onclick(bool) {
+								updateActive = function (node) {
+									if (!node) {
+										node = start.firstChild.querySelector('.active');
+										if (!node) {
+											return;
+										}
+									}
+									if (!node.link) {
+										node._initLink();
+									}
+									for (var i = 0; i < node.link.childElementCount; i++) {
+										if (node.link.childNodes[i].updateBanned) {
+											node.link.childNodes[i].updateBanned();
+										}
+									}
+								};
+								if (lib.config['extension_搬运自用_byzy_kpkuaijiekaiguangongneng']=="1" || lib.config['extension_搬运自用_byzy_kpkuaijiekaiguangongneng']==undefined) {
+									// 当前模式快捷禁卡（默认功能）
+									var banned = [];
+									if (connectMenu) {
+										var modex = menux.pages[0].firstChild.querySelector('.active');
+										if (modex && modex.mode) {
+											banned = lib.config['connect_' + modex.mode + '_bannedcards'];
+										}
+									}
+									else if (_status.connectMode) return;
+									else banned = lib.config[get.mode() + '_bannedcards'] || [];
+									var listx = list;
+									
+									// 为菜单-卡牌添加属性杀显示
+									var map = {
+										"thunder": "leisha",
+										"fire": "huosha",
+										"ice": "icesha",
+										"stab": "cisha",
+										"kami": "kamisha",
+									};
+									
+									if (bool) {
+										for (var i = 0; i < listx.length; i++) {
+											// 为菜单-卡牌添加属性杀显示
+											if(listx[i][2]=="sha" && listx[i][3]!=null && map[listx[i][3]]){
+												banned.remove(map[listx[i][3]]);
+											} else
+											banned.remove(listx[i][2]);
+										}
+									}
+									else {
+										for (var i = 0; i < listx.length; i++) {
+											// 为菜单-卡牌添加属性杀显示
+											if(listx[i][2]=="sha" && listx[i][3]!=null && map[listx[i][3]]){
+												banned.add(map[listx[i][3]]);
+											} else
+											banned.add(listx[i][2]);
+										}
+									}
+									game.saveConfig(connectMenu ? ('connect_' + modex.mode + '_bannedcards') : (get.mode() + '_bannedcards'), banned);
+									
+									updateActive();
+									
+									game.saveConfig(get.mode() + "cfgnodekjkggnkp" + mode, bool);
+								}
+							},
+						});
+						
+						// 不加开关
+						if(
+							!mode.startsWith('mode_') ||
+							(cardPack && cardPack.closeable)
+						) {
+							page.appendChild(cfgnodekjkggnkp);
+						}
+						
+						cfgnodekjkggnkp.style.marginTop = '0px';
+					}
+					
 					var banCard = function (e) {
 						if (_status.clicked) {
 							_status.clicked = false;
@@ -7403,6 +7636,13 @@ decadeModule.import(function(lib, game, ui, get, ai, _status){
 				node.style.display = 'none';
 				page.classList.add('menu-help');
 				page.innerHTML = lib.help[i];
+				
+				// 更改菜单按钮字体
+				if (node.innerHTML.length >= 5) {
+					if (node.textContent.replace(/[^\u4e00-\u9fa5]/g, "").length >= 6) {
+						node.classList.add('minifont');
+					} else node.classList.add('smallfont');
+				}
 			}
 
 			if (!connectMenu) {

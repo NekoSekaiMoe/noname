@@ -163,11 +163,15 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 				nameinfo,
 				gzbool = false;
 			const mode = get.mode();
+			
+			// 临时修复国战原画受非国战换肤影响的bug
+			let name2 = "";
+			
 			if (type == "character") {
 				if (lib.characterPack[`mode_${mode}`] && lib.characterPack[`mode_${mode}`][name]) {
 					if (mode == "guozhan") {
 						nameinfo = lib.character[name];
-						if (name.startsWith("gz_shibing")) name = name.slice(3, 11);
+						if (name.startsWith("gz_shibing")) name = name;//国战士兵能单独添加皮肤了
 						else {
 							if (
 								lib.config.mode_config.guozhan.guozhanSkin &&
@@ -175,6 +179,7 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 								lib.character[name][4].includes("gzskin")
 							)
 								gzbool = true;
+							name2 = name;
 							name = name.slice(3);
 						}
 					} else modeimage = mode;
@@ -213,16 +218,33 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 				}
 			}
 			if (imgPrefixUrl) src = imgPrefixUrl;
-			else if (extimage) src = extimage.replace(/^ext:/, "extension/");
+			else if (extimage) {
+				// 支持衍生篇扩展的原画还原功能
+				if (type == "character" && lib.config.skin[name] && arguments[2] != "noskin" && !name2) {
+					src = `image/skin/${name}/${lib.config.skin[name]}${ext}`;
+				} else if (type == "character" && lib.config.skin["gz_" + name] && arguments[2] != "noskin" && name2) {
+					// 国战皮肤能单独添加了
+					const gzname = "gz_" + name;
+					src = `image/skin/${gzname}/${lib.config.skin[gzname]}${ext}`;
+				} else {
+					src = extimage.replace(/^ext:/, "extension/");
+				}
+			}
 			else if (dbimage) {
 				this.setBackgroundDB(dbimage.slice(3));
 				return this;
 			} else if (modeimage) src = `image/mode/${modeimage}/character/${name}${ext}`;
-			else if (type == "character" && lib.config.skin[name1] && arguments[2] != "noskin")
+			else if (type == "character" && lib.config.skin[name1] && arguments[2] != "noskin" && !name2) {
 				src = `image/skin/${name1}/${lib.config.skin[name1]}${ext}`;
-			else if (type == "character" && lib.config.skin[name] && arguments[2] != "noskin")
+			} else if (type == "character" && lib.config.skin[name] && arguments[2] != "noskin" && !name2) {
 				src = `image/skin/${name}/${lib.config.skin[name]}${ext}`;
-			else if (type == "character") {
+			} else if (type == "character" && lib.config.skin["gz_" + name] && arguments[2] != "noskin" && name2) {
+				// 国战皮肤能单独添加了
+				const gzname = "gz_" + name;
+				src = `image/skin/${gzname}/${lib.config.skin[gzname]}${ext}`;
+			} else if (type == "character") {
+				//国战士兵能单独添加皮肤了
+				if (name.startsWith("gz_shibing")) name = name.slice(3, 11);
 				src = `image/character/${gzbool ? "gz_" : ""}${name}${ext}`;
 			} else src = `image/${type}/${subfolder}/${name}${ext}`;
 		} else src = `image/${name}${ext}`;

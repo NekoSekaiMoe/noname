@@ -95,16 +95,15 @@ game.import("character", function () {
 			// },
 			
 			shen_diaochan(mode) {
-				return (
-					mode == "identity" ||
-					mode == "doudizhu" ||
-					mode == "single" ||
-					(mode == "versus" && _status.mode != "standard" && _status.mode != "three")
-				);
+				return mode == "identity" || mode == "doudizhu" || mode == "single" || (mode == "versus" && _status.mode != "standard" && _status.mode != "three");
 			},
 			shen_dengai(mode) {
-				if (["boss", "chess", "tafang", "stone"].includes(mode)) return false;
-				if (mode == "versus") return _status.mode != "three";
+				if (["boss", "chess", "tafang", "stone"].includes(mode)) {
+					return false;
+				}
+				if (mode == "versus") {
+					return _status.mode != "three";
+				}
 				return true;
 			},
 			le_shen_jiaxu(mode) {
@@ -1186,8 +1185,8 @@ game.import("character", function () {
 				trigger: {
 					player: "phaseZhunbeiBegin",
 					// 临时修改（by 棘手怀念摧毁）
-					global: "roundStart",
-					// global: "roundEnd",
+					// global: "roundStart",
+					global: "roundEnd",
 				},
 				getIndex(event, player) {
 					if (event.name == "phaseZhunbei") {
@@ -1208,8 +1207,8 @@ game.import("character", function () {
 				},
 				filter(event, player, triggername, card) {
 					// 临时修改（by 棘手怀念摧毁）
-					const curLen = player.actionHistory.length;
-					if (curLen <= 2) return false;
+					// const curLen = player.actionHistory.length;
+					// if (curLen <= 2) return false;
 					
 					if (event.name == "phaseZhunbei") {
 						return true;
@@ -2064,6 +2063,10 @@ game.import("character", function () {
 						return false;
 					}
 					if (event.name == "_wuxie") {
+						const directHit = event._trigger?.getParent()?.directHit;
+						if (directHit?.length && directHit.includes(player)) {
+							return false;
+						}
 						if (event.wuxieresult && event.wuxieresult == player) {
 							return false;
 						}

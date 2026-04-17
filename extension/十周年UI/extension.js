@@ -1230,6 +1230,14 @@ content:function(config, pack){
 		});
 	}
 	
+	// 为选项加介绍
+	lib.arenaReady.push(function(){
+		// 斗地主
+		lib.mode.doudizhu.config.enhance_dizhu.intro = "<li>〖殷富〗：锁定技。①回合开始时，若你的已损失体力值不小于游戏轮次，你回复1点体力。②当你发动〖殷富①〗至少3次后，你失去〖殷富〗。<li>〖强易〗：出牌阶段，你可以获得一名其他角色的至多两张牌，然后交给其等量的牌。每名角色每局游戏限一次。<li>削弱〖强易〗：每名角色限一次。出牌阶段，你选择一名其他角色，获得其一张手牌，然后交给其一张手牌。<li>〖恃强〗：出牌阶段限一次，你可以将一张牌当无距离限制的任意【杀】使用。你以此法使用【杀】时，摸一张牌。此【杀】结算结束后，若未造成伤害，你减1点体力上限。<li>削弱〖恃强〗：出牌阶段限一次，你可以将一张牌当无距离限制的【杀】使用。此【杀】结算结束后，若未造成伤害，你减1点体力上限。";
+		lib.mode.doudizhu.config.enhance_nongmin.intro = "<li>OL版本：农民队友阵亡后，你摸一张牌<li>手杀版本：农民队友阵亡后，你可以摸两张牌或回复1点体力<li>十周年版本：无农民遗产";
+		lib.mode.doudizhu.config.feiyang_version.intro = `<div class="caption">〖飞扬〗：</div><li>OL版本：判定阶段开始时，若你的判定区有牌，则你可以弃置两张牌，然后弃置你判定区的所有牌。<li>手杀版本：判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。<li>十周年版本：判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的所有牌。<br><br>〖跋扈〗：<br>锁定技，准备阶段开始时，你摸一张牌。出牌阶段，你出【杀】次数+1。`;
+	});
+	
 	// 国战魔改
 	if(config.guozhanmogai){
 		// 在国战模式，若开启“使用国战武将”开关时，勾玉改为阴阳鱼，武将体力以阴阳鱼为单位，体力上限相加向下取整
@@ -1526,7 +1534,14 @@ content:function(config, pack){
 						lib.init.onfree();
 					}
 					else if(chosen.length){
-						game.me.init(chosen[0],chosen[1],false);
+						// game.me.init(chosen[0],chosen[1],false);
+						// lib.init.onfree();
+						
+						// 再战武将的势力临时修复（by 棘手怀念摧毁）
+						result.buttons = [
+							{link:chosen[0]},
+							{link:chosen[1]}
+						];
 						lib.init.onfree();
 					}
 					else{
@@ -3092,6 +3107,97 @@ content:function(config, pack){
 			}
 			game.phaseLoop(_status.firstAct);
 		};
+		// 阵亡武将的即将获胜显示临时修复
+		lib.element.player.gainZhibao = function (num, source) {
+			if (source) {
+				if (num === true || num > source.storage.longchuanzhibao) {
+					num = source.storage.longchuanzhibao;
+				}
+			} else {
+				if (typeof num != "number") {
+					num = 1;
+				}
+			}
+			if (!num || typeof num != "number") return this;
+
+			this.storage.longchuanzhibao += num;
+			this.updateMark("longchuanzhibao");
+
+			if (source) {
+				source.storage.longchuanzhibao -= num;
+				source.updateMark("longchuanzhibao");
+				game.log(this, "从", source, "处获得了" + get.cnNumber(num) + "个", "#y龙船至宝");
+			} else {
+				game.log(this, "获得了" + get.cnNumber(num) + "个", "#y龙船至宝");
+			}
+
+			if (source && source.side != this.side) {
+				this.draw(num, "nodelay");
+				var that = this;
+				var friend = game.findPlayer(function (current) {
+					return current.side == that.side && current != that;
+				});
+				if (friend) {
+					friend.draw(num, "nodelay");
+				}
+			}
+
+			var map = { wei: 0, shu: 0, wu: 0, qun: 0 };
+			for (var i = 0; i < game.players.length; i++) {
+				var current = game.players[i];
+				map[current.side] += current.storage.longchuanzhibao;
+			}
+			for (var i = 0; i < game.players.length; i++) {
+				var current = game.players[i];
+				if (map[current.side] >= 4) {
+					current.classList.add("current_action");
+				} else {
+					current.classList.remove("current_action");
+				}
+			}
+			
+			// 临时修复（by 棘手怀念摧毁）
+			for (var i = 0; i < game.dead.length; i++) {
+				var current = game.dead[i];
+				if (map[current.side] >= 4) {
+					current.classList.add("current_action");
+				} else {
+					current.classList.remove("current_action");
+				}
+			}
+			
+			return this;
+		};
+		if(lib.skill.longchuanzhibao != undefined){
+			lib.skill.longchuanzhibao.subSkill.over = {
+				trigger: { player: "roundStart" },
+				silent: true,
+				filter: function () {
+					var map = { wei: 0, shu: 0, wu: 0, qun: 0 };
+					for (var i = 0; i < game.players.length; i++) {
+						var current = game.players[i];
+						map[current.side] += current.storage.longchuanzhibao;
+						if (map[current.side] >= 4) {
+							_status.winside = current.side;
+							return true;
+						}
+					}
+				},
+				content: function () {
+					for (var i = 0; i < game.players.length; i++) {
+						game.players[i].classList.remove("current_action");
+					}
+					
+					// 临时修复（by 棘手怀念摧毁）
+					for (var i = 0; i < game.dead.length; i++) {
+						game.dead[i].classList.remove("current_action");
+					}
+					
+					var me = game.me._trueMe || game.me;
+					game.over(_status.winside == me.side);
+				},
+			}
+		}
 		
 		// 修复对决-自由模式选将时按钮偏上的异常
 		// 修改versus.js的函数chooseCharacter:function(){
@@ -3393,6 +3499,10 @@ content:function(config, pack){
 						var choice=(lib.storage.choice=='∞')?list.length:lib.storage.choice;
 						var buttons=dialog.querySelector('.buttons');
 						var button;
+						
+						// 修复武将过少导致的报错
+						if(choice>list.length) choice = list.length;
+						
 						for(i=dialog.buttons.length;i<choice;i++){
 							button=ui.create.button(list[i],'character',buttons).addTempClass('zoom')
 							dialog.buttons.push(button);
@@ -4351,6 +4461,10 @@ content:function(config, pack){
 				lib.characterIntro.boss_baijiwenyuan = lib.characterIntro.zhangliao;
 				lib.characterIntro.boss_yihanyunchang = lib.characterIntro.guanyu;
 				lib.characterIntro.boss_fuweizilong = lib.characterIntro.zhaoyun;
+				lib.characterIntro.boss_weiwuyide = lib.characterIntro.zhangfei;
+				lib.characterIntro.boss_elaiziman = lib.characterIntro.dianwei;
+				lib.characterIntro.boss_shenjianhansheng = lib.characterIntro.huangzhong;
+				lib.characterIntro.boss_yiyongwenze = lib.characterIntro.yujin;
 				"step 1";
 				for (var i in lib.skill) {
 					if (lib.skill[i].seatRelated) {
@@ -4521,7 +4635,8 @@ content:function(config, pack){
 						break;
 				}
 				game.me.chooseButton(dialog, true).set("onfree", true).selectButton = function () {
-					if (get.config("double_character_jiange")) return [2, 2];
+					// 修复双将模式开启后器械/英魂会选双将的bug
+					if (get.config("double_character_jiange") && game.me.type == "human") return [2, 2];
 					return [1, 1];
 				};
 				"step 2";
@@ -4577,6 +4692,29 @@ content:function(config, pack){
 					);
 				}
 				ui.arena.classList.add("choose-character");
+				
+				// 临时修复由于禁将导致的报错（武将数为零报错）
+				var listfix = {
+					wei: [],
+					shu: [],
+					wu: [],
+					qun: [],
+				};
+				for (var i in lib.character) {
+					if (lib.filter.characterDisabled(i)) continue;
+					if (get.is.double(i)) continue;
+					if (get.config("siguo_character") == "off" && lib.characterPack.mode_versus[i])
+						continue;
+					if (listfix[lib.character[i][1]]) {
+						listfix[lib.character[i][1]].push(i);
+					}
+				}
+				if(listfix.wei.length<8 || listfix.shu.length<8 || listfix.wu.length<8 || listfix.qun.length<8){
+					console.log("武将不足，无法继续游戏，请开启武将包并确保武将充足；点击确定后将重启进入启动页界面");
+					alert("武将不足，无法继续游戏，请开启武将包并确保武将充足；点击确定后将重启进入启动页界面");
+					game.pause();
+					window.location.reload();
+				}
 				"step 1";
 				var list = {
 					wei: [],
@@ -4872,6 +5010,512 @@ content:function(config, pack){
 	}
 	
 	if(lib.config.mode=='chess'){
+		// 查看手牌的显示美化
+		lib.init.start = function () {
+			"step 0";
+			_status.gameDrawed = true;
+			_status.mode = get.config("chess_mode");
+			if (
+				lib.config.player_border == "normal" &&
+				(lib.config.layout == "long" || lib.config.layout == "long2")
+			) {
+				ui.arena.classList.add("lslim_player");
+			}
+			// if(_status.mode=='leader'){
+			// 	_status.mode='combat';
+			// }
+			if (lib.config.test_game) {
+				_status.mode = "combat";
+				game.saveConfig("additional_player", false, true);
+			}
+			if (_status.mode == "combat") {
+				_status.first_less = true;
+			}
+			"step 1";
+			for (var i in lib.skill) {
+				if (lib.skill[i].seatRelated) {
+					lib.skill[i] = {};
+					if (lib.translate[i + "_info"]) {
+						lib.translate[i + "_info"] = "此模式下不可用";
+					}
+				}
+			}
+			lib.init.css(lib.assetURL + "layout/mode", "chess");
+			ui.chesssheet = document.createElement("style");
+			document.head.appendChild(ui.chesssheet);
+			var playback = localStorage.getItem(lib.configprefix + "playback");
+			lib.treasurelist = [];
+			if (get.config("chess_character") || playback || _status.mode == "leader") {
+				for (var i in lib.characterPack.mode_chess) {
+					if (i.indexOf("treasure_") == 0) {
+						lib.treasurelist.push(i);
+					}
+					if (!playback && i.indexOf("leader_") == 0 && _status.mode != "leader") continue;
+					lib.character[i] = lib.characterPack.mode_chess[i];
+					if (!lib.character[i][4]) {
+						lib.character[i][4] = [];
+					}
+				}
+			}
+			if (get.config("chess_card")) {
+				lib.card.list.addArray(lib.chess_cardlist);
+			}
+			ui.create.cardsAsync();
+			game.finishCards();
+			game.addGlobalSkill("autoswap");
+			ui.chessContainer = ui.create.div("#chess-container", ui.arena);
+			ui.chessContainer.move = ui.click.moveContainer;
+			ui.chessContainer.chessLeft = 0;
+			ui.chessContainer.chessTop = 0;
+			// lib.setScroll(ui.chessContainer);
+			ui.chess = ui.create.div("#chess", ui.chessContainer);
+			ui.canvas2 = document.createElement("canvas");
+			ui.canvas2.id = "canvas2";
+			ui.chess.appendChild(ui.canvas2);
+			ui.ctx2 = ui.canvas2.getContext("2d");
+			game.me = ui.create.player();
+			if (playback) {
+				for (var i in lib.characterPack) {
+					for (var j in lib.characterPack[i]) {
+						lib.character[j] = lib.character[j] || lib.characterPack[i][j];
+					}
+				}
+				game.pause();
+				ui.system.style.display = "none";
+				_status.playback = playback;
+				localStorage.removeItem(lib.configprefix + "playback");
+				var store = lib.db.transaction(["video"], "readwrite").objectStore("video");
+				store.get(parseInt(playback)).onsuccess = function (e) {
+					if (e.target.result) {
+						event.video = e.target.result.video;
+						game.resume();
+					} else {
+						alert("播放失败：找不到录像");
+						game.reload();
+					}
+				};
+			} else {
+				switch (_status.mode) {
+					case "leader": {
+						game.leaderView();
+						break;
+					}
+					case "three": {
+						if (lib.config.continue_name_chess) {
+							event._result = {
+								friend: lib.config.continue_name_chess.friend,
+								enemy: lib.config.continue_name_chess.enemy,
+							};
+							_status.color = lib.config.continue_name_chess.color;
+							game.saveConfig("continue_name_chess");
+							game.delay(0.5);
+							lib.init.onfree();
+						} else {
+							game.chooseCharacterDouble(
+								function (i) {
+									if (lib.character[i][4].includes("chessboss")) {
+										return false;
+									}
+									return !lib.filter.characterDisabled(i);
+								},
+								function (i) {
+									switch (i) {
+										case 0:
+											return "主帅";
+										case 1:
+											return "副帅";
+										default:
+											return "前锋";
+									}
+								}
+							);
+						}
+						break;
+					}
+					case "combat": {
+						game.chooseCharacter();
+						break;
+					}
+					default: {
+						game.chooseCharacter();
+					}
+				}
+			}
+			"step 2";
+			ui.arena.classList.add("chess");
+			if (_status.mode == "three") {
+				_status.mylist = result.friend;
+				_status.enemylist = result.enemy;
+				_status.friendBackup = _status.mylist.slice(0);
+				_status.enemyBackup = _status.enemylist.slice(0);
+			}
+			var mylistmap, enemylistmap;
+			if (event.video) {
+				var videocontent;
+				for (var ii = 0; ii < event.video.length; ii++) {
+					if (event.video[ii].type == "init") {
+						videocontent = event.video[ii].content;
+						break;
+					}
+				}
+				_status.mylist = [];
+				_status.enemylist = [];
+				mylistmap = [];
+				enemylistmap = [];
+				for (var i = 0; i < videocontent.length; i++) {
+					if (videocontent[i].lord) {
+						_status.lord = videocontent[i].name;
+					}
+					if (videocontent[i].identity == "friend") {
+						_status.mylist.push(videocontent[i].name);
+						mylistmap.push(videocontent[i].position);
+					} else {
+						_status.enemylist.push(videocontent[i].name);
+						enemylistmap.push(videocontent[i].position);
+					}
+				}
+				game.playerMap = lib.posmap;
+			}
+			var num = Math.round((_status.mylist.length + _status.enemylist.length) / 2);
+			var friend, enemy;
+			var side;
+			if (_status.mode == "three") {
+				side = !_status.color;
+			} else if (_status.mode == "leader") {
+				side = true;
+			} else {
+				side = Math.random() < 0.5;
+			}
+
+			switch (num) {
+				case 1:
+					ui.chessheight = 4;
+					break;
+				case 2:
+					ui.chessheight = 5;
+					break;
+				case 3:
+					ui.chessheight = 5;
+					break;
+				case 4:
+					ui.chessheight = 6;
+					break;
+				case 5:
+					ui.chessheight = 6;
+					break;
+				case 6:
+					ui.chessheight = 7;
+					break;
+				case 7:
+					ui.chessheight = 7;
+					break;
+				case 8:
+					ui.chessheight = 8;
+					break;
+				default:
+					ui.chessheight = 8;
+			}
+			ui.chesswidth = Math.round(ui.chessheight * 1.5);
+
+			if (num == 1) ui.chesswidth++;
+			game.initChess();
+
+			var grids = [];
+			var gridnum = ui.chessheight * ui.chesswidth;
+			for (var i = 0; i < gridnum; i++) {
+				grids.push(i);
+			}
+			event.obs = [];
+			if (!event.video) {
+				var nco = parseFloat(get.config("chess_obstacle"));
+				if (nco > 0) {
+					var ng = Math.floor(gridnum * nco);
+					for (var i = 0; i < ng; i++) {
+						var cg = grids.randomRemove();
+						game.addObstacle(cg.toString(), false);
+						event.obs.push(cg.toString());
+					}
+				}
+			}
+			_status.enemyCount = _status.enemylist.length;
+			_status.friendCount = _status.mylist.length;
+			while (_status.mylist.length) {
+				friend = ui.create.player().addTempClass("start");
+				friend.getId();
+				if (!event.friendZhu) {
+					event.friendZhu = friend;
+				} else if (!event.friendViceZhu) {
+					event.friendViceZhu = friend;
+				}
+				friend.init(_status.mylist.shift());
+				friend.side = side;
+				friend.setIdentity("friend");
+				friend.identity = "friend";
+				friend.node.identity.dataset.color = get.translation(side + "Color");
+				game.players.push(friend);
+				ui.chess.appendChild(friend);
+				if (event.video) {
+					ui.placeChess(friend, mylistmap.shift());
+				} else {
+					ui.placeChess(friend, grids.randomRemove());
+					if (_status.enterArena && game.data.arena.acted.includes(friend.name)) {
+						friend.hp--;
+						friend.update();
+					}
+					if (_status.enterArena) {
+						friend.addSkill("arenaAdd");
+					}
+				}
+				lib.posmap[friend.dataset.position] = friend;
+			}
+			while (_status.enemylist.length) {
+				enemy = ui.create.player().addTempClass("start");
+				enemy.getId();
+				enemy.init(_status.enemylist.shift());
+				enemy.side = !side;
+				enemy.setIdentity("enemy");
+				enemy.identity = "enemy";
+				enemy.node.identity.dataset.color = get.translation(!side + "Color");
+				game.players.push(enemy);
+				ui.chess.appendChild(enemy);
+				if (event.video) {
+					ui.placeChess(enemy, enemylistmap.shift());
+				} else {
+					ui.placeChess(enemy, grids.randomRemove());
+				}
+				lib.posmap[enemy.dataset.position] = enemy;
+			}
+
+			if (lib.config.show_handcardbutton) {
+				lib.setPopped(
+					ui.create.system("手牌", null, true),
+					function () {
+						var uiintro = ui.create.dialog("hidden");
+						var added = false;
+						for (var i = 0; i < game.players.length; i++) {
+							if (game.players[i].side == game.me.side && game.players[i] != game.me) {
+								added = true;
+								uiintro.add(get.translation(game.players[i]));
+								var cards = game.players[i].getCards("h");
+								if (cards.length) {
+									// 修改（与菜单卡牌的显示美化一样）
+									var list = [];
+									for (var j = 0; j < cards.length; j++) {
+										var cardx = cards[j];
+										var copy = game.createCard2(cardx.name, cardx.suit, cardx.number, cardx.nature);
+										copy.classList.add('menusize');
+										copy.node.suitnum.classList.add('menusizex');
+										copy.node.image.classList.add('menusize');
+										copy.$name.classList.add('menusize');
+										list.unshift(copy);
+									}
+									uiintro.addSmall([list, "card"], true);
+									// uiintro.addSmall(cards, true);
+								} else {
+									uiintro.add("（无）");
+								}
+							}
+						}
+						if (!added) {
+							uiintro.add("无队友");
+						}
+
+						return uiintro;
+					},
+					220
+				);
+			}
+
+			if (
+				!event.video &&
+				_status.mode == "combat" &&
+				!_status.vsboss &&
+				(_status.replacelist.length || get.config("additional_player"))
+			) {
+				_status.enemyDied = 0;
+				_status.friendDied = 0;
+				ui.enemyDied = ui.create.system("杀敌: " + get.cnNumber(0), null, true);
+				ui.friendDied = ui.create.system("阵亡: " + get.cnNumber(0), null, true);
+				if (!get.config("additional_player")) {
+					lib.setPopped(ui.friendDied, function () {
+						if (_status.replacelist.length) {
+							var uiintro = ui.create.dialog("hidden");
+
+							uiintro.add("未上场");
+							uiintro.add([_status.replacelist, "character"]);
+
+							return uiintro;
+						}
+					});
+				}
+			}
+			if (!event.video && _status.mode == "combat" && !get.config("single_control") && !_status.boss) {
+				ui.single_swap = ui.create.system(
+					"换人",
+					function () {
+						var bool = false;
+						for (var i = 0; i < game.players.length; i++) {
+							if (game.players[i].side == game.me.side && game.players[i] != game.me) {
+								bool = true;
+								break;
+							}
+						}
+						if (bool) {
+							if (ui.auto.classList.contains("hidden")) {
+								game.me.popup("请稍后换人");
+								return;
+							}
+							if (_status.event.isMine()) {
+								ui.click.auto();
+								setTimeout(function () {
+									ui.click.auto();
+								}, 500);
+							}
+							var player = game.me;
+							for (var i = 0; i < game.players.length; i++) {
+								player = player.next;
+								if (player.side == game.me.side) {
+									game.modeSwapPlayer(player);
+									return;
+								}
+							}
+						}
+					},
+					true
+				);
+			}
+			if (
+				!event.video &&
+				_status.mode == "combat" &&
+				!_status.vsboss &&
+				get.config("additional_player")
+			) {
+				var finishGameBr = document.createElement("br");
+				finishGameBr.classList.add("finish_game");
+				ui.finishGame = ui.create.system("结束游戏", function () {
+					ui.finishGame.remove();
+					if (_status.friendDied < _status.enemyDied) {
+						game.forceOver(true);
+					} else if (_status.friendDied > _status.enemyDied) {
+						game.forceOver(false);
+					} else {
+						game.forceOver();
+					}
+				});
+				ui.finishGame.classList.add("finish_game");
+				ui.finishGame.parentNode.insertBefore(finishGameBr, ui.finishGame);
+			}
+
+			ui.create.me();
+			ui.create.fakeme();
+
+			if (
+				!event.video &&
+				((_status.mode == "combat" &&
+					get.config("zhu") &&
+					!_status.vsboss &&
+					game.players.length > 2) ||
+					_status.mode == "three")
+			) {
+				game.friendZhu = event.friendZhu;
+				game.friendZhu.hp++;
+				game.friendZhu.maxHp++;
+				game.friendZhu.update();
+				game.friendZhu.node.identity.firstChild.innerHTML = "将";
+
+				for (var i = 0; i < game.players.length; i++) {
+					if (game.players[i].side != game.me.side) {
+						game.enemyZhu = game.players[i];
+						game.players[i].hp++;
+						game.players[i].maxHp++;
+						game.players[i].update();
+						game.players[i].node.identity.firstChild.innerHTML = "帅";
+						break;
+					}
+				}
+
+				if ((get.config("main_zhu") || _status.mode == "three") && event.friendViceZhu) {
+					game.friendViceZhu = event.friendViceZhu;
+					game.friendViceZhu.node.identity.firstChild.innerHTML = "仕";
+					for (var i = 0; i < game.players.length; i++) {
+						if (game.players[i].side != game.me.side && game.players[i] != game.enemyZhu) {
+							game.enemyViceZhu = game.players[i];
+							game.players[i].node.identity.firstChild.innerHTML = "士";
+							break;
+						}
+					}
+				}
+			}
+
+			ui.chessinfo = ui.create.div(".fakeme.player.playerbg", ui.me, function (e) {
+				e.stopPropagation();
+			});
+			ui.create.div(ui.chessinfo);
+			lib.setScroll(ui.chessinfo.firstChild);
+
+			game.arrangePlayers();
+			"step 3";
+			ui.control.style.display = "";
+			var p;
+			for (var i = 0; i < game.players.length; i++) {
+				if (_status.lord) {
+					if (game.players[i].name == _status.lord) {
+						p = game.players[i];
+						p.addSkill("tongshuai");
+						p.addSkill("leader_zhaoxiang");
+						break;
+					}
+				} else {
+					if (game.players[i].side) {
+						p = game.players[i];
+						break;
+					}
+				}
+			}
+			if (event.video) {
+				game.playVideoContent(event.video);
+				game.setChessInfo(p);
+				return;
+			}
+
+			var players = get.players(lib.sort.position);
+			var info = [];
+			for (var i = 0; i < players.length; i++) {
+				info.push({
+					name: players[i].name,
+					identity: players[i].identity,
+					position: players[i].dataset.position,
+					lord: players[i].name == _status.lord,
+				});
+			}
+			_status.videoInited = true;
+			game.addVideo("init", null, info);
+			if (game.friendZhu) {
+				game.addVideo("identityText", game.friendZhu, "将");
+				game.addVideo("identityText", game.enemyZhu, "帅");
+				if (game.friendViceZhu) {
+					game.addVideo("identityText", game.friendViceZhu, "仕");
+					game.addVideo("identityText", game.enemyViceZhu, "士");
+				}
+			}
+			if (event.obs) {
+				game.addVideo("initobs", null, event.obs);
+			}
+
+			event.trigger("gameStart");
+			game.gameDraw(p);
+			game.me.classList.add("current_action");
+			if (_status.mode == "three") {
+				game.phaseLoopThree(_status.color ? game.enemyZhu : game.friendZhu);
+			} else if (_status.mode == "leader") {
+				game.phaseLoopOrdered(p);
+			} else if (get.config("seat_order") == "指定") {
+				game.phaseLoopOrdered(p);
+			} else {
+				game.phaseLoop(p);
+			}
+			game.setChessInfo(p);
+		};
 		// 修复战棋模式选将时按钮偏上的异常
 		game.leaderView=function(){
 			var next=game.createEvent('leaderView',false);
@@ -6854,6 +7498,287 @@ content:function(config, pack){
 	}
 	
 	if(lib.config.mode=='tafang'){
+		// 查看手牌的显示美化
+		lib.init.start = function () {
+			"step 0";
+			_status.gameDrawed = true;
+			lib.init.css(lib.assetURL + "layout/mode", "chess");
+			lib.init.css(lib.assetURL + "layout/mode", "tafang");
+			game.loadMode("chess");
+			"step 1";
+			if (
+				get.is.phoneLayout() &&
+				lib.config.touchscreen &&
+				!lib.config.show_round_menu &&
+				!["system", "menu"].includes(lib.config.swipe_left) &&
+				!["system", "menu"].includes(lib.config.swipe_right) &&
+				!["system", "menu"].includes(lib.config.swipe_up)
+			) {
+				ui.roundmenu.style.display = "";
+			}
+			if (
+				lib.config.player_border == "normal" &&
+				(lib.config.layout == "long" || lib.config.layout == "long2")
+			) {
+				ui.arena.classList.add("lslim_player");
+			}
+			for (var i in result.element) {
+				for (var j in result.element[i]) {
+					if (j != "dieAfter") {
+						lib.element[i][j] = result.element[i][j];
+					}
+				}
+			}
+			for (var i in result.ui) {
+				for (var j in result.ui[i]) {
+					ui[i][j] = result.ui[i][j];
+				}
+			}
+			get.chessDistance = result.get.chessDistance;
+			get.rawAttitude = result.get.rawAttitude;
+			var toLoad = [
+				"addChessPlayer",
+				"addObstacle",
+				"removeObstacle",
+				"isChessNeighbour",
+				"draw2",
+				"updateCanvas2",
+				"setChessInfo",
+				"modeSwapPlayer",
+				"initChess",
+			];
+			for (var i = 0; i < toLoad.length; i++) {
+				game[toLoad[i]] = result.game[toLoad[i]];
+			}
+			toLoad = ["_attackmove", "_phasequeue", "_chessmove", "_chesscenter", "_tempobstacle"];
+			for (var i = 0; i < toLoad.length; i++) {
+				lib.skill[toLoad[i]] = result.skill[toLoad[i]];
+			}
+			ui.placeChess = result.ui.placeChess;
+			ui.click.moveContainer = result.ui.click.moveContainer;
+			for (var i in lib.skill) {
+				if (lib.skill[i].seatRelated) {
+					lib.skill[i] = {};
+					if (lib.translate[i + "_info"]) {
+						lib.translate[i + "_info"] = "此模式下不可用";
+					}
+				}
+			}
+			// if(!localStorage.getItem(lib.configprefix+'playback')){
+			//     game.loadMap();
+			// }
+			"step 2";
+			var result = "basic_medium";
+			_status.map = lib.tafang.map[result];
+			_status.mapname = result;
+			ui.chesssheet = document.createElement("style");
+			document.head.appendChild(ui.chesssheet);
+			var playback = localStorage.getItem(lib.configprefix + "playback");
+			lib.mechlist = [];
+			for (var i in lib.characterPack.mode_tafang) {
+				if (i.indexOf("tafang_mech_") == 0) {
+					lib.characterPack.mode_tafang[i][3].push(i + "_skill");
+					lib.mechlist.push(i);
+				}
+				lib.character[i] = lib.characterPack.mode_tafang[i];
+				if (!lib.character[i][4]) {
+					lib.character[i][4] = [];
+				}
+			}
+			ui.create.cardsAsync();
+			game.finishCards();
+			game.addGlobalSkill("autoswap");
+			ui.chessContainer = ui.create.div("#chess-container", ui.arena);
+			ui.chessContainer.move = ui.click.moveContainer;
+			ui.chessContainer.chessLeft = 0;
+			ui.chessContainer.chessTop = 0;
+			// lib.setScroll(ui.chessContainer);
+			ui.chess = ui.create.div("#chess", ui.chessContainer);
+			ui.canvas2 = document.createElement("canvas");
+			ui.canvas2.id = "canvas2";
+			ui.chess.appendChild(ui.canvas2);
+			ui.ctx2 = ui.canvas2.getContext("2d");
+			game.me = ui.create.player();
+			if (playback) {
+				for (var i in lib.characterPack) {
+					for (var j in lib.characterPack[i]) {
+						lib.character[j] = lib.character[j] || lib.characterPack[i][j];
+					}
+				}
+				game.pause();
+				ui.system.style.display = "none";
+				_status.playback = playback;
+				localStorage.removeItem(lib.configprefix + "playback");
+				var store = lib.db.transaction(["video"], "readwrite").objectStore("video");
+				store.get(parseInt(playback)).onsuccess = function (e) {
+					if (e.target.result) {
+						event.video = e.target.result.video;
+						game.resume();
+					} else {
+						alert("播放失败：找不到录像");
+						game.reload();
+					}
+				};
+			}
+			_status.mylist = [];
+			_status.enemylist = [];
+			"step 3";
+			ui.arena.classList.add("chess");
+			if (event.video) {
+				for (var ii = 0; ii < event.video.length; ii++) {
+					if (event.video[ii].type == "init") {
+						_status.mapname = event.video[ii].content;
+						break;
+					}
+				}
+				_status.map = lib.tafang.map[_status.mapname];
+				game.playerMap = lib.posmap;
+			}
+			ui.chesswidth = _status.map.size[0];
+			ui.chessheight = _status.map.size[1];
+			game.initChess();
+
+			var grids = [];
+			var gridnum = ui.chessheight * ui.chesswidth;
+			for (var i = 0; i < gridnum; i++) {
+				grids.push(i);
+			}
+			event.obs = [];
+			if (!event.video) {
+				var tafanglist = [0, 2, 3, 5, 6, 8, 9, 11, 12];
+				for (var i = 0; i < ui.chessheight - 1; i++) {
+					for (var j = 0; j < ui.chesswidth; j++) {
+						if (i >= 8 && j != 0 && j != ui.chesswidth - 1) continue;
+						if (tafanglist.includes(j)) {
+							var cg = i * ui.chesswidth + j;
+							grids.remove(cg);
+							game.addObstacle(cg.toString(), false);
+							event.obs.push(cg.toString());
+						}
+					}
+				}
+				for (var i = 0; i < ui.chesswidth; i++) {
+					switch (ui.chesswidth) {
+						case 6:
+							if (i == 2 || i == 3) continue;
+							break;
+						case 9:
+							if (i == 3 || i == 4 || i == 5) continue;
+							break;
+						case 12:
+							if (i == 4 || i == 5 || i == 6 || i == 7) continue;
+							break;
+					}
+					var cg = (ui.chessheight - 1) * ui.chesswidth + i;
+					grids.remove(cg);
+					game.addObstacle(cg.toString(), false);
+					event.obs.push(cg.toString());
+				}
+			}
+
+			if (lib.config.show_handcardbutton) {
+				lib.setPopped(
+					ui.create.system("手牌", null, true),
+					function () {
+						var uiintro = ui.create.dialog("hidden");
+						var added = false;
+						for (var i = 0; i < game.players.length; i++) {
+							if (game.players[i].side == game.me.side && game.players[i] != game.me) {
+								added = true;
+								uiintro.add(get.translation(game.players[i]));
+								var cards = game.players[i].getCards("h");
+								if (cards.length) {
+									// 修改（与菜单卡牌的显示美化一样）
+									var list = [];
+									for (var j = 0; j < cards.length; j++) {
+										var cardx = cards[j];
+										var copy = game.createCard2(cardx.name, cardx.suit, cardx.number, cardx.nature);
+										copy.classList.add('menusize');
+										copy.node.suitnum.classList.add('menusizex');
+										copy.node.image.classList.add('menusize');
+										copy.$name.classList.add('menusize');
+										list.unshift(copy);
+									}
+									uiintro.addSmall([list, "card"], true);
+									// uiintro.addSmall(cards, true);
+								} else {
+									uiintro.add("（无）");
+								}
+							}
+						}
+						if (!added) {
+							uiintro.add("无队友");
+						}
+						return uiintro;
+					},
+					220
+				);
+			}
+
+			ui.create.me();
+			ui.create.fakeme();
+
+			ui.chessinfo = ui.create.div(".fakeme.player", ui.me, function (e) {
+				e.stopPropagation();
+			});
+			ui.create.div(ui.chessinfo);
+			lib.setScroll(ui.chessinfo.firstChild);
+
+			game.arrangePlayers();
+			"step 4";
+			ui.control.style.display = "";
+			if (event.video) {
+				game.playVideoContent(event.video);
+				game.setChessInfo();
+				return;
+			}
+			_status.videoInited = true;
+			game.addVideo("init", null, _status.mapname);
+			if (game.friendZhu) {
+				game.addVideo("identityText", game.friendZhu, "将");
+				game.addVideo("identityText", game.enemyZhu, "帅");
+				if (game.friendViceZhu) {
+					game.addVideo("identityText", game.friendViceZhu, "仕");
+					game.addVideo("identityText", game.enemyViceZhu, "士");
+				}
+			}
+			if (event.obs) {
+				game.addVideo("initobs", null, event.obs);
+			}
+
+			ui.me.querySelector(".fakeme.player").hide();
+			ui.me.querySelector(".fakeme.avatar").hide();
+
+			var list = [];
+			for (i in lib.character) {
+				if (i.indexOf("treasure_") == 0) continue;
+				if (i.indexOf("tafang_mech_") == 0) continue;
+				if (lib.character[i][4].includes("minskin")) continue;
+				if (lib.config.forbidchess.includes(i)) continue;
+				if (lib.character[i][4].includes("boss")) continue;
+				if (lib.filter.characterDisabled(i)) continue;
+				list.push(i);
+			}
+			list.randomSort();
+			_status.characterList = list;
+			_status.friends = [];
+			_status.enemies = [];
+			_status.turnCount = 0;
+			_status.turnTotal = parseInt(get.config("tafang_turn"));
+			ui.turnCount = ui.create.system("", null, true);
+			_status.remainingCount = 0;
+
+			_status.tafangend = [];
+			for (var i = 0; i < ui.chesswidth; i++) {
+				var tafangdes = ui.chesswidth * (ui.chessheight - 1) + i;
+				if (!lib.posmap[tafangdes]) {
+					_status.tafangend.push(tafangdes.toString());
+				}
+			}
+			lib.init.onfree();
+			event.trigger("gameStart");
+			game.phaseLoopTafang();
+		};
 		// 塔防模式对话框位置调整
 		game.phaseLoopTafang = function () {
 			var next = game.createEvent("phaseLoop");
@@ -6943,13 +7868,13 @@ content:function(config, pack){
 					for (var i in map) {
 						for (var j = 0; j < map[i].length; j++) {
 							map[i][j].classList.remove("unselectable");
-							map[i][j].classList.add("pointerdiv");
+							// map[i][j].classList.add("pointerdiv");
 							if (map[i][j].count > count) {
 								map[i][j].classList.add("unselectable");
-								map[i][j].classList.remove("pointerdiv");
+								// map[i][j].classList.remove("pointerdiv");
 							} else if (i == "zhaomu" && _status.friends.length + selectedZhaomu >= 5) {
 								map[i][j].classList.add("unselectable");
-								map[i][j].classList.remove("pointerdiv");
+								// map[i][j].classList.remove("pointerdiv");
 							} else if (i == "bufang") {
 								var numbufang = 0;
 								for (var k = 0; k < game.treasures.length; k++) {
@@ -7279,6 +8204,7 @@ content:function(config, pack){
 					game.over(true);
 				}
 				"step 8";
+				/*
 				if (event.xingdong.length) {
 					var toact = event.xingdong.shift();
 					if (game.players.includes(toact)) {
@@ -7288,7 +8214,27 @@ content:function(config, pack){
 				} else {
 					event.xingdong = _status.enemies.slice(0);
 				}
+				*/
+				// 临时修改（by 棘手怀念摧毁）
+				// phaseOver时机适配
+				if (event.xingdong.length) {
+					event.goto(9);
+				} else {
+					event.xingdong = _status.enemies.slice(0);
+					event.goto(12);
+				}
 				"step 9";
+				var toact = event.xingdong.shift();
+				event.toacttrigger = toact;
+				if (game.players.includes(toact)) {
+					toact.phase();
+				}
+				"step 10";
+				if (game.players.includes(event.toacttrigger)) event.trigger("phaseOver");
+				"step 11";
+				event.goto(8);
+				"step 12";
+				/*
 				if (event.xingdong.length) {
 					var enemy = event.xingdong.shift();
 					if (!event.justadded.includes(enemy.name) && game.players.includes(enemy)) {
@@ -7298,7 +8244,26 @@ content:function(config, pack){
 				} else {
 					event.mechlist = game.treasures.slice(0);
 				}
-				"step 10";
+				*/
+				// 临时修改（by 棘手怀念摧毁）
+				// phaseOver时机适配
+				if (event.xingdong.length) {
+					event.goto(13);
+				} else {
+					event.mechlist = game.treasures.slice(0);
+					event.goto(16);
+				}
+				"step 13";
+				var enemy = event.xingdong.shift();
+				event.enemytrigger = enemy;
+				if (!event.justadded.includes(enemy.name) && game.players.includes(enemy)) {
+					enemy.phase();
+				}
+				"step 14";
+				if (!event.justadded.includes(event.enemytrigger.name) && game.players.includes(event.enemytrigger)) event.trigger("phaseOver");
+				"step 15";
+				event.goto(12);
+				"step 16";
 				if (event.mechlist.length) {
 					var mech = event.mechlist.shift();
 					var info = lib.skill[mech.name + "_skill"];
@@ -7321,15 +8286,27 @@ content:function(config, pack){
 					}
 					event.redo();
 				}
-				"step 11";
+				"step 17";
 				delete event.xingdong;
 				delete event.mechlist;
 				if (_status.turnCount >= _status.turnTotal) {
 					game.over(true);
 				} else {
-					event.goto(0);
-					game.delay();
+					// 临时修改（by 棘手怀念摧毁）
+					// roundEnd时机适配
+					event.goto(18);
+					// game.delay();
 				}
+				"step 18";
+				// 临时修改（by 棘手怀念摧毁）
+				// roundEnd时机适配
+				if(game.roundNumber >= 1) {
+					game.log();
+					event.trigger("roundEnd");
+				}
+				"step 19";
+				event.goto(0);
+				game.delay();
 			});
 		};
 	}
@@ -8967,7 +9944,7 @@ content:function(config, pack){
 	}
 	
 	if(lib.config.mode=='boss'){
-		// 挑战模式界面显示体力条样式
+		// 挑战模式界面显示体力条样式、查看手牌的显示美化
 		lib.init.start = function () {
 			"step 0";
 			var playback = localStorage.getItem(lib.configprefix + "playback");
@@ -9299,7 +10276,19 @@ content:function(config, pack){
 									uiintro.add(get.translation(players[i]));
 									var cards = players[i].getCards("h");
 									if (cards.length) {
-										uiintro.addSmall(cards, true);
+										// 修改（与菜单卡牌的显示美化一样）
+										var list = [];
+										for (var j = 0; j < cards.length; j++) {
+											var cardx = cards[j];
+											var copy = game.createCard2(cardx.name, cardx.suit, cardx.number, cardx.nature);
+											copy.classList.add('menusize');
+											copy.node.suitnum.classList.add('menusizex');
+											copy.node.image.classList.add('menusize');
+											copy.$name.classList.add('menusize');
+											list.unshift(copy);
+										}
+										uiintro.addSmall([list, "card"], true);
+										// uiintro.addSmall(cards, true);
 									} else {
 										uiintro.add("（无）");
 									}
@@ -10562,6 +11551,11 @@ content:function(config, pack){
 		};
 	}
 	
+	// 对决-四国禁用星袁绍
+	lib.characterFilter.star_yuanshao=function(mode){
+		if (mode == "versus") return _status.mode != "siguo";
+		return true;
+	};
 	// 神贾诩限制使用修改
 	lib.characterFilter.le_shen_jiaxu=function(mode){
 		if(lib.config.extensions && lib.config.extensions.contains('搬运自用') && lib.config['extension_搬运自用_enable']){
@@ -12451,6 +13445,8 @@ content:function(config, pack){
 		// 来莺儿沙标记修改
 		lib.translate.shawu_bg = "沙";
 		// 技能含round:XXX,的标记修改
+		// 势陈祗权宠标记修改
+		lib.translate.mbquanchong_bg = "权宠";
 		// 杨彪尽节标记修改
 		lib.translate.dcjinjie_bg = "尽节";
 		// 衰曹节王甫纵害标记修改
@@ -12526,6 +13522,22 @@ content:function(config, pack){
 		
 		// OL魔曹操覆载标记显示内容修改
 		if(lib.skill.olfuzai != undefined){
+			lib.skill.olfuzai.intro={
+				mark(dialog, storage, player){
+					const names = player.getStorage("olfuzai").filter(name => name != undefined);
+					if(names.length){
+						for (let i = 0; i < names.length; i++) {
+							var name = names[i];
+							dialog.addText("视为装备着：【" + get.translation(name) + "】" + "<br><li>" + get.translation(name+"_info"), false);
+							var card = game.createCard(name);
+							card.classList.add('menusizes');
+							dialog.addSmall(card);
+						}
+					}
+					else return "无视为装备";
+				},
+			};
+			/*
 			lib.skill.olfuzai.intro.content = function(_, player) {
 				const names = player.getStorage("olfuzai").filter(name => name != undefined);
 				let str = "",
@@ -12541,6 +13553,7 @@ content:function(config, pack){
 				}
 				return "无视为装备";
 			};
+			*/
 		}
 		
 		// 棘手懒人包OL魔吕布、孙寒华等标记美化
@@ -12563,7 +13576,7 @@ content:function(config, pack){
 							// 设置块级显示
 							element.style.display = "inline-block";
 							// 六边形裁剪
-							element.style.clipPath = "polygon(0% 49%, 15% 72%, 85% 72%, 100% 49%, 85% 26%, 15% 26%)";
+							element.style.clipPath = "polygon(0% 49%, 15% 68%, 85% 68%, 100% 49%, 85% 26%, 15% 26%)";
 							// 双字
 							element.style.padding = '4px 4px';
 							// 单字
@@ -12611,7 +13624,7 @@ content:function(config, pack){
 							// 设置块级显示
 							element.style.display = "inline-block";
 							// 六边形裁剪
-							element.style.clipPath = "polygon(0% 49%, 15% 72%, 85% 72%, 100% 49%, 85% 26%, 15% 26%)";
+							element.style.clipPath = "polygon(0% 49%, 15% 68%, 85% 68%, 100% 49%, 85% 26%, 15% 26%)";
 							element.style.padding = '4px 4px';
 							
 							element.innerHTML = text;
@@ -12621,6 +13634,171 @@ content:function(config, pack){
 			}
 		}
 		
+		// mark: "card",标记修改
+		// 鲈鱼羹
+		if(lib.skill.luyugeng != undefined){
+			lib.skill.luyugeng.mark = true;
+			lib.skill.luyugeng.marktext = "鱼羹";
+		}
+		// 虾饺
+		if(lib.skill.xiajiao != undefined){
+			lib.skill.xiajiao.mark = true;
+		}
+		// 蜜汁藕
+		if(lib.skill.mizhilianou != undefined){
+			lib.skill.mizhilianou.mark = true;
+			lib.skill.mizhilianou.marktext = "藕";
+		}
+		// 春饼
+		if(lib.skill.chunbing != undefined){
+			lib.skill.chunbing.mark = true;
+		}
+		// 骨董羹
+		if(lib.skill.gudonggeng != undefined){
+			lib.skill.gudonggeng.mark = true;
+			lib.skill.gudonggeng.marktext = "羹";
+		}
+		// 青团
+		if(lib.skill.qingtuan != undefined){
+			lib.skill.qingtuan.mark = true;
+		}
+		// 鲤鱼汤
+		if(lib.skill.liyutang != undefined){
+			lib.skill.liyutang.mark = true;
+			lib.skill.liyutang.marktext = "鱼汤";
+		}
+		// 酉羹
+		if(lib.skill.yougeng != undefined){
+			lib.skill.yougeng.mark = true;
+		}
+		// 茉莉茶
+		if(lib.skill.molicha != undefined){
+			lib.skill.molicha.mark = true;
+			lib.skill.molicha.marktext = "茶";
+		}
+		// 元宝肉
+		if(lib.skill.yuanbaorou != undefined){
+			lib.skill.yuanbaorou.mark = true;
+			lib.skill.yuanbaorou.marktext = "肉";
+		}
+		// 昙花冻
+		if(lib.skill.tanhuadong != undefined){
+			lib.skill.tanhuadong.mark = true;
+			lib.skill.tanhuadong.marktext = "花冻";
+		}
+		// 麻婆豆腐
+		if(lib.skill.mapodoufu != undefined){
+			lib.skill.mapodoufu.mark = true;
+			lib.skill.mapodoufu.marktext = "豆腐";
+		}
+		// 玉女元参
+		if(lib.skill.yunvyuanshen_skill != undefined){
+			lib.skill.yunvyuanshen_skill.mark = true;
+			lib.skill.yunvyuanshen_skill.marktext = "元参";
+		}
+		// 帝女玄霜
+		// if(lib.skill.dinvxuanshuang_skill != undefined){
+			// lib.skill.dinvxuanshuang_skill.mark = true;
+			// lib.skill.dinvxuanshuang_skill.marktext = "玄霜";
+		// }
+		// 机关鸢
+		if(lib.skill.jiguanyuan != undefined){
+			lib.skill.jiguanyuan.mark = true;
+			lib.skill.jiguanyuan.marktext = "鸢";
+		}
+		// 张宝符火
+		if(lib.skill.nsfuhuo2 != undefined){
+			lib.skill.nsfuhuo2.mark = true;
+			lib.skill.nsfuhuo2.marktext = "符";
+		}
+		// 章鱼巨兽巨噬
+		if(lib.skill.gwjushi2 != undefined){
+			lib.skill.gwjushi2.mark = true;
+		}
+		// 巴内斯拟态
+		if(lib.skill.hsnitai != undefined){
+			lib.skill.hsnitai.subSkill.card.mark = true;
+		}
+		// 伊莉斯寻宝
+		if(lib.skill.xunbao2 != undefined){
+			lib.skill.xunbao2.marktext = "寻宝";
+		}
+		// 麦迪文缚魂
+		if(lib.skill.mdzhoufu2 != undefined){
+			lib.skill.mdzhoufu2.mark = true;
+		}
+		// 瓦莉拉闷棍
+		if(lib.skill.mengun2 != undefined){
+			lib.skill.mengun2.mark = true;
+		}
+		// 临月麻醉
+		if(lib.skill.lmazui2 != undefined){
+			lib.skill.lmazui2.mark = true;
+		}
+		// 临月针灸
+		if(lib.skill.zhenjiu2 != undefined){
+			lib.skill.zhenjiu2.mark = true;
+		}
+		// 长卿天符
+		if(lib.skill.ctianfu2 != undefined){
+			lib.skill.ctianfu2.mark = true;
+		}
+		// 柳梦璃织梦
+		if(lib.skill.xjzhimeng2 != undefined){
+			lib.skill.xjzhimeng2.mark = true;
+		}
+		// 凯撒独裁
+		if(lib.skill.ducai2 != undefined){
+			lib.skill.ducai2.mark = true;
+		}
+		// mark: "image",标记修改
+		// 霍格先祖麦酒
+		if(lib.skill.gwjinli != undefined){
+			lib.skill.gwjinli.subSkill.jiu.mark = true;
+			lib.skill.gwjinli.subSkill.jiu.marktext = "麦酒";
+		}
+		
+		// 转换技标记修复（默认为“阳”需修复）
+		// 新杀谋鲁肃盟谋
+		if(lib.skill.dcsbmengmou != undefined){
+			lib.skill.dcsbmengmou.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 新杀谋周瑜英谋
+		if(lib.skill.dcsbyingmou != undefined){
+			lib.skill.dcsbyingmou.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 新杀谋司马懿权谋
+		if(lib.skill.dcsbquanmou != undefined){
+			lib.skill.dcsbquanmou.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 新杀谋贾诩覆谋
+		if(lib.skill.dcsbfumou != undefined){
+			lib.skill.dcsbfumou.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 新杀谋郭嘉先谋
+		if(lib.skill.xianmou != undefined){
+			lib.skill.xianmou.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// ☆董卓雄进
+		if(lib.skill.xiongjin != undefined){
+			lib.skill.xiongjin.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 慢陆逊从风
+		if(lib.skill.sxrmcongfeng != undefined){
+			lib.skill.sxrmcongfeng.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 王瓘谬焰
+		if(lib.skill.olmiuyan != undefined){
+			lib.skill.olmiuyan.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 燕幽司马懿佯固
+		if(lib.skill.yyyanggu != undefined){
+			lib.skill.yyyanggu.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
+		// 曲阿小将援绝
+		if(lib.skill.peyuanjue != undefined){
+			lib.skill.peyuanjue.marktext = `<span style="display:inline-block; transform:rotate(180deg);">☯</span>`;
+		}
 	}
 	// 解除本体AI禁将
 	lib.config.forbidai.remove('ns_liuzhang');
@@ -12975,8 +14153,8 @@ content:function(config, pack){
 		if (config.notuoguanzhong){
 			ui.autonode.remove();
 		}
-		// 花色none（无色）的翻译修改为空格（UI表现为不显示花色）
-		lib.translate.none = " ";
+		// 花色none（无色）的翻译修改为零宽空格（零宽字符，UI表现为不显示花色）
+		lib.translate.none = "\u200b";
 		// 修复武关羽绝武标签显示
 		lib.translate.dcjuewu_two = "绝武";
 		// 大键角色图→水转百戏图
@@ -12991,7 +14169,7 @@ content:function(config, pack){
 		lib.translate.shencai_info = "出牌阶段限一次，你可以令一名其他角色进行判定。你获得此判定牌，然后若此判定牌：包含以下要素中的任意一个，则其失去已有的下列效果，并获得对应的效果：{⒈“笞”-体力：当其受到伤害后，其失去等量的体力、⒉“杖”-武器：其不能使用牌响应【杀】、⒊“徒”-打出：当其失去手牌后，其再随机弃置一张手牌（不嵌套触发）、⒋“流”-距离：其的结束阶段开始时，其翻面}；若均不包含，你获得其区域里的一张牌，其获得一枚“死”并获得如下效果：其的角色手牌上限-X、其的回合结束时，若X大于场上存活人数，则其死亡（X为其“死”标记数）。";
 		// 巡使技能描述修改
 		lib.translate.xunshi_info = "锁定技。①你的多目标锦囊牌均视为花色为无色的普通【杀】。②你使用颜色为无色的牌无距离和次数限制。③当你使用无颜色的牌选择目标后，你令你的〖神裁〗的发动次数上限+1（至多为5），然后可以为此牌增加任意个目标。";
-		lib.translate.tyxunshi_info = "锁定技。①你手牌中的的多目标锦囊牌花色视为无色。②你使用颜色为无色的牌无距离和次数限制。③当你使用无颜色的牌选择目标后，你令你的〖神裁〗的发动次数上限+1（至多为5），然后可以为此牌增加任意个目标。";
+		lib.translate.tyxunshi_info = "锁定技。①你手牌中的多目标锦囊牌花色视为无色。②你使用颜色为无色的牌无距离和次数限制。③当你使用无颜色的牌选择目标后，你令你的〖神裁〗的发动次数上限+1（至多为5），然后可以为此牌增加任意个目标。";
 		lib.translate.tyxunshi_tag = "巡使";
 		// 巧思技能描述修正
 		lib.translate.qiaosi_info = "出牌阶段限一次，你可以表演「水转百戏图」并根据表演结果获得相应的牌。然后，你选择一项：1.弃置X张牌。2.将X张牌交给一名其他角色。（X为你以此法得到的牌数）";
@@ -13068,6 +14246,8 @@ content:function(config, pack){
 		// 修复同舟共济、力争上游cardimage
 		if(lib.card.tongzhougongji!=undefined)lib.card.tongzhougongji.cardimage='tongzhougongji';
 		if(lib.card.lizhengshangyou!=undefined)lib.card.lizhengshangyou.cardimage='lizhengshangyou';
+		// 修复水淹七军cardimage
+		if(lib.card.shuiyanqijuny!=undefined)lib.card.shuiyanqijuny.cardimage='shuiyanqijuny';
 		// 修复手杀界孙笨的彩蛋
 		lib.translate.re_sunben = "手杀界孙策";
 		lib.translate.re_sunben_prefix = "手杀界";
@@ -13184,6 +14364,14 @@ content:function(config, pack){
 		lib.translate["#kaisa:die"]="Let's talk about something else.";
 		// 屈原离骚
 		lib.translate["#dclisao1"]="朝饮木兰之坠露兮，夕餐秋菊之落英。";
+		// 旧神曹操
+		lib.skill.junkguixin.audio = 4;
+		if(lib.characterPack.old && lib.characterPack.old.old_caocao && lib.characterPack.old.old_caocao[4] && lib.characterPack.old.old_caocao[4].includes("die_audio:shen_caocao")) lib.characterPack.old.old_caocao[4].remove("die_audio:shen_caocao");
+		lib.translate["#junkguixin1"]="青青子衿，悠悠我心。";
+		lib.translate["#junkguixin2"]="威服诸侯，师之所尊。";
+		lib.translate["#junkguixin3"]="日月之行，若出其中。";
+		lib.translate["#junkguixin4"]="星汉灿烂，若出其里。";
+		lib.translate["#old_caocao:die"]="月明星稀，乌鹊南飞，绕树三匝，无枝可依……";
 	});
 	
 	// 手牌上限显示，搬运自假装无敌扩展，已征得清瑶的“徒弟”的修改许可
@@ -13449,7 +14637,7 @@ content:function(config, pack){
 						open:function(){
 							/*
 							// 参考本体noname\library\element\dialog.js的open() {
-							// 临时修复电脑端chooseButton.dialog.direct = true会多弹出一个对话框然后自动关闭（蒋琬蓄发、OL魔吕布罡拳等）的问题
+							// 临时修复电脑端chooseButton.dialog.direct = true会多弹出一个对话框然后自动关闭（蒋琬蓄发、OL魔吕布罡拳、OL魔曹操覆载等）的问题
 							// 失败方案：if (!lib.device && this.direct && this.classList.contains('forcebutton-auto') && !this.classList.contains('prompt') && this.buttons?.length=='1') return;
 							// 暂不更新（因为修复后效果变了，不能因为几个武将影响体验，需要的自行去掉注释）
 							if(!lib.device){
@@ -16715,9 +17903,17 @@ if(!(lib.config.extensions.contains("手杀ui")&&lib.config.extension_手杀ui_e
 									break;
 								case '友':
 									fileName = 'friend';
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'qianfeng_blue' : 'qianfeng';
+										checked = true;
+									}
 									break;
 								case '敌':
 									fileName = 'enemy';
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'qianfeng_blue' : 'qianfeng';
+										checked = true;
+									}
 									break;
 								case '民':
 									fileName = 'commoner';
@@ -16772,11 +17968,19 @@ if(!(lib.config.extensions.contains("手杀ui")&&lib.config.extension_手杀ui_e
 									break;
 								case '帅':
 									fileName = 'zhushuai';
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'zhushuai_blue' : 'zhushuai';
+										checked = true;
+									}
 									break;
 								case '将':
 									fileName = 'dajiang';
 									if (_status.mode == 'three' || get.translation(player.side + 'Color') == 'wei') {
 										fileName = 'zhushuai_blue';
+										checked = true;
+									}
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'zhushuai_blue' : 'zhushuai';
 										checked = true;
 									}
 									break;
@@ -16812,6 +18016,18 @@ if(!(lib.config.extensions.contains("手杀ui")&&lib.config.extension_手杀ui_e
 									break;
 								case '后':
 									fileName = 'houshou';
+									break;
+								case '仕':
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'fushuai_blue' : 'fushuai';
+										checked = true;
+									}
+									break;
+								case '士':
+									if (get.mode() == 'chess' && (get.config("zhu") || get.config("main_zhu") || _status.mode == "three")) {
+										fileName = this.player.side === false ? 'fushuai_blue' : 'fushuai';
+										checked = true;
+									}
 									break;
 								default:
 									this.innerText = value;
@@ -22125,8 +23341,8 @@ config:{
 				// 移除 textarea
 				document.body.removeChild(textarea);
 				// 提示复制成功
-				if(game.say1){
-					game.say1('已复制到剪贴板');
+				if(game.byzy_say1){
+					game.byzy_say1('已复制到剪贴板');
 				}else{
 					alert('已复制到剪贴板');
 				}

@@ -26,6 +26,7 @@ window.noname_package = {
 		huicui: "群英荟萃",
 		xianding: "限定专属",
 		sp2: "系列专属",
+		wztx: "威震天下",
 		//移动服+外服
 		mobile: "移动版",
 		sb: "谋攻篇",
@@ -81,11 +82,11 @@ window.noname_package = {
 	mode: {
 		identity: "身份",
 		guozhan: "国战",
-		versus: "对决",
-		connect: "联机",
-		boss: "挑战",
 		doudizhu: "斗地主",
+		versus: "对决",
 		single: "单挑",
+		boss: "挑战",
+		connect: "联机",
 		chess: "战棋",
 		tafang: "塔防",
 		stone: "炉石",

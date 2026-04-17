@@ -2085,7 +2085,7 @@ game.import("character", function () {
 					return player.countCards("he", { color: "black" }) > 0;
 				},
 				audio: true,
-				prompt: "将一张黑色牌当作桃园结义使用",
+				prompt: "将一张黑色牌当作【桃园结义】使用",
 				check: function (card) {
 					return 7 - get.useful(card);
 				},
@@ -2560,7 +2560,7 @@ game.import("character", function () {
 					if (num == 0) return false;
 					return num % 2 == 1;
 				},
-				prompt: "将一张手牌当作闪使用或打出",
+				prompt: "将一张手牌当作【闪】使用或打出",
 				check: function (card) {
 					return 6 - get.value(card);
 				},
@@ -2598,7 +2598,7 @@ game.import("character", function () {
 					if (num == 0) return false;
 					return num % 2 == 0;
 				},
-				prompt: "将一张手牌当作桃使用",
+				prompt: "将一张手牌当作【桃】使用",
 				check: function (card) {
 					return 9 - get.value(card);
 				},
@@ -3752,7 +3752,7 @@ game.import("character", function () {
 				filterCard: { color: "black" },
 				position: "he",
 				viewAs: { name: "toulianghuanzhu" },
-				prompt: "将一张黑色牌当作偷梁换柱使用",
+				prompt: "将一张黑色牌当作【偷梁换柱】使用",
 				check: function (card) {
 					if (_status.event.player.countCards("h") > _status.event.player.hp) {
 						return 5 - get.value(card);
@@ -5452,7 +5452,7 @@ game.import("character", function () {
 				viewAsFilter: function (player) {
 					if (!player.countCards("he", { suit: "heart" })) return false;
 				},
-				prompt: "将一张红桃手牌当作流星火羽使用",
+				prompt: "将一张红桃手牌当作【流星火羽】使用",
 				check: function (card) {
 					return 6 - get.value(card);
 				},
@@ -5510,7 +5510,8 @@ game.import("character", function () {
 				viewAsFilter: function (player) {
 					if (!player.countCards("he", { color: "black" })) return false;
 				},
-				prompt: "将一张黑色牌当作冰魄针使用",
+				// prompt: "将一张黑色牌当作冰魄针使用",
+				prompt: "将一张黑色牌当作【天女散花】使用",
 				check: function (card) {
 					return 5 - get.value(card);
 				},
@@ -5526,7 +5527,7 @@ game.import("character", function () {
 				},
 				selectCard: 3,
 				position: "he",
-				prompt: "将三张牌当作惊雷闪使用",
+				prompt: "将三张牌当作【惊雷闪】使用",
 				check: function (card) {
 					return 4 - get.value(card);
 				},
@@ -6010,9 +6011,9 @@ game.import("character", function () {
 					}
 					"step 3";
 					if (event.num) {
-						var next = trigger.target.chooseToRespond({ name: "shan" }, "请打出一张闪响应燎原");
+						var next = trigger.target.chooseToRespond({ name: "shan" }, "请打出一张【闪】响应燎原");
 						next.ai = get.unuseful2;
-						if (event.num > 1) next.set("prompt2", "共需额外打出" + event.num + "张闪");
+						if (event.num > 1) next.set("prompt2", "共需额外打出" + event.num + "张【闪】");
 					} else {
 						event.finish();
 					}
@@ -7131,7 +7132,7 @@ game.import("character", function () {
 				filterCard: { color: "red" },
 				viewAs: { name: "shan" },
 				position: "he",
-				prompt: "将一张红色牌当闪使用或打出",
+				prompt: "将一张红色牌当【闪】使用或打出",
 				check: function (card) {
 					return 6 - get.value(card);
 				},
@@ -9958,7 +9959,7 @@ game.import("character", function () {
 				},
 				position: "he",
 				viewAs: { name: "nanman" },
-				prompt: "将一张装备牌当南蛮入侵使用",
+				prompt: "将一张装备牌当【南蛮入侵】使用",
 				check: function (card) {
 					var player = _status.currentPhase;
 					if (player.countCards("he", { subtype: get.subtype(card) }) > 1) {
@@ -10268,7 +10269,7 @@ game.import("character", function () {
 				},
 				position: "he",
 				viewAs: { name: "sha" },
-				prompt: "将一张闪当杀使用或打出",
+				prompt: "将一张【闪】当【杀】使用或打出",
 				check: function (card) {
 					if (get.subtype(card) == "equip1") return 10 - get.value(card);
 					return 7 - get.equipValue(card);
@@ -10405,7 +10406,7 @@ game.import("character", function () {
 				"弃牌阶段，若你弃置了至少一张牌，你可以获得1点护甲；每当你失去此技能，你可以获得1点护甲。",
 			cyqiandian: "千靛",
 			cyqiandian_info:
-				"结束阶段，你可以视为使用一张惊雷闪；每当你失去此技能，你可以视为使用一张惊雷闪。",
+				"结束阶段，你可以视为使用一张【惊雷闪】；每当你失去此技能，你可以视为使用一张【惊雷闪】。",
 			gxianyin: "仙音",
 			gxianyin_info:
 				"出牌阶段限一次，你可以选择一种花色，将你的手牌中该花色的牌移至弃牌堆，然后选择另一种花色，从牌堆中获得等量的该花色的牌。",
@@ -10482,9 +10483,9 @@ game.import("character", function () {
 				"结束阶段，若你本回合内使用了至少X张牌，你可以选择一项：获得1点护甲，或对攻击范围内的一名角色造成1点伤害（X为你当前的体力值且最多为3）。",
 			hxunzhi: "殉志",
 			hxunzhi_info:
-				"限定技，出牌阶段，你可以视为使用一张万箭齐发并获得技能武圣、咆哮，若如此做，你在此阶段结束时死亡。",
+				"限定技，出牌阶段，你可以视为使用一张【万箭齐发】并获得技能〖武圣〗、〖咆哮〗，若如此做，你在此阶段结束时死亡。",
 			hxunzhi_info_alter:
-				"限定技，出牌阶段，你可以获得技能武圣、咆哮，若如此做，你在此阶段结束时死亡。",
+				"限定技，出牌阶段，你可以获得技能〖武圣〗、〖咆哮〗，若如此做，你在此阶段结束时死亡。",
 			lmazui: "麻醉",
 			lmazui2: "麻醉",
 			lmazui_info:
@@ -10492,16 +10493,16 @@ game.import("character", function () {
 			hyunshen: "云身",
 			hyunshen2: "云身",
 			hyunshen_info:
-				"每当你打出一张闪，你可以令你的防御距离+1；准备阶段，你将累计的防御距离清零，然后摸等量的牌。",
+				"每当你打出一张【闪】，你可以令你的防御距离+1；准备阶段，你将累计的防御距离清零，然后摸等量的牌。",
 			hlingbo: "凌波",
-			hlingbo_info: "每当你使用或打出一张闪，你可以摸两张牌。",
+			hlingbo_info: "每当你使用或打出一张【闪】，你可以摸两张牌。",
 			gtiandao: "天道",
 			gtiandao_info: "任意一名角色的判定生效前，你可以打出一张牌替换之。",
 			nlianji: "连计",
 			nlianji_info:
 				"出牌阶段限一次，你可以选择一张手牌并指定两名角色进行拼点。若拼点结果不为平局，拼点赢的角色获得此牌，并对没赢的角色造成1点伤害。",
 			fengze: "风泽",
-			fengze_info: "出牌阶段限一次，你可以将一张黑色牌当作桃园结义使用。",
+			fengze_info: "出牌阶段限一次，你可以将一张黑色牌当作【桃园结义】使用。",
 			lingyue: "凌月",
 			lingyue_info: "每当你使用一张【杀】，你可以令目标弃置一张牌。",
 			jinlin: "金鳞",
@@ -10557,10 +10558,10 @@ game.import("character", function () {
 			yuchen: "浴尘",
 			yuchen_info: "每当你于回合外使用或打出一张黑色牌，你可以弃置一名角色的一张牌。",
 			huangyu: "凰羽",
-			huangyu_info: "出牌阶段限一次，你可以将两张红色牌当炽羽袭使用。",
+			huangyu_info: "出牌阶段限一次，你可以将两张红色牌当【炽羽袭】使用。",
 			bingjian: "冰箭",
 			bingjian_info:
-				"出牌阶段限一次，你可以弃置一张黑色的【杀】，令一名有手牌的其他角色展示手牌并弃置其中的所有闪，若其没有闪则受到1点雷电伤害。",
+				"出牌阶段限一次，你可以弃置一张黑色的【杀】，令一名有手牌的其他角色展示手牌并弃置其中的所有【闪】，若其没有【闪】则受到1点雷电伤害。",
 			rumeng: "入梦",
 			rumeng_info:
 				"其他角色的出牌阶段前，你可以弃置一张非基本牌，并令其选择一项：弃置一张基本牌，或跳过出牌及弃牌阶段。",
@@ -10619,14 +10620,14 @@ game.import("character", function () {
 				"限定技，当任意一名角色处于濒死状态时，若你的武将牌正朝上，可以将武将牌翻面，然后令场上所有存活角色回复2点体力。",
 			bofeng: "搏风",
 			bofeng_info:
-				"锁定技，体力值不大于你的角色视为在你的攻击范围；当你使用【杀】指定目标时，可令目标额外打出一张闪，否则此【杀】不可闪避且造成的伤害+1。",
+				"锁定技，体力值不大于你的角色视为在你的攻击范围；当你使用【杀】指定目标时，可令目标额外打出一张【闪】，否则此【杀】不可闪避且造成的伤害+1。",
 			hutian: "护天",
 			hutian2: "护天",
 			hutian3: "护天",
 			hutian_info:
 				"结束阶段，你可以将任意张牌置于一名角色的武将牌上，则该角色的体力值始终不能小于“护天”牌数；在你的下一个结束阶段，该角色获得武将牌上的“护天”牌（在此回合不能再次发动）。",
 			linyun: "凌云",
-			linyun_info: "你可以将两张牌当作【杀】使用，此【杀】需要额外一张闪才能闪避。",
+			linyun_info: "你可以将两张牌当作【杀】使用，此【杀】需要额外一张【闪】才能闪避。",
 			sliufeng: "流风",
 			sliufeng_info: "锁定技，体力值不大于你的角色视为在你的攻击范围。",
 			chengjian: "承剑",
@@ -10664,10 +10665,10 @@ game.import("character", function () {
 			rexue: "热血",
 			rexue_info: "任意一名角色的准备阶段，你可以对其使用一张【杀】，并摸一张牌。",
 			huopu: "火瀑",
-			huopu_info: "出牌阶段限一次，你可以将一张红桃牌当作流星火羽使用。",
+			huopu_info: "出牌阶段限一次，你可以将一张红桃牌当作【流星火羽】使用。",
 			benlei: "奔雷",
 			benlei2: "奔雷",
-			benlei_info: "你可以将三张牌当惊雷闪使用；每当你造成一次雷属性伤害，你回复1点体力。",
+			benlei_info: "你可以将三张牌当【惊雷闪】使用；每当你造成一次雷属性伤害，你回复1点体力。",
 			lingwu: "灵舞",
 			lingwu_info:
 				"回合结束后，若你在本回合内使用的牌数不少于当前体力值，你可以进行一个额外的回合（不可重复发动）。",
@@ -10728,7 +10729,7 @@ game.import("character", function () {
 			touxi_info_alter:
 				"在其他角色的结束阶段，你可以进行一次判定，若结果为黑色，你对其造成1点雷电伤害，且直到下一回合开始不能再次发动偷袭；若结果为红色，对方可以获得你的一张牌。",
 			minjing: "明镜",
-			minjing_info: "若你没有防具牌，你视为装备了光纱天衣。",
+			minjing_info: "若你没有防具牌，你视为装备了【光纱天衣】。",
 			jqimou: "奇谋",
 			jqimou_info: "每当你于回合外受到一次伤害，你可以摸一张牌，并可以使用一张牌。",
 			mufeng: "沐风",
@@ -10743,11 +10744,11 @@ game.import("character", function () {
 				"锁定技，每当你于回合外失去牌，你的防御距离+1；若防御距离的变化值超过了存活角色数的一半，则降至0。",
 			lexue: "乐学",
 			lexue_info:
-				"回合内，你随机获得制衡、集智、缔盟、驱虎中的一个技能；回合外，你随机获得遗计、急救、鬼道、反馈中的一个技能。",
+				"回合内，你随机获得〖制衡〗、〖集智〗、〖缔盟〗、〖驱虎〗中的一个技能；回合外，你随机获得〖遗计〗、〖急救〗、〖鬼道〗、〖反馈〗中的一个技能。",
 			mingfu: "冥缚",
-			mingfu_info: "出牌阶段限一次，你可以将一张梅花牌当鬼幽结使用。",
+			mingfu_info: "出牌阶段限一次，你可以将一张梅花牌当【鬼幽结】使用。",
 			chuanyue: "穿月",
-			chuanyue_info: "出牌阶段限一次，你可以将两张手牌当决斗使用。",
+			chuanyue_info: "出牌阶段限一次，你可以将两张手牌当【决斗】使用。",
 
 			miedao: "灭道",
 			miedao1: "灭道",
@@ -10769,7 +10770,7 @@ game.import("character", function () {
 			xiangu_info: "锁定技，你的手牌上限不会因体力值的减少而减少。",
 			hujing: "壶境",
 			hujing_info:
-				"锁定技，准备阶段，若弃牌堆中有炼妖壶，你装备之；当你的装备区内有炼妖壶时，你的手牌上限+2。",
+				"锁定技，准备阶段，若弃牌堆中有【炼妖壶】，你装备之；当你的装备区内有【炼妖壶】时，你的手牌上限+2。",
 			huajian: "化剑",
 			huajian_info: "出牌阶段结束时，你可以将一张牌当作【杀】对任意一名角色使用。",
 			xuanyuan: "轩辕",
@@ -10818,12 +10819,12 @@ game.import("character", function () {
 			duanxing: "锻星",
 			duanxing_info: "每当你装备一张未强化的装备牌，可以视为一名角色使用一张【杀】。",
 			wanjun: "万钧",
-			wanjun_info: "你可以将一张装备牌当作南蛮入侵使用。",
+			wanjun_info: "你可以将一张装备牌当作【南蛮入侵】使用。",
 			dunxing: "遁形",
 			dunxing_info:
 				"当你成为其他角色卡牌的目标时，你可以弃置一张牌并进行一次判定，若不为红桃，则取消之。",
 			guiying: "鬼影",
-			guiying_info: "你可以将一张黑色牌当偷梁换柱使用。",
+			guiying_info: "你可以将一张黑色牌当【偷梁换柱】使用。",
 			shehun: "摄魂",
 			shehun_info:
 				"出牌阶段限一次，你可以弃置任意张花色不同的牌，另一名其他角色弃置等量的牌，若其弃置的牌中有牌的花色与你弃置的牌相同，你对其造成1点伤害。",
@@ -10910,8 +10911,9 @@ game.import("character", function () {
 			susheng: "苏生",
 			shengshou: "圣手",
 			huanjian: "幻箭",
-			huanjian_info: "出牌阶段，你可以将一张黑色牌当作冰魄针使用。",
-			shengshou_info: "你可以将一张黑色手牌当作草药使用。",
+			// huanjian_info: "出牌阶段，你可以将一张黑色牌当作冰魄针使用。",
+			huanjian_info: "出牌阶段，你可以将一张黑色牌当作【天女散花】使用。",
+			shengshou_info: "你可以将一张黑色手牌当作【草药】使用。",
 			susheng_info:
 				"在任意一名角色即将死亡时，你可以弃置一张手牌防止其死亡，并将其体力回复至1，每回合限发动一次。",
 			susheng_info_alter:
@@ -10964,9 +10966,9 @@ game.import("character", function () {
 			luomu_info: "锁定技，每当你造成伤害时，受伤害角色随机弃置一张牌。",
 			poxing_info: "锁定技，每当你即将造成伤害，若目标的体力值大于你，你令伤害+1。",
 			liaoyuan_info:
-				"每当你使用一张【杀】指定目标后，你可以弃置任意张与此【杀】花色相同的牌，若如此做，目标需额外打出等量的闪，每少打出一张闪，此【杀】的伤害+1。",
+				"每当你使用一张【杀】指定目标后，你可以弃置任意张与此【杀】花色相同的牌，若如此做，目标需额外打出等量的【闪】，每少打出一张【闪】，此【杀】的伤害+1。",
 			liaoyuan_info_alter:
-				"每当你使用一张【杀】指定目标后，你可以弃置一张与此【杀】花色相同的牌，若如此做，目标需额外打出一张闪，若目标没打出闪，此【杀】的伤害+1。",
+				"每当你使用一张【杀】指定目标后，你可以弃置一张与此【杀】花色相同的牌，若如此做，目标需额外打出一张【闪】，若目标没打出【闪】，此【杀】的伤害+1。",
 			yishan_info: "每当你受到一次伤害，你可以重新获得最近失去的两张牌。",
 			huanhun_info:
 				"当一名角色进入濒死状态时，你可以弃置一张牌并令其进行一次判定，若结果为红色，其回复1点体力，否则其获得你弃置的牌。",
@@ -11003,7 +11005,7 @@ game.import("character", function () {
 				"结束阶段，你可以弃置一张牌并从三名随机武将中选择一个，在2X回合后你将其所有技能加入你的天书列表，X为其技能数；在技能加入天书列表时，或于出牌阶段，你可以装备一项天书列表中的技能。",
 			swdtianshu_info:
 				"出牌阶段，你可以弃置一张锦囊牌，然后获得一名其他角色的一项技能直到该角色死亡（替换以此法获得的前一个技能）。",
-			zaowu_info: "出牌阶段限一次，你可以将一张黑桃或红桃手牌当作封印之蛋使用。",
+			zaowu_info: "出牌阶段限一次，你可以将一张黑桃或红桃手牌当作【封印之蛋】使用。",
 			luomei_info: "每当你使用或打出一张梅花花色的牌，你可以摸一张牌。",
 			xingdian_info: "出牌阶段限一次，你可以弃置一张手牌，然后随机弃置两名敌人各一张牌。",
 			yulin_info: "每当你即将受到伤害，你可以弃置一张装备牌抵消此伤害。",

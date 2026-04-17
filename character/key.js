@@ -1172,7 +1172,7 @@ game.import("character", function () {
 							if (
 								count >= 4 &&
 								(type[0] != "炸弹" || num > type[1] || count > type[2]) &&
-								numu.length < (type[0] == "炸弹" ? type2 : 4)
+								numu.length < (type[0] == "炸弹" ? type[2] : 4)
 							)
 								return 15;
 						}
@@ -3368,8 +3368,8 @@ game.import("character", function () {
 					const result = event.cost_data;
 					if (result.type === "addSkill") {
 						player.markAuto("liyingxia_wumai", [result.skill]);
-						player.addSkills(result.skill, "roundStart");
-						player.gainMaxHp();
+						player.addSkills(result.skill, "roundEnd");
+						player.gainMaxHp()
 					} else if (result.type === "drawCards") {
 						player.draw(result.num+2);
 					}
@@ -13925,7 +13925,7 @@ game.import("character", function () {
 			    "锁定技，转换技。当你受到伤害后，阴: 你回复两点体力，且伤害来源所有技能失效直到回合结束。阳: 你摸四张牌，且下个回合开始前防止此类伤害。",
 			misa_yehuo: "业火",
 			misa_yehuo_info:
-				"一名角色的摸牌阶段开始时，若其在你的攻击范围内，你可以弃置X张牌并选择一项：①对其造成1点火属性伤害。②令其于此摸牌阶段放弃摸牌。（X为你与其的的距离）",
+				"一名角色的摸牌阶段开始时，若其在你的攻击范围内，你可以弃置X张牌并选择一项：①对其造成1点火属性伤害。②令其于此摸牌阶段放弃摸牌。（X为你与其的距离）",
 			yusa_misa: "通灵",
 			yusa_misa_info: "当你发动的〖演艺〗结算完成之后，你可以将武将牌翻面。",
 			misa_yusa: "归魂",

@@ -710,7 +710,9 @@ game.import("card", function () {
 					);
 				},
 				filter: function (event, player) {
-					return player.countCards("h") > 0;
+					// 临时修复（by 棘手怀念摧毁）
+					return player.countCards("h") > 0 && player.getEquip("muniu");
+					// return player.countCards("h") > 0;
 				},
 				prepare: function (cards, player) {
 					player.$give(1, player, false);
