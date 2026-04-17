@@ -1239,8 +1239,16 @@ game.import("character", function () {
 							})
 							.set("ai", target => {
 								const player = get.event("player");
+								var att = get.attitude(player, target);
+								var seat = Math.abs(target.seatNum - player.seatNum);
+								if (seat > game.players.length / 2) seat = game.players.length - seat;
+								if (att < 0) att = -10;
+								else att = 10;
 								return (
-									get.rank("zhangzhang", true) -
+									att * 10 +
+									seat * 2 +
+									target.hp * 2 +
+									target.countCards("h") * 2 -
 									["name", "name1", "name2"].reduce((sum, name) => {
 										if (!target[name] || !lib.character[target[name]] || (name == "name1" && target.name1 == target.name)) return sum;
 										return sum + get.rank(target[name], true);
@@ -1272,8 +1280,16 @@ game.import("character", function () {
 							})
 							.set("ai", target => {
 								const player = get.event("player");
+								var att = get.attitude(player, target);
+								var seat = Math.abs(target.seatNum - player.seatNum);
+								if (seat > game.players.length / 2) seat = game.players.length - seat;
+								if (att < 0) att = -10;
+								else att = 10;
 								return (
-									get.rank("re_zhouyu", true) -
+									att * 10 +
+									seat * 2 +
+									target.hp * 2 +
+									target.countCards("h") * 2 -
 									["name", "name1", "name2"].reduce((sum, name) => {
 										if (!target[name] || !lib.character[target[name]] || (name == "name1" && target.name1 == target.name)) return sum;
 										return sum + get.rank(target[name], true);
