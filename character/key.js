@@ -2121,119 +2121,6 @@ game.import("character", function () {
 					},
 				},
 			},
-			tomoyo_zhengfeng: {
-				dutySkill: true,
-				trigger: { player: "phaseZhunbeiBegin" },
-				filter(event, player) {
-					return game.hasPlayer((current) => player.inRange(current));
-				},
-				async cost(event, trigger, player) {
-					event.result = await player
-						.chooseTarget(
-							get.prompt("tomoyo_zhengfeng"),
-							"令一名攻击范围内的角色进行判定。其于你的下回合开始前使用与判定结果颜色相同的牌时，你摸一张牌。",
-							function (card, player, target) {
-								return player.inRange(target);
-							}
-						)
-						.set("ai", function (target) {
-							var player = _status.event.player;
-							if (player.hp <= 1 && !player.countCards("h")) return 0;
-							var hs = target.countCards("h"),
-								thr = get.threaten(target);
-							if (target.hasJudge("lebu")) return 0;
-							return Math.sqrt(1 + hs) * Math.sqrt(Math.max(1, 1 + thr));
-						})
-						.forResult();
-				},
-				content() {
-					"step 0";
-					var target = targets[0];
-					event.target = target;
-					target.judge();
-					"step 1";
-					player.addTempSkill("tomoyo_zhengfeng_tomoyo", {
-						player: "phaseBeginStart",
-					});
-					player.markAuto("tomoyo_zhengfeng_tomoyo", [
-						{
-							target: target,
-							color: result.color,
-						},
-					]);
-				},
-				group: "tomoyo_zhengfeng_after",
-				subSkill: {
-					tomoyo: {
-						charlotte: true,
-						onremove: true,
-						mod: {
-							inRangeOf(source, player) {
-								var list = player.getStorage("tomoyo_zhengfeng_tomoyo");
-								for (var obj of list) {
-									if (obj.target == source) return true;
-								}
-							},
-						},
-						trigger: { global: "useCard" },
-						forced: true,
-						filter(event, player) {
-							var color = get.color(event.card);
-							if (color == "none") return false;
-							var list = player.getStorage("tomoyo_zhengfeng_tomoyo");
-							for (var obj of list) {
-								if (obj.target == event.player && color == obj.color) return true;
-							}
-							return false;
-						},
-						content() {
-							player.draw();
-						},
-						intro: {
-							mark(dialog, students, player) {
-								if (!students || !students.length) return "全校风纪良好！";
-								var str = "";
-								for (var i of students) {
-									if (str.length > 0) str += "<br>";
-									str += get.translation(i.target);
-									str += "：";
-									str += get.translation(i.color);
-								}
-								dialog.addText(str);
-							},
-						},
-					},
-					after: {
-						trigger: { player: "phaseJieshuBegin" },
-						filter(event, player) {
-							return !player.hasHistory("useSkill", function (evt) {
-								return evt.skill == "tomoyo_zhengfeng";
-							});
-						},
-						prompt: "整风：是否放弃使命？",
-						prompt2:
-							"你可以减1点体力上限并失去〖武威〗，摸两张牌并回复1点体力，然后获得技能〖长誓〗。",
-						skillAnimation: true,
-						animationColor: "gray",
-						check(event, player) {
-							return player.hp * 1.1 + player.countCards("h") < 3;
-						},
-						content() {
-							"step 0";
-							game.log(player, "放弃了身为学生会长的使命");
-							player.awakenSkill("tomoyo_zhengfeng");
-							player.loseMaxHp();
-							"step 1";
-							player.removeSkills("tomoyo_wuwei");
-							"step 2";
-							player.draw(2);
-							player.recover();
-							"step 3";
-							player.addSkills("tomoyo_changshi");
-						},
-					},
-				},
-			},
 			tomoyo_changshi: {
 				trigger: {
 					global: ["gainAfter", "loseAsyncAfter"],
@@ -3556,7 +3443,6 @@ game.import("character", function () {
                     var currentSuits = [...new Set(player.getCards('h').map(card => get.suit(card)))];
                     player.storage.mia_rujing.suits = currentSuits;
                     player.storage.mia_rujing.state = (player.storage.mia_rujing.state === 'yin' ? 'yang' : 'yin');
-                    game.log(player, '的【入境】状态变为', player.storage.mia_rujing.state === 'yin' ? '阴' : '阳');
                     player.markSkill('mia_rujing');
                 },
                 subSkill: {
@@ -3575,7 +3461,6 @@ game.import("character", function () {
                             'step 0'
                             var num = trigger.targets ? trigger.targets.length : 1;
                             player.draw(num);
-                            game.log(player, '触发【入境】：摸', num, '张牌');
                             'step 1'
                             trigger.getParent().cancel();
                             game.log(player, '令', trigger.card, '无效');
@@ -3616,14 +3501,12 @@ game.import("character", function () {
 
                             if(player.countCards('h') < targetNum) {
                                 trigger.cancel();
-                                player.loseHp();
-                                game.log(player, '触发【入境】：手牌不足，令', trigger.card, '无效并失去1点体力');
+                                player.gainHp();
                                 event.finish();
                                 return;
                             }
 
                             event.num = targetNum;
-                            game.log(player, '触发【入境】：需弃置', targetNum, '张手牌');
                             player.chooseToDiscard('h', targetNum, true);
                         }
                     }
@@ -3640,7 +3523,15 @@ game.import("character", function () {
                     }
                 }
             },
-            mia_qianmeng: {
+			mia_qianmeng: {
+				mark: true,
+				marktext: "梦",
+				intro: {
+					content(storage) {
+						if (!storage || !storage.card) return "当前没有“潜梦”牌";
+						return "当前“潜梦”牌：" + get.translation(storage.card);
+					},
+				},
 				trigger: {
 					global: "phaseBefore",
 					player: "enterGame",
@@ -3654,42 +3545,49 @@ game.import("character", function () {
 				},
 				content() {
 					"step 0";
-					player.draw();
+					var card = get.cardPile(function (card) {
+						return get.name(card, false) == "wuzhong";
+					});
+					if (!card) {
+						player.chat("不是，连无中生有都没有？");
+						event.finish();
+						return;
+					}
+					event.card = card;
+					player.gain(card, "gain2").gaintag.add("mia_qianmeng_tag");
+					player.storage.mia_qianmeng = {
+						card: card,
+						awakened: false,
+					};
 					"step 1";
-					if (player.countCards("he") > 0) {
-						player.chooseCard("he", true, "潜梦：选择一张牌置于牌堆中");
+					if (get.owner(event.card) == player && get.position(event.card) == "h" && game.hasPlayer(function (current) {
+						return current != player;
+					})) {
+						player
+							.chooseTarget("潜梦：将“潜梦”牌交给一名其他角色", true, lib.filter.notMe)
+						.set("ai", function (target) {
+							return get.attitude(_status.event.player, target);
+						});
 					} else event.finish();
 					"step 2";
 					if (result.bool) {
-						var card = result.cards[0];
-						player.storage.mia_qianmeng = card;
-						player.$throw(card, 1000);
-						player.lose(card, ui.cardPile).insert_index = function () {
-							return ui.cardPile.childNodes[Math.ceil(ui.cardPile.childNodes.length / 2)];
-						};
-					} else event.finish();
-					"step 3";
-					game.delayx();
+						var target = result.targets[0],
+							card = event.card;
+						player.give(card, target).gaintag.add("mia_qianmeng_tag");
+					}
 				},
 				onremove: true,
-				group: ["mia_qianmeng_achieve", "mia_qianmeng_fail"],
+				group: ["mia_qianmeng_achieve", "mia_qianmeng_transfer", "mia_qianmeng_fail"],
 				subSkill: {
 					achieve: {
 						trigger: {
-							global: ["gainAfter", "loseAsyncAfter"],
+							player: ["useCard", "respond"],
 						},
 						forced: true,
 						filter(event, player) {
-							var card = player.storage.mia_qianmeng;
-							if (event.name == "gain") {
-								var source = event.player,
-									cards = event.getg(source);
-								return cards.includes(card) && source.getCards("hejsx").includes(card);
-							} else {
-								if (event.type != "gain") return false;
-								var owner = get.owner(card);
-								return owner && event.getg(owner).includes(card);
-							}
+							var storage = player.storage.mia_qianmeng;
+							if (!storage || storage.awakened || get.itemtype(storage.card) != "card") return false;
+							return event.cards && event.cards.includes(storage.card);
 						},
 						skillAnimation: true,
 						animationColor: "key",
@@ -3697,36 +3595,85 @@ game.import("character", function () {
 							"step 0";
 							game.log(player, "成功完成使命");
 							player.awakenSkill("mia_qianmeng");
-							var card = player.storage.mia_qianmeng,
-								owner = get.owner(card);
-							if (owner && owner != player) owner.give(card, player);
+							player.storage.mia_qianmeng.awakened = true;
 							"step 1";
+							player.gainMaxHp();
+							"step 2";
 							if (player.hp < player.maxHp) player.recover(player.maxHp - player.hp);
 							player.changeSkills(["mia_fengfa"], ["mia_shihui"]);
 						},
+					},
+					transfer: {
+						trigger: {
+							global: ["loseAfter", "loseAsyncAfter", "cardsDiscardAfter", "equipAfter"],
+						},
+						forced: true,
+						filter(event, player) {
+							var storage = player.storage.mia_qianmeng;
+							if (!storage || storage.awakened || get.itemtype(storage.card) != "card") return false;
+							if (!event.getd) return false;
+							if (
+								!game.hasPlayer(function (current) {
+									return current != player && !current.hasSkill("mia_qianmeng_used");
+								})
+							)
+								return false;
+							return event.getd().some(function (card) {
+								return card == storage.card && get.position(card) == "d";
+							});
+						},
+						content() {
+							"step 0";
+							var card = player.storage.mia_qianmeng.card;
+							event.card = card;
+							player
+								.chooseTarget(
+									"潜梦：将“潜梦”牌交给一名本回合未以此法获得过此牌的角色",
+									true,
+									function (cardx, player, target) {
+										return target != player && !target.hasSkill("mia_qianmeng_used");
+									}
+								)
+								.set("ai", function (target) {
+									return get.attitude(_status.event.player, target);
+								});
+							"step 1";
+							if (result.bool) {
+								var target = result.targets[0];
+								player.line(target);
+								target.gain(event.card, "gain2").gaintag.add("mia_qianmeng_tag");
+								if (_status.currentPhase) {
+									target.addTempSkill("mia_qianmeng_used", "phaseAfter");
+								} else {
+									target.addTempSkill("mia_qianmeng_used");
+								}
+							}
+						},
+					},
+					used: {
+						charlotte: true,
 					},
 					fail: {
 						trigger: { player: "die" },
 						forceDie: true,
 						filter(event, player) {
-							return get.itemtype(player.storage.mia_qianmeng) == "card";
+							var storage = player.storage.mia_qianmeng;
+							return storage && !storage.awakened && get.itemtype(storage.card) == "card";
 						},
 						async cost(event, trigger, player) {
 							event.result = await player
 								.chooseTarget(
 									get.prompt("mia_qianmeng"),
-									"令一名角色获得牌堆中所有点数为" +
-										player.storage.mia_qianmeng.number +
-										"的牌",
-									lib.filter.notMe
+									"令一名角色获得牌堆中所有与“潜梦”牌花色点数相同的牌"
 								)
 								.forResult();
 						},
 						async content(event, trigger, player) {
 							game.log(player, "使命失败");
 							var target = event.targets[0];
-							var num = player.storage.mia_qianmeng.number,
-								suit = player.storage.mia_qianmeng.suit,
+							var card = player.storage.mia_qianmeng.card,
+								num = card.number,
+								suit = card.suit,
 								cards = [];
 							for (var i = 0; i < ui.cardPile.childNodes.length; i++) {
 								var card = ui.cardPile.childNodes[i];
@@ -14349,10 +14296,10 @@ game.import("character", function () {
 				"锁定技，摸牌阶段，你改为摸X+1张牌（X为你上回合弃置的牌数）；结束阶段，你弃置一张牌并回复1点体力。",
 			mia_rujing: "入境",
 			mia_rujing_info:
-			    "锁定技。当你手牌的花色数变化时，阴: 你受到牌的目标时，你摸X张牌然后令此牌无效。阳: 你使用牌指定目标时，你弃置X张牌。X为指定的目标数。",
+			    "锁定技。当你手牌的花色数变化时，阴: 你受到牌的目标时，你摸X张牌然后令此牌无效。阳: 你使用牌指定目标时，你弃置X张牌。X为指定的目标数。当手牌数不足时，你回复X点体力。",
 			mia_qianmeng: "潜梦",
 			mia_qianmeng_info:
-				"使命技。①游戏开始时，你摸一张牌，然后将一张牌置于牌堆的正中央。②使命：当有角色获得“潜梦”牌时，其将此牌交给你。你将体力值回复至上限，失去〖时迴〗并获得〖风发〗。③失败：当你死亡时，你可令一名角色获得牌堆中所有与“潜梦”牌花色点数相同的牌。",
+				"使命技。①游戏开始时，你从牌堆里获得一张【无中生有】并标记之，然后将此牌交给一名角色。②使命：当“潜梦”牌进入弃牌堆时，你将此牌交给一名本回合未以此法获得过此“潜梦”牌的角色。当你使用或打出“潜梦”牌时，你增加1点体力上限并将体力值回复至上限，失去〖时迴〗并获得〖风发〗。③失败：当你死亡时，你可令一名角色获得牌堆中所有与“潜梦”牌花色点数相同的牌。",
 			mia_fengfa: "风发",
 			mia_fengfa_info: "锁定技。摸牌阶段，你多摸X张牌（X为你上回合使用过的牌数）。",
 			kano_liezhen: "列阵",
@@ -14530,9 +14477,6 @@ game.import("character", function () {
 			tomoyo_wuwei: "武威",
 			tomoyo_wuwei_info:
 				"①每回合每种花色限一次。你可以将一张手牌当做【杀】使用或打出。②当有角色使用【闪】后，若你在其攻击范围内，你可以对其使用一张【杀】（无距离限制）。",
-			tomoyo_zhengfeng: "整风",
-			tomoyo_zhengfeng_info:
-				"使命技。①准备阶段，你可以令攻击范围内的一名角色进行判定。若如此做，你获得如下效果直到下回合开始：你视为在该角色的攻击范围内，且当该角色使用与判定牌颜色相同的牌时，你摸一张牌。②失败：结束阶段，若你于本回合内未发动过〖整风①〗，则你可以减1点体力上限。你失去〖武威〗，摸两张牌并回复1点体力，然后获得〖长誓〗。",
 			tomoyo_changshi: "长誓",
 			tomoyo_changshi_info:
 				"锁定技。一名攻击范围内包含你的角色回复体力后，你获得1点护甲；一名攻击范围内包含你的角色一次性获得至少两张牌后，你摸一张牌。",
