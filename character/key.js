@@ -7700,7 +7700,7 @@ game.import("character", function () {
 					const result = event.cost_data;
 					if (result.index == 0) {
 						player.logSkill("miki_zhiluo");
-						player.draw(2);
+						player.draw(4);
 					} else player.useCard({ name: "sha", isCard: true }, trigger.player, "miki_zhiluo"); player.useCard({ name: "sha", isCard: true }, trigger.player, "miki_zhiluo");
 				},
 			},
@@ -13771,7 +13771,7 @@ game.import("character", function () {
 				"出牌阶段限一次，你可以选择一张不在游戏外的牌，然后将其置于牌堆/弃牌堆的顶部/底部或一名角色的对应区域内。",
 			kagari_yuanyi: "远忆",
 			kagari_yuanyi_info:
-				"锁定技，回合开始和结束时时，你摸X张牌并回复X点体力。（X为游戏轮数且至多为3）",
+				"锁定技，回合开始和结束时时，你摸X张牌并回复X点体力。（X为游戏轮数且至多为9）回合开始和结束时，你获得技能「改写·伤」直到回合结束。",
 				
 			key_shiki: "神山识",
 			key_shiki_ab: "神山识",
