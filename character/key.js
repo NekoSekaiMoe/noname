@@ -13,7 +13,7 @@ game.import("character", function () {
 			db_key_hina: ["female", "key", 5, ["hina_shenshi", "hina_xingzhi"], ["doublegroup:key:shen"]],
 			
 			sp_key_yuri: ["female", "qun", 5, ["mubing", "ziqu", "diaoling"], ["border:key"]],
-			key_lucia: ["female", "key", "4/5", ["lucia_duqu", "lucia_zhenren"]],
+			key_lucia: ["female", "key", "4/5", ["lucia_duqu", "lucia_zhenren", "lucia_duquan"]],
 			key_kyousuke: ["male", "key", 5, ["nk_shekong", "key_huanjie"]],
 			key_yuri: ["female", "key", 5, ["yuri_xingdong", "yuri_buqu", "yuri_wangxi"], ["zhu"]],
 			key_haruko: ["female", "key", 5, ["haruko_haofang", "haruko_zhuishi"]],
@@ -31,7 +31,7 @@ game.import("character", function () {
 			key_yui: ["female", "key", 5, ["yui_jiang", "yui_lieyin", "yui_takaramono"]],
 			key_tsumugi: ["female", "key", 5, ["tsumugi_mugyu", "tsumugi_huilang"]],
 			key_saya: ["female", "key", 5, ["saya_shouji", "saya_powei"]],
-			key_harukakanata: ["female", "key", 5, ["haruka_shuangche"]],
+			key_harukakanata: ["female", "key", 5, ["haruka_shuangche", "lucia_wuwei", "lucia_liangyi"]],
 			key_inari: ["female", "key", 5, ["inari_baiwei", "inari_huhun"]],
 			key_shiina: ["female", "key", 5, ["shiina_qingshen", "shiina_feiyan"]],
 			key_sunohara: [
@@ -101,7 +101,7 @@ game.import("character", function () {
 			key_nao: ["female", "key", 5, ["nao_duyin", "nao_wanxin", "nao_shouqing", "nao_diandeng"]],
 			key_yuuki: ["female", "key", 5, ["yuuki_yicha", "yuuki_wuxin"]],
 			key_kotarou: ["male", "key", 5, ["kotarou_rewrite", "kotarou_aurora"]],
-			key_tenzen: ["male", "key", 5, ["tenzen_fenghuan", "tenzen_retianquan"]],
+			key_tenzen: ["male", "key", 5, ["tenzen_fenghuan", "tenzen_retianquan", "tenzen_poyu"]],
 			key_kyouko: ["female", "key", 5, ["kyouko_rongzhu", "kyouko_gongmian"]],
 			key_kyou: ["female", "key", 5, ["kyou_zhidian", "kyou_duanfa"]],
 			key_seira: ["female", "key", 5, ["seira_xinghui", "seira_yuanying"]],
@@ -2797,6 +2797,28 @@ game.import("character", function () {
 								);
 						});
 					}
+				},
+			},
+			tenzen_poyu: {
+				limited: true,
+				trigger: { player: "dieBefore" },
+				forced: true,
+				filter(event, player) {
+					return player.isAlive();
+				},
+				content() {
+					trigger.cancel();
+					player.revive(2, false);
+					player.removeSkills(["tenzen_fenghuan", "tenzen_retianquan"]);
+					player.maxHp = 7;
+					player.hp = Math.min(player.hp, 7);
+				},
+				ai: {
+					effect: {
+						target: function(card, player, target, isBad) {
+							if (isBad && target.hp <= 2) return [1, 2];
+						},
+					},
 				},
 			},
 			//藏里见
@@ -11847,7 +11869,7 @@ game.import("character", function () {
 					"step 1";
 					if (!result.bool) {
 						player.addTempSkill("haruka_kanata");
-						player.gainHp(4);
+						player.recover(4);
 					}
 					else {
 					    player.draw(4);
@@ -11855,6 +11877,55 @@ game.import("character", function () {
 				},
 			},
 			haruka_kanata: { charlotte: true },
+			lucia_wuwei: {
+				locked: true,
+				charlotte: true,
+				mod: {
+					targetInRange(card, player, target) {
+						if (player == target || !target.hasSkill("lucia_wuwei")) return;
+						var info = get.info(card);
+						if (!info || (!info.range && !info.outrange)) return;
+						return false;
+					},
+					globalTo(from, to, distance) {
+						if (to != from && to.hasSkill("lucia_wuwei")) return 0;
+						return distance;
+					},
+					globalFrom(from, to, distance) {
+						if (!from.hasSkill("lucia_wuwei") || from == to) return distance;
+						if (from.storage.lucia_liangyi) {
+							if (distance == from.hp) return 1;
+						}
+						else if (distance == 1) return from.hp;
+						return distance;
+					},
+				},
+			},
+			lucia_liangyi: {
+				mark: true,
+				zhuanhuanji: true,
+				locked: true,
+				charlotte: true,
+				marktext: "☯",
+				intro: {
+					content(storage, player) {
+						var num = player.hp;
+						if (storage) return "当前为阳：你对距离为" + get.cnNumber(num) + "的角色的距离视为1";
+						return "当前为阴：你对距离为1的角色的距离视为" + get.cnNumber(num);
+					},
+				},
+				init(player) {
+					player.storage.lucia_liangyi = false;
+				},
+				trigger: { player: "phaseJieshuBegin" },
+				filter(event, player) {
+					return !player.isDamaged();
+				},
+				content() {
+					player.storage.lucia_liangyi = !player.storage.lucia_liangyi;
+					player.markSkill("lucia_liangyi");
+				},
+			},
 			//紬文德斯
 			tsumugi_mugyu: {
 				audio: 5,
@@ -13668,6 +13739,98 @@ game.import("character", function () {
 					}
 				},
 			},
+			lucia_duquan: {
+				trigger: { global: "recoverBegin" },
+				forced: true,
+				charlotte: true,
+				filter(event) {
+					return event.num > 0 && event.player && event.player.isIn();
+				},
+				content() {
+					trigger.player.addMark("wang", trigger.num, false);
+				},
+				group: ["lucia_duquan_use", "lucia_duquan_death"],
+				subSkill: {
+					use: {
+						enable: "phaseUse",
+						usable: 1,
+						filter(event, player) {
+							return player.countMark("wang") > 0 && game.hasPlayer(function(current) {
+								return current != player;
+							});
+						},
+						content() {
+							"step 0";
+							event.num = player.countMark("wang");
+							player.removeMark("wang", event.num, false);
+							player.draw(event.num);
+							event.count = Math.min(event.num, game.countPlayer(function(current) {
+								return current != player;
+							}));
+							if (!event.count) event.finish();
+							else {
+								player.chooseControl("失去体力", "获得标记").set("prompt", "毒泉：请选择一项").set("choice", (function() {
+									var value = 0;
+									game.countPlayer(function(current) {
+										if (current == player) return;
+										value -= get.attitude(player, current);
+									});
+									return value > 0 ? 0 : 1;
+								})());
+							}
+							"step 1";
+							event.choice = result.control;
+							player.chooseTarget(
+								true,
+								event.count,
+								"选择" + get.cnNumber(event.count) + "名其他角色" + (event.choice == "失去体力" ? "各失去1点体力" : "各获得1枚「望」标记"),
+								function(card, player, target) {
+									return target != player;
+								}
+							).set("ai", function(target) {
+								var player = _status.event.player;
+								if (_status.event.choice == "失去体力") return -get.attitude(player, target);
+								return get.attitude(player, target);
+							}).set("choice", event.choice);
+							"step 2";
+							if (!result.bool || !result.targets || !result.targets.length) return;
+							player.line(result.targets);
+							for (var i = 0; i < result.targets.length; i++) {
+								if (event.choice == "失去体力") result.targets[i].loseHp();
+								else result.targets[i].addMark("wang", 1, false);
+							}
+						},
+						ai: {
+							order: 10,
+							result: {
+								player(player) {
+									if (player.countMark("wang") >= 3) return 1;
+									if (player.countMark("wang") >= player.hp) return 1;
+									return 0;
+								},
+							},
+						},
+					},
+				},
+				marktext: "望",
+				intro: { content: "mark" },
+			},
+			lucia_duquan_death: {
+				trigger: { global: "dieBegin" },
+				forced: true,
+				filter(event, player) {
+					return event.player == player;
+				},
+				content() {
+					game.players.concat(game.dead).forEach(function(current) {
+						var num = current.countMark("wang");
+						if (num > 0) {
+							current.removeMark("wang", num, false);
+							current.loseHp(num);
+						}
+					});
+				},
+			},
 			
 		},
 		dynamicTranslate: {
@@ -13820,6 +13983,9 @@ game.import("character", function () {
 			lucia_zhenren: "振刃",
 			lucia_zhenren_info:
 				"锁定技，每个结束阶段，若你的装备区内有牌，则你弃置之。然后，你依次弃置场上的X张牌。（X为你以此法弃置的牌数）",
+			lucia_duquan: "毒泉",
+			lucia_duquan_info:
+				"当一名角色回复体力时，该角色获得等量的「望」标记。出牌阶段限一次，你可以弃置所有「望」标记并摸等量的牌，然后选择一项：1.令X名其他角色失去1点体力。2.令X名其他角色获得一枚「望」标记。（X为「望」的数量）当你死亡时，所有角色依次弃置「望」标记并失去等量的体力。",
 			nk_shekong: "设控",
 			nk_shekong_info:
 				"出牌阶段限一次，你可以弃置任意张手牌并选择一名其他角色（不能超过该角色的牌数），然后令其选择一项：弃置一张牌并令你摸X张牌，或弃置X张牌并令你摸一张牌。然后，你将你与其弃置的且位于弃牌堆中的牌以任意顺序置于牌堆顶。",
@@ -13927,6 +14093,10 @@ game.import("character", function () {
 			haruka_shuangche_backup: "双掣",
 			haruka_shuangche_info:
 				"出牌阶段，你可以视为使用任意基本牌或普通锦囊牌。此牌结算完成后，你选择一项：1.弃置X张牌并摸4张牌。2.回复4点体力且本回合内不能再发动〖双掣〗。（X为你于此回合内发动过〖双掣〗的次数）",
+			lucia_wuwei: "无为",
+			lucia_wuwei_info: "锁定技，其他角色对你的距离视为0；你对距离为1的角色的距离视为X（X为你的体力值）。",
+			lucia_liangyi: "两仪",
+			lucia_liangyi_info: "锁定技，转换技。阴：你对距离为1的角色的距离视为X。阳：你对距离为X的角色的距离视为1。回合结束时，若你未受伤，你转换此状态。（X为你的体力值）",
 			//你不能以此法使用〖回魂〗
 			saya_shouji: "授计",
 			saya_shouji_info:
@@ -14341,6 +14511,8 @@ game.import("character", function () {
 			tenzen_retianquan: "天全",
 			tenzen_retianquan_info:
 				"每回合限一次。当你使用【杀】指定目标后，你可失去1点体力或弃置一张牌，然后亮出牌堆顶的三张牌（若你的体力值小于体力上限的50%，则改为展示五张牌）。这些牌中每有一张基本牌，响应此牌所需的【闪】的数量便+1。此牌结算结束后，若此牌造成过伤害，则你获得展示牌中的所有非基本牌。",
+			tenzen_poyu: "破羽",
+			tenzen_poyu_info: "限定技，当你死亡时，你可以复活。若如此做，你失去所有技能并将体力上限调整为7。",
 			iriya_yinji: "殷极",
 			iriya_yinji_info: "锁定技。出牌阶段开始时，你摸17张牌。你不能直接使用以此法得到的牌。",
 			iriya_haozhi: "豪掷",
