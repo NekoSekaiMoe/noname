@@ -7408,14 +7408,14 @@ game.import("character", function () {
 			},
 			kaori_dongfeng: {
 				trigger: {
-					player: ["die", "phaseZhunbeiBegin"],
+					player: ["dieBefore", "phaseZhunbeiBegin"],
 				},
 				forced: true,
 				forceDie: true,
 				skillAnimation: true,
 				animationColor: "fire",
 				filter(event, player, name) {
-					if (name == "die") return true;
+					if (name == "dieBefore") return !event.reason || !event.reason.kaori_dongfeng_norevive;
 					if (name == "phaseZhunbeiBegin") {
 						// 准备阶段，若弃牌堆里没有桃
 						for (var i = 0; i < ui.discardPile.childElementCount; i++) {
@@ -7426,11 +7426,11 @@ game.import("character", function () {
 					return false;
 				},
 				content() {
-					if (event.triggername == "die") {
+					if (trigger.name == "die") {
 						// 死亡时复活
 						trigger.cancel();
 						player.revive(player.maxHp);
-						player.drawTo(player.maxHp);
+						player.drawTo(player.getHandcardLimit());
 						// 将弃牌堆上所有的桃移出游戏并替换成等量的杀
 						var taoCount = 0;
 						for (var i = ui.discardPile.childElementCount - 1; i >= 0; i--) {
@@ -7444,9 +7444,9 @@ game.import("character", function () {
 						}
 						game.log(player, "复活了");
 						game.log("将弃牌堆中的" + get.cnNumber(taoCount) + "张【桃】替换成了【杀】");
-					} else if (event.triggername == "phaseZhunbeiBegin") {
+					} else if (trigger.name == "phaseZhunbei") {
 						// 准备阶段，若弃牌堆里没有桃，死亡
-						player.die();
+						player.die({ kaori_dongfeng_norevive: true });
 						// 将场上和牌堆里的所有桃替换成杀，桃园结义替换成万箭齐发
 						// 场上的桃
 						game.players.forEach(function(current) {
