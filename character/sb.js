@@ -582,8 +582,9 @@ game.import("character", function () {
 				},
 				updateBlocker(player) {
 					if (!player) return;
+					player.storage = player.storage || {};
 					const list = [],
-						storage = player.storage.sbgongqi_block;
+						const storage = player.storage.sbgongqi_block;
 					if (storage && storage.length) {
 						list.addArray(...storage.map(i => i[1]));
 					}
@@ -8917,8 +8918,9 @@ game.import("character", function () {
 				},
 				updateBlocker: function (player) {
 					if (!player) return;
+					player.storage = player.storage || {};
 					var list = [],
-						storage = player.storage.sbliegong_block;
+						const storage = player.storage.sbliegong_block;
 					if (storage && storage.length) {
 						for (var i of storage) list.addArray(i[1]);
 					}
