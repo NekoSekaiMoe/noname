@@ -101,7 +101,7 @@ game.import("character", function () {
 			key_nao: ["female", "key", 5, ["nao_duyin", "nao_wanxin", "nao_shouqing", "nao_diandeng"]],
 			key_yuuki: ["female", "key", 5, ["yuuki_yicha", "yuuki_wuxin"]],
 			key_kotarou: ["male", "key", 5, ["kotarou_rewrite", "kotarou_aurora"]],
-			key_tenzen: ["male", "key", 5, ["tenzen_fenghuan", "tenzen_retianquan", "tenzen_lingyu"]],
+			key_tenzen: ["male", "key", 5, ["tenzen_fenghuan", "tenzen_retianquan", "tenzen_lingyu", "tenzen_shenyu"]],
 			key_kyouko: ["female", "key", 5, ["kyouko_rongzhu", "kyouko_gongmian"]],
 			key_kyou: ["female", "key", 5, ["kyou_zhidian", "kyou_duanfa"]],
 			key_seira: ["female", "key", 5, ["seira_xinghui", "seira_yuanying"]],
