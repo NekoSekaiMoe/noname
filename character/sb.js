@@ -581,6 +581,7 @@ game.import("character", function () {
 					await game.asyncDelayx();
 				},
 				updateBlocker(player) {
+					if (!player) return;
 					const list = [],
 						storage = player.storage.sbgongqi_block;
 					if (storage && storage.length) {
@@ -8915,6 +8916,7 @@ game.import("character", function () {
 					lib.skill.sbliegong.updateBlocker(target);
 				},
 				updateBlocker: function (player) {
+					if (!player) return;
 					var list = [],
 						storage = player.storage.sbliegong_block;
 					if (storage && storage.length) {
@@ -9006,7 +9008,7 @@ game.import("character", function () {
 								}
 							}
 							if (!storage.length) player.removeSkill("sbliegong_block");
-							else lib.skill.sbliegong.updateBlocker(target);
+							else lib.skill.sbliegong.updateBlocker(player);
 						},
 					},
 					count: {
