@@ -101,7 +101,7 @@ game.import("character", function () {
 			key_nao: ["female", "key", 5, ["nao_duyin", "nao_wanxin", "nao_shouqing", "nao_diandeng"]],
 			key_yuuki: ["female", "key", 5, ["yuuki_yicha", "yuuki_wuxin"]],
 			key_kotarou: ["male", "key", 5, ["kotarou_rewrite", "kotarou_aurora"]],
-			key_tenzen: ["male", "key", 5, ["tenzen_fenghuan", "tenzen_retianquan", "tenzen_poyu"]],
+			key_tenzen: ["male", "key", 5, ["tenzen_fenghuan", "tenzen_retianquan", "tenzen_lingyu"]],
 			key_kyouko: ["female", "key", 5, ["kyouko_rongzhu", "kyouko_gongmian"]],
 			key_kyou: ["female", "key", 5, ["kyou_zhidian", "kyou_duanfa"]],
 			key_seira: ["female", "key", 5, ["seira_xinghui", "seira_yuanying"]],
@@ -2799,19 +2799,47 @@ game.import("character", function () {
 					}
 				},
 			},
-			tenzen_poyu: {
+			tenzen_lingyu: {
 				limited: true,
-				trigger: { player: "dieBefore" },
+				trigger: { player: "dying" },
 				filter(event, player) {
-					return player.isAlive();
+					if (player.hp >= 1 || player._trueMe) return false;
+					if (game.hasPlayer(function (current) {
+						return current._trueMe == player;
+					})) return false;
+					return game.hasPlayer(function (current) {
+						if (current == player) return false;
+						if (current._trueMe) return false;
+						return !game.hasPlayer(function (target) {
+							return target._trueMe == current;
+						});
+					});
 				},
-				prompt: "是否发动【破羽】？",
+				prompt: "是否发动【灵羽】？",
 				content() {
-					trigger.cancel();
-					player.revive(2, false);
-					player.clearSkills(true);
-					player.maxHp = 7;
-					player.hp = Math.min(player.hp, 7);
+					"step 0";
+					player.awakenSkill("tenzen_lingyu");
+					player.recover(2 - player.hp);
+					"step 1";
+					player.chooseTarget(true, "选择一名其他角色，与其交换控制权", function (card, player, target) {
+						if (target == player || target._trueMe) return false;
+						return !game.hasPlayer(function (current) {
+							return current._trueMe == target;
+						});
+					}).set("ai", function (target) {
+						var player = _status.event.player;
+						return -get.attitude(player, target);
+					});
+					"step 2";
+					if (result.bool) {
+						var target = result.targets[0];
+						player._trueMe = target;
+						target._trueMe = player;
+						game.addGlobalSkill("autoswap");
+						if (player == game.me || player.isUnderControl()) {
+							game.swapPlayerAuto(target);
+						}
+					}
 				},
 				ai: {
 					effect: {
@@ -4125,7 +4153,7 @@ game.import("character", function () {
 						},
 						check(event, player) {
 							if (
-								!player.storage.tenzen_lingyu &&
+								!player.storage.tenzen_shenyu &&
 								player.getExpansions("tenzen_yixing").length < 3
 							)
 								return false;
@@ -4190,7 +4218,7 @@ game.import("character", function () {
 					if (result.bool) player.useCard(card, target, false, "tenzen_yixing");
 				},
 			},
-			tenzen_lingyu: {
+			tenzen_shenyu: {
 				trigger: { player: "phaseZhunbeiBegin" },
 				forced: true,
 				juexingji: true,
@@ -4200,8 +4228,8 @@ game.import("character", function () {
 					return player.getExpansions("tenzen_yixing").length >= player.hp;
 				},
 				content() {
-					player.awakenSkill("tenzen_lingyu");
-					player.storage.tenzen_lingyu = true;
+					player.awakenSkill("tenzen_shenyu");
+					player.storage.tenzen_shenyu = true;
 					var hp = player.hp;
 					player.loseMaxHp();
 					if (player.hp < hp) player.draw(2);
@@ -4258,7 +4286,7 @@ game.import("character", function () {
 							}
 						}
 						if (num < 5) {
-							var next = game.createEvent("tenzen_lingyu_gain");
+							var next = game.createEvent("tenzen_shenyu_gain");
 							next.cards = cards;
 							next.player = player;
 							event.next.remove(next);
@@ -7025,6 +7053,10 @@ game.import("character", function () {
 				},
 				trigger: { global: "phaseBeginStart" },
 				filter(event, player) {
+					if (player._trueMe) return false;
+					if (game.hasPlayer(function (current) {
+						return current._trueMe == player;
+					})) return false;
 					return (
 						player != event.player &&
 						!event.player._trueMe &&
@@ -14513,8 +14545,8 @@ game.import("character", function () {
 			tenzen_retianquan: "天全",
 			tenzen_retianquan_info:
 				"每回合限一次。当你使用【杀】指定目标后，你可失去1点体力或弃置一张牌，然后亮出牌堆顶的三张牌（若你的体力值小于体力上限的50%，则改为展示五张牌）。这些牌中每有一张基本牌，响应此牌所需的【闪】的数量便+1。此牌结算结束后，若此牌造成过伤害，则你获得展示牌中的所有非基本牌。",
-			tenzen_poyu: "破羽",
-			tenzen_poyu_info: "限定技，当你死亡时，你可以复活。若如此做，你失去所有技能并将体力上限调整为7。",
+			tenzen_lingyu: "灵羽",
+			tenzen_lingyu_info: "限定技，当你进入濒死状态时，你可以防止此次死亡。若如此做，你回复至2点体力，然后你与一名其他角色交换其控制权。",
 			iriya_yinji: "殷极",
 			iriya_yinji_info: "锁定技。出牌阶段开始时，你摸17张牌。你不能直接使用以此法得到的牌。",
 			iriya_haozhi: "豪掷",
@@ -14603,8 +14635,8 @@ game.import("character", function () {
 			tenzen_yixing_info:
 				"当有角色因【杀】或【决斗】而受到伤害后，若伤害来源在你的攻击范围内或受伤角色在你的攻击范围内，你可以摸一张牌，然后将一张牌置于武将牌上，称为“兴”。当你成为其他角色使用【杀】或普通锦囊牌的唯一目标后，你可以获得一张“兴”，并可于此牌结算完成后弃置两张牌，视为对其使用一张名称相同的牌。",
 			//若对方为水织静久则无法触发〖弈兴〗
-			tenzen_lingyu: "领域",
-			tenzen_lingyu_info:
+			tenzen_shenyu: "神域",
+			tenzen_shenyu_info:
 				"觉醒技，准备阶段，若你的“兴”不小于你的体力值，则你减1点体力上限并获得技能〖天全〗。若你以此法失去了体力，则你摸两张牌。",
 			tenzen_tianquan: "天全",
 			tenzen_tianquan_info:
