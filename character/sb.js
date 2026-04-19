@@ -584,7 +584,7 @@ game.import("character", function () {
 					if (!player) return;
 					player.storage = player.storage || {};
 					const list = [],
-						const storage = player.storage.sbgongqi_block;
+						storage = player.storage.sbgongqi_block;
 					if (storage && storage.length) {
 						list.addArray(...storage.map(i => i[1]));
 					}
@@ -8920,7 +8920,7 @@ game.import("character", function () {
 					if (!player) return;
 					player.storage = player.storage || {};
 					var list = [],
-						const storage = player.storage.sbliegong_block;
+						storage = player.storage.sbliegong_block;
 					if (storage && storage.length) {
 						for (var i of storage) list.addArray(i[1]);
 					}

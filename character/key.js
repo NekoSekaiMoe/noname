@@ -2802,14 +2802,14 @@ game.import("character", function () {
 			tenzen_poyu: {
 				limited: true,
 				trigger: { player: "dieBefore" },
-				forced: true,
 				filter(event, player) {
 					return player.isAlive();
 				},
+				prompt: "是否发动【破羽】？",
 				content() {
 					trigger.cancel();
 					player.revive(2, false);
-					player.removeSkills(["tenzen_fenghuan", "tenzen_retianquan"]);
+					player.clearSkills(true);
 					player.maxHp = 7;
 					player.hp = Math.min(player.hp, 7);
 				},
@@ -4110,7 +4110,8 @@ game.import("character", function () {
 								return false;
 							return (
 								event.targets.length == 1 &&
-								(event.card.name == "sha" || get.type(event.card) == "trick")
+								(event.card.name == "sha" || get.type(event.card) == "trick") &&
+								get.type2(event.card) != "delay"
 							);
 						},
 						prompt2(event) {
@@ -4201,8 +4202,9 @@ game.import("character", function () {
 				content() {
 					player.awakenSkill("tenzen_lingyu");
 					player.storage.tenzen_lingyu = true;
+					var hp = player.hp;
 					player.loseMaxHp();
-					if (player.isHealthy()) player.draw(2);
+					if (player.hp < hp) player.draw(2);
 					player.addSkills("tenzen_tianquan");
 				},
 				ai: {
@@ -4252,7 +4254,7 @@ game.import("character", function () {
 								if (!map[idt]) map[idt] = {};
 								if (!map[idt].shaReq) map[idt].shaReq = {};
 								if (!map[idt].shaReq[idt]) map[idt].shaReq[idt] = 1;
-								map[idt].shaReq[idt]++;
+								map[idt].shaReq[idt] += num;
 							}
 						}
 						if (num < 5) {
@@ -14599,7 +14601,7 @@ game.import("character", function () {
 			key_tenzen: "加纳天善",
 			tenzen_yixing: "弈兴",
 			tenzen_yixing_info:
-				"当有角色因【杀】或【决斗】而受到伤害后，若其在你的攻击范围内或你在伤害来源的攻击范围内，你可以摸一张牌，然后将一张牌置于武将牌上，称为“兴”。当你成为其他角色使用【杀】或普通锦囊牌的唯一目标后，你可以获得一张“兴”，并可于此牌结算完成后弃置两张牌，视为对其使用一张名称相同的牌。",
+				"当有角色因【杀】或【决斗】而受到伤害后，若伤害来源在你的攻击范围内或受伤角色在你的攻击范围内，你可以摸一张牌，然后将一张牌置于武将牌上，称为“兴”。当你成为其他角色使用【杀】或普通锦囊牌的唯一目标后，你可以获得一张“兴”，并可于此牌结算完成后弃置两张牌，视为对其使用一张名称相同的牌。",
 			//若对方为水织静久则无法触发〖弈兴〗
 			tenzen_lingyu: "领域",
 			tenzen_lingyu_info:
