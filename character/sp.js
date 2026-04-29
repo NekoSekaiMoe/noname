@@ -25587,17 +25587,19 @@ game.import("character", function () {
 				viewAs: { name: "tao" },
 				viewAsFilter: function (player) {
 					return player != _status.currentPhase && player.countCards("hes") > 1;
+					player.recover(2);
 				},
-				selectCard: 2,
+				selectCard: 1,
 				filterCard: true,
 				position: "hes",
 			},
 			shulv: {
 				inherit: "zhiheng",
-				prompt: "弃置一张牌并摸一张牌",
+				prompt: "弃置一张牌并摸四张牌",
 				selectCard: 1,
 				filter: function (event, player) {
 					return player.countCards("hs") > player.hp;
+					player.draw(4);
 				},
 			},
 			xiandeng: {
@@ -31800,9 +31802,9 @@ game.import("character", function () {
 			xiandeng: "先登",
 			xiandeng_info: "锁定技，出牌阶段，你使用的第一张【杀】不计入次数且无距离限制。",
 			shulv: "熟虑",
-			shulv_info: "出牌阶段限一次，若你的手牌数大于体力值，则你可以弃置一张牌并摸一张牌。",
+			shulv_info: "出牌阶段限一次，若你的手牌数大于体力值，则你可以弃置一张牌并摸两张牌。",
 			xisheng: "牺牲",
-			xisheng_info: "每名其他角色的回合限一次，你可以将两张牌当做【桃】使用。",
+			xisheng_info: "每名其他角色的回合限一次，你可以将一张牌当做【桃】使用。",
 			yuhua: "羽化",
 			yuhua_info: "锁定技。①你的非基本牌不计入手牌上限。②准备阶段和结束阶段开始时，你卜算1。",
 			qirang: "祈禳",
