@@ -410,7 +410,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				mode: "identity",
 				intro: [
 					"杀死所有其他角色，成为最后的存活者",
-					"所有角色改为四血白板，依靠灵力值获得技能。灵力值可以通过各种方式获得",
+					"所有角色改为五血白板，依靠灵力值获得技能。灵力值可以通过各种方式获得",
 				],
 				showcase: function (init) {
 					if (init) {
@@ -572,7 +572,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							if (lib.filter.characterDisabled(name)) continue;
 							if (name.indexOf("old_") == 0) continue;
 							var skillsx = lib.character[name][3].slice(0);
-							lib.character[name][2] = 4;
+							lib.character[name][2] = 5;
 							lib.character[name][3] = [];
 							if (lib.character[name][4]) lib.character[name][4].remove("hiddenSkill");
 							characters.push(name);
@@ -670,7 +670,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 										},
 										content: function () {
 											game.log(player, "对击杀目标造成了伤害");
-											player.changeLingli(trigger.num);
+											player.changeLingli(trigger.num * 2);
 										},
 									},
 									_lingli: {
@@ -684,16 +684,16 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 										trigger: {
 											player: "phaseBeginStart",
 										},
-										prompt: "是否消耗2点灵力获得一个技能？",
+										prompt: "是否消耗3点灵力获得一个技能？",
 										filter: function (event, player) {
-											return player.storage._lingli > 1;
+											return player.storage._lingli > 2;
 										},
-										check: function (event, player) {
-											return player.skillH.length < 3;
-										},
+									check: function (event, player) {
+										return player.skillH.length < 4;
+									},
 										content: function () {
 											"step 0";
-											player.changeLingli(-2);
+											player.changeLingli(-3);
 											"step 1";
 											event.skills = lib.huanhuazhizhan.skills;
 											var skills = event.skills;
@@ -720,7 +720,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 												return;
 											}
 											event.skill = result.control;
-											if (player.skillH.length == 3) {
+											if (player.skillH.length == 4) {
 												event.lose = true;
 												player.chooseControl(player.skillH).prompt =
 													"选择失去1个已有技能";
@@ -738,7 +738,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 											return _status._aozhan != true && game.roundNumber > 1;
 										},
 										content: function () {
-											player.changeLingli(1);
+											player.changeLingli(2);
 										},
 									},
 									_lingli_draw: {
@@ -773,7 +773,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 										},
 										content: function () {
 											game.log(trigger.player, "帮助了保护目标");
-											trigger.player.changeLingli(1);
+											trigger.player.changeLingli(2);
 										},
 									},
 									_hhzz_qiankunbagua: {
@@ -793,7 +793,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 											"step 0";
 											if (_status._aozhan && !player.getStat("damage")) {
 												player.loseHp();
-												player.changeLingli(1);
+												player.changeLingli(2);
 												game.log(player, "本回合内未造成伤害，触发死战模式惩罚");
 											}
 											if (trigger._lastDead == undefined) event.goto(2);
@@ -839,7 +839,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 												}
 												case 5: {
 													game.countPlayer(function (current) {
-														current.changeLingli(1);
+														current.changeLingli(2);
 													});
 													break;
 												}
@@ -1084,7 +1084,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 										if (typeof num == "function") {
 											numx = num(player);
 										}
-										if (player._hSeat > 6) player.changeLingli(1);
+										if (player._hSeat > 6) player.changeLingli(2);
 										let cards = get.cards(numx);
 										player.directgain(cards);
 										player._start_cards = cards;
@@ -1141,7 +1141,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 									if (typeof num != "number") num = 1;
 									if (typeof this.storage._lingli != "number") this.storage._lingli = 0;
 									if (num > 0) {
-										num = Math.min(num, 5 - this.storage._lingli);
+										num = Math.min(num, 9 - this.storage._lingli);
 										if (num < 1) return;
 										game.log(this, "获得了", "#y" + get.cnNumber(num) + "点", "灵力");
 									} else {
@@ -1284,7 +1284,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 													popup: "聚灵",
 													intro: {
 														name: "灵力",
-														content: "当前灵力点数：# / 5",
+content: "当前灵力点数：# / 9",
 													},
 												},
 												_lingli_round: {},
