@@ -25587,11 +25587,13 @@ game.import("character", function () {
 				viewAs: { name: "tao" },
 				viewAsFilter: function (player) {
 					return player != _status.currentPhase && player.countCards("hes") > 1;
-					player.recover(2);
 				},
 				selectCard: 1,
 				filterCard: true,
 				position: "hes",
+				content: function (event, trigger, player) {
+					player.recover(2);
+				},
 			},
 			shulv: {
 				inherit: "zhiheng",
@@ -25599,16 +25601,19 @@ game.import("character", function () {
 				selectCard: 1,
 				filter: function (event, player) {
 					return player.countCards("hs") > player.hp;
+				},
+				content: function (event, trigger, player) {
 					player.draw(4);
 				},
 			},
 			xiandeng: {
+				forced: true,
 				mod: {
 					cardUsable: function (card, player, num) {
 						if (card.name == "sha") return num + 1;
 					},
 					targetInRange: function (card, player) {
-						if (card.name == "sha" && player.countUsed("sha", true) == 0) return true;
+						if (card.name == "sha") return true;
 					},
 				},
 			},
