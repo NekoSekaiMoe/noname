@@ -25583,37 +25583,38 @@ game.import("character", function () {
 			},
 			xisheng: {
 				enable: "chooseToUse",
-				usable: 1,
 				viewAs: { name: "tao" },
 				viewAsFilter: function (player) {
-					return player != _status.currentPhase && player.countCards("hes") > 1;
+					return player.countCards("hes") > 0;
 				},
 				selectCard: 1,
 				filterCard: true,
 				position: "hes",
 				content: function (event, trigger, player) {
 					player.recover(2);
+					player.changeHujia(2);
 				},
 			},
 			shulv: {
-				inherit: "zhiheng",
-				prompt: "弃置一张牌并摸四张牌",
+				enable: "phaseUse",
+				usable: 1,
+				filterCard: true,
 				selectCard: 1,
-				filter: function (event, player) {
-					return player.countCards("hs") > player.hp;
-				},
+				position: "he",
+				prompt: "弃置一张牌并摸五张牌并获得2点护甲",
 				content: function (event, trigger, player) {
-					player.draw(4);
+					player.draw(5);
+					player.changeHujia(2);
 				},
 			},
 			xiandeng: {
 				forced: true,
 				mod: {
 					cardUsable: function (card, player, num) {
-						if (card.name == "sha") return num + 1;
+						return num + 1;
 					},
 					targetInRange: function (card, player) {
-						if (card.name == "sha") return true;
+						return true;
 					},
 				},
 			},
@@ -31805,11 +31806,11 @@ game.import("character", function () {
 			qingyi2: "轻逸",
 			qingyi_info: "你可以跳过判定阶段和摸牌阶段。若如此做，视为对一名角色使用了一张无距离限制的【杀】。",
 			xiandeng: "先登",
-			xiandeng_info: "锁定技，出牌阶段，你使用的第一张【杀】不计入次数且无距离限制。",
+			xiandeng_info: "锁定技，出牌阶段，你使用的牌无距离和次数限制。",
 			shulv: "熟虑",
-			shulv_info: "出牌阶段限一次，若你的手牌数大于体力值，则你可以弃置一张牌并摸两张牌。",
+			shulv_info: "出牌阶段限一次，你可以弃置一张牌然后摸5张牌并获得2点护甲。",
 			xisheng: "牺牲",
-			xisheng_info: "每名其他角色的回合限一次，你可以将一张牌当做【桃】使用。",
+			xisheng_info: "你可以将一张牌当做【桃】使用且回复数+1且额外获得2点护甲。",
 			yuhua: "羽化",
 			yuhua_info: "锁定技。①你的非基本牌不计入手牌上限。②准备阶段和结束阶段开始时，你卜算1。",
 			qirang: "祈禳",

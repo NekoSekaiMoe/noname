@@ -679,7 +679,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 										popup: "聚灵",
 										intro: {
 											name: "灵力",
-											content: "当前灵力点数：# / 5",
+											content: "当前灵力点数：# / 9",
 										},
 										trigger: {
 											player: "phaseBeginStart",
@@ -689,7 +689,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 											return player.storage._lingli > 2;
 										},
 									check: function (event, player) {
-										return player.skillH.length < 4;
+										return player.skillH.length < 5;
 									},
 										content: function () {
 											"step 0";
@@ -720,7 +720,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 												return;
 											}
 											event.skill = result.control;
-											if (player.skillH.length == 4) {
+											if (player.skillH.length == 5) {
 												event.lose = true;
 												player.chooseControl(player.skillH).prompt =
 													"选择失去1个已有技能";
@@ -756,7 +756,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 											result: {
 												player: function (player) {
 													return player.storage._lingli -
-														2 * (3 - player.skillH.length) >
+														2 * (4 - player.skillH.length) >
 														0
 														? 1
 														: 0;
@@ -862,7 +862,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 												}
 												case 7: {
 													game.countPlayer(function (current) {
-														if (current.skillH.length < 3) {
+														if (current.skillH.length < 4) {
 															var skills = lib.huanhuazhizhan.skills;
 															skills.randomSort();
 															for (var i = 0; i < skills.length; i++) {
@@ -975,22 +975,22 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 										},
 										forceDie: true,
 										logTarget: "source",
-										content: function () {
-											var source = trigger.source;
-											source.draw();
-											if (source.skillH.length == 3)
-												source.removeSkillH(source.skillH.randomGet());
-											var skills = lib.huanhuazhizhan.skills;
-											skills.randomSort();
-											for (var i = 0; i < skills.length; i++) {
-												if (!source.skillH.includes(skills[i])) {
-													source.addSkillH(skills[i]);
-													break;
-												}
+									content: function () {
+										var source = trigger.source;
+										source.draw();
+										if (source.skillH.length == 4)
+											source.removeSkillH(source.skillH.randomGet());
+										var skills = lib.huanhuazhizhan.skills;
+										skills.randomSort();
+										for (var i = 0; i < skills.length; i++) {
+											if (!source.skillH.includes(skills[i])) {
+												source.addSkillH(skills[i]);
+												break;
 											}
-										},
+										}
 									},
-									hhzz_huizhen: {
+								},
+								hhzz_huizhen: {
 										trigger: { player: "die" },
 										forced: true,
 										forceDie: true,
@@ -998,20 +998,20 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 										filter: function (event, player) {
 											return event.source != undefined;
 										},
-										content: function () {
-											var source = trigger.source;
-											source.draw(3);
-											if (source.skillH.length == 3)
-												source.removeSkillH(source.skillH.randomGet());
-											var skills = lib.huanhuazhizhan.skills;
-											skills.randomSort();
-											for (var i = 0; i < skills.length; i++) {
-												if (!source.skillH.includes(skills[i])) {
-													source.addSkillH(skills[i]);
-													break;
-												}
+									content: function () {
+										var source = trigger.source;
+										source.draw(3);
+										if (source.skillH.length == 4)
+											source.removeSkillH(source.skillH.randomGet());
+										var skills = lib.huanhuazhizhan.skills;
+										skills.randomSort();
+										for (var i = 0; i < skills.length; i++) {
+											if (!source.skillH.includes(skills[i])) {
+												source.addSkillH(skills[i]);
+												break;
 											}
-										},
+										}
+									},
 									},
 									hhzz_jubao: {
 										trigger: { player: "damage" },
@@ -1123,7 +1123,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 									if (source && this.name.indexOf("hhzz_") != 0) {
 										if (source._toKill == this) game.log(source, "击杀目标成功");
 										source.draw(this == source._toKill ? 2 : 1);
-										source.changeLingli(this == source._toKill ? 3 : 2);
+										source.changeLingli(this == source._toKill ? 5 : 3);
 									}
 									if (!_status._aozhan) {
 										var that = this;
@@ -1242,16 +1242,19 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 											game.addGlobalSkill(list[i]);
 										}
 										game.me.addSkillH(result.control);
-										game.countPlayer(function (current) {
-											if (!current.name) {
-												current.init(_status.characterlist.randomRemove(1)[0]);
-												current.addSkillH(
-													["xiandeng", "shulv", "xisheng"].randomGet()
-												);
-											}
-											current.storage._lingli = 0;
-											current.markSkill("_lingli");
-										});
+									game.countPlayer(function (current) {
+										if (!current.name) {
+											current.init(_status.characterlist.randomRemove(1)[0]);
+											current.addSkillH(
+												["xiandeng", "shulv", "xisheng"].randomGet()
+											);
+										}
+										current.maxHp = 5;
+										current.hp = 5;
+										current.update();
+										current.storage._lingli = 0;
+										current.markSkill("_lingli");
+									});
 										game.showIdentity(true);
 										"step 3";
 										game.randomMission();
