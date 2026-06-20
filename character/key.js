@@ -8111,7 +8111,7 @@ game.import("character", function () {
 					player: [
 						"phaseJieshuBegin",
 						"recoverEnd",
-						"damageEnd",
+						"loseHpEnd",
 						"phaseDrawBegin2",
 						"phaseZhunbeiBegin",
 					],
