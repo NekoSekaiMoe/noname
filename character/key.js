@@ -8464,9 +8464,11 @@ game.import("character", function () {
 			nao_duyin: {
 				trigger: { global: "phaseBegin" },
 				filter(event, player) {
-					return (
-						event.player != player &&
-						(!player.storage.nao_duyin || !player.storage.nao_duyin.includes(event.player))
+					if (event.player == player) return false;
+					// 每轮对每名角色各限一次：记录[目标, 轮数]，轮数变更后自动可再发动
+					if (!player.storage.nao_duyin || !player.storage.nao_duyin.length) return true;
+					return !player.storage.nao_duyin.some(
+						(pair) => pair[0] == event.player && pair[1] == game.roundNumber
 					);
 				},
 				logTarget: "player",
@@ -8480,13 +8482,17 @@ game.import("character", function () {
 						if (_status.event.player.isTurnedOver()) return 0;
 						return 6 - get.value(card);
 					});
+					"step 1";
 					player.draw(4);
 					player.recover(2);
-					"step 1";
 					if (!result.bool) player.turnOver();
 					player.addTempSkill("nao_duyin2", { player: "phaseAfter" });
 					if (!player.storage.nao_duyin) player.storage.nao_duyin = [];
-					player.storage.nao_duyin.push(trigger.player);
+					// 只保留本轮的记录，避免跨轮残留
+					player.storage.nao_duyin = player.storage.nao_duyin.filter(
+						(pair) => pair[1] == game.roundNumber
+					);
+					player.storage.nao_duyin.push([trigger.player, game.roundNumber]);
 					if (!player.storage.nao_duyin2) player.storage.nao_duyin2 = [];
 					player.storage.nao_duyin2.push(trigger.player);
 					player.markSkill("nao_duyin2");
@@ -14604,7 +14610,7 @@ game.import("character", function () {
 			nao_duyin: "独隐",
 			nao_duyin2: "独隐",
 			nao_duyin_info:
-				"一名其他角色的回合开始时，若你本局游戏内未对其发动过〖独隐〗，则你可以弃置一张牌或将武将牌翻面。若如此做，你不能成为其使用牌的目标，且对其使用牌没有距离限制且不计入使用次数直到你的下回合结束。",
+				"一名其他角色的回合开始时，若你本轮游戏内未对其发动过〖独隐〗，则你可以弃置一张牌或将武将牌翻面，摸四张牌并回复两点体力。若如此做，直到你的下回合结束，你不能成为其使用牌的目标，且对其使用牌没有距离限制且不计入使用次数。",
 			nao_wanxin: "挽心",
 			nao_wanxin_info:
 				"一名角色的回合结束时，你可以令一名本回合内受到过伤害的角色摸两张牌，然后你与其将武将牌重置。",
