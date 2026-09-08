@@ -8071,7 +8071,7 @@ content:function(config, pack){
 					if(lib.filter.characterDisabled(name)) continue;
 					if(name.indexOf('old_')==0) continue;
 					var skillsx=lib.character[name][3].slice(0);
-					lib.character[name][2]=4;
+					lib.character[name][2]=5;
 					lib.character[name][3]=[];
 					if(lib.character[name][4]) lib.character[name][4].remove('hiddenSkill');
 					characters.push(name);
@@ -8160,30 +8160,30 @@ content:function(config, pack){
 								},
 								content:function(){
 									game.log(player,'对击杀目标造成了伤害');
-									player.changeLingli(trigger.num);
+									player.changeLingli(trigger.num*2);
 								},
 							},
 							_lingli:{
 								mark:true,
-								marktext:'灵力',
+								marktext:'灵',
 								popup:'聚灵',
 								intro:{
 									name:'灵力',
-									content:'当前灵力点数：# / 5',
+									content:'当前灵力点数：# / 9',
 								},
 								trigger:{
 									player:'phaseBeginStart',
 								},
-								prompt:'是否消耗2点灵力获得一个技能？',
+								prompt:'是否消耗3点灵力获得一个技能？',
 								filter:function(event,player){
-									return player.storage._lingli>1;
+									return player.storage._lingli>2;
 								},
 								check:function(event,player){
-									return player.skillH.length<3;
+									return player.skillH.length<5;
 								},
 								content:function(){
 									'step 0'
-									player.changeLingli(-2);
+									player.changeLingli(-3);
 									'step 1'
 									event.skills=lib.huanhuazhizhan.skills;
 									var skills=event.skills;
@@ -8207,7 +8207,7 @@ content:function(config, pack){
 										return;
 									}
 									event.skill=result.control;
-									if(player.skillH.length==3){
+									if(player.skillH.length==5){
 										event.lose=true;
 											player.chooseControl(player.skillH).prompt='选择失去1个已有技能';
 									}
@@ -8224,7 +8224,7 @@ content:function(config, pack){
 									return _status._aozhan!=true&&game.roundNumber>1;
 								},
 								content:function(){
-									player.changeLingli(1);
+									player.changeLingli(2);
 								},
 							},
 							_lingli_draw:{
@@ -8241,7 +8241,7 @@ content:function(config, pack){
 									order:10,
 									result:{
 										player:function(player){
-											return (player.storage._lingli-2*(3-player.skillH.length))>0?1:0;
+											return (player.storage._lingli-2*(4-player.skillH.length))>0?1:0;
 										},
 									},
 								},
@@ -8255,7 +8255,7 @@ content:function(config, pack){
 								},
 								content:function(){
 									game.log(trigger.player,'帮助了保护目标');
-									trigger.player.changeLingli(1);
+									trigger.player.changeLingli(2);
 								},
 							},
 							_hhzz_qiankunbagua:{
@@ -8270,7 +8270,7 @@ content:function(config, pack){
 									'step 0'
 									if(_status._aozhan&&!player.getStat('damage')){
 										player.loseHp();
-										player.changeLingli(1);
+										player.changeLingli(2);
 										game.log(player,'本回合内未造成伤害，触发死战模式惩罚');
 									}
 									if(trigger._lastDead==undefined) event.goto(2);
@@ -8309,7 +8309,7 @@ content:function(config, pack){
 										}
 										case 5:{
 											game.countPlayer(function(current){
-												current.changeLingli(1);
+												current.changeLingli(2);
 											});
 											break;
 										}
@@ -8329,7 +8329,7 @@ content:function(config, pack){
 										}
 										case 7:{
 											game.countPlayer(function(current){
-												if(current.skillH.length<3){
+												if(current.skillH.length<4){
 													var skills=lib.huanhuazhizhan.skills;
 													skills.randomSort();
 													for(var i=0;i<skills.length;i++){
@@ -8346,9 +8346,8 @@ content:function(config, pack){
 											trigger._lastDead.revive(null,false);
 											trigger._lastDead.uninit();
 											// 修改开始
-											// 删除乱斗-幻化之战模式乱入武将，如果想用的话切换一下注释
-											// trigger._lastDead.init(['hhzz_shiona','hhzz_kanade','hhzz_takaramono1','hhzz_takaramono2'].randomGet());
-											trigger._lastDead.init(['hhzz_takaramono1','hhzz_takaramono2'].randomGet());
+											// 与基础版一致：保留完整乱入武将随机池
+											trigger._lastDead.init(['hhzz_shiona','hhzz_kanade','hhzz_takaramono1','hhzz_takaramono2'].randomGet());
 											// 修改结束
 											trigger._lastDead.skillH=lib.character[trigger._lastDead.name][3].slice(0);
 											trigger._lastDead.addSkill('hhzz_noCard');
@@ -8434,7 +8433,7 @@ content:function(config, pack){
 								content:function(){
 									var source=trigger.source;
 									source.draw();
-									if(source.skillH.length==3) source.removeSkillH(source.skillH.randomGet());
+									if(source.skillH.length==4) source.removeSkillH(source.skillH.randomGet());
 									var skills=lib.huanhuazhizhan.skills;
 									skills.randomSort();
 									for(var i=0;i<skills.length;i++){
@@ -8456,7 +8455,7 @@ content:function(config, pack){
 								content:function(){
 									var source=trigger.source;
 									source.draw(3);
-									if(source.skillH.length==3) source.removeSkillH(source.skillH.randomGet());
+									if(source.skillH.length==4) source.removeSkillH(source.skillH.randomGet());
 									var skills=lib.huanhuazhizhan.skills;
 									skills.randomSort();
 									for(var i=0;i<skills.length;i++){
@@ -8534,7 +8533,7 @@ content:function(config, pack){
 								if(typeof num=='function'){
 									numx=num(player);
 								}
-								if(player._hSeat>6) player.changeLingli(1);
+								if(player._hSeat>6) player.changeLingli(2);
 								player.directgain(get.cards(numx));
 								player=player.next;
 							}
@@ -8568,7 +8567,7 @@ content:function(config, pack){
 							if(source&&this.name.indexOf('hhzz_')!=0){
 								if(source._toKill==this) game.log(source,'击杀目标成功');
 								source.draw(this==source._toKill?2:1);
-								source.changeLingli(this==source._toKill?3:2);
+								source.changeLingli(this==source._toKill?5:3);
 							}
 							if(!_status._aozhan){
 								var that=this;
@@ -8586,7 +8585,7 @@ content:function(config, pack){
 							if(typeof num!='number') num=1;
 							if(typeof this.storage._lingli!='number') this.storage._lingli=0;
 							if(num>0){
-								num=Math.min(num,5-this.storage._lingli);
+								num=Math.min(num,9-this.storage._lingli);
 								if(num<1) return;
 								game.log(this,'获得了','#y'+get.cnNumber(num)+'点','灵力');
 							}
@@ -8690,6 +8689,9 @@ content:function(config, pack){
 										current.init(_status.characterlist.randomRemove(1)[0]);
 										current.addSkillH(['xiandeng','shulv','xisheng'].randomGet());
 									}
+									current.maxHp=5;
+									current.hp=5;
+									current.update();
 									current.storage._lingli=0;
 									current.markSkill('_lingli');
 								});
@@ -8719,11 +8721,11 @@ content:function(config, pack){
 										_lingli_damage:{},
 										_lingli:{
 										mark:true,
-										marktext:'灵力',
+										marktext:'灵',
 										popup:'聚灵',
 										intro:{
 											name:'灵力',
-											content:'当前灵力点数：# / 5',
+											content:'当前灵力点数：# / 9',
 										},
 										},
 										_lingli_round:{},
@@ -8798,11 +8800,7 @@ content:function(config, pack){
 				}
 				func(pack);
 				
-				// 删除乱斗-幻化之战模式乱入武将
-				delete lib.huanhuazhizhan.pack.character.hhzz_shiona;
-				delete lib.character.hhzz_shiona;
-				delete lib.huanhuazhizhan.pack.character.hhzz_kanade;
-				delete lib.character.hhzz_kanade;
+				// 与基础版一致：保留乱入武将（乾坤八卦·坤会将其复活）
 				if(lib.characterSort.key){
 					lib.characterSort.key.luanru_key.push('hhzz_shiona');
 					lib.characterSort.key.luanru_key.push('hhzz_kanade');
