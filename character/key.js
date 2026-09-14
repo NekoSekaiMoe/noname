@@ -8639,24 +8639,30 @@ game.import("character", function () {
 					content: "已使用过的花色：$",
 					onunmark: true,
 				},
-				trigger: { player: "useCardAfter" },
+				trigger: { player: ["useCardAfter", "respondAfter"] },
 				forced: true,
 				filter(event, player) {
 					if (!lib.suit.includes(get.suit(event.card))) return false;
 					const suit = get.suit(event.card);
-					// 改为每回合第一次使用该花色
-					if (player.getHistory("useCard", evt => get.suit(evt.card) == suit).indexOf(event) != 0) return false;
-					return true; // 只要是每回合第一次使用该花色就触发
+					// 每回合第一次使用/打出该花色才触发（useCard与respond历史合并判定，回合外响应同样计入）
+					const check = evt => get.suit(evt.card) == suit;
+					return (
+						player
+							.getHistory("useCard", check)
+							.concat(player.getHistory("respond", check))
+							.filter(evt => evt != event).length == 0
+					);
 				},
 				content() {
 					"step 0";
-					var hasLink = false;
-					var hasRecast = false;
+					// 注意：每个step是独立的一次函数调用，局部变量不跨step共享，必须存放在event上
+					event.hasLink = false;
+					event.hasRecast = false;
 					
 					// 检查是否满足横置条件
 					if (trigger.targets && trigger.targets.length == 1 && !trigger.targets[0].isLinked()) {
 						trigger.targets[0].link(true);
-						hasLink = true;
+						event.hasLink = true;
 					} else {
 						// 不满足横置条件时，重置所有花色记录
 						player.storage.nao_diandeng = [];
@@ -8667,12 +8673,12 @@ game.import("character", function () {
 					var cards = player.getCards("h", card => get.suit(card) == get.suit(trigger.card) && player.canRecast(card));
 					if (cards.length > 0) {
 						player.recast(cards);
-						hasRecast = true;
+						event.hasRecast = true;
 					}
 					
 					"step 1";
 					// 只要执行了横置或重铸中的任意一个，就摸两张牌
-					if (hasLink || hasRecast) {
+					if (event.hasLink || event.hasRecast) {
 						player.draw(2);
 					}
 				},
@@ -8680,19 +8686,24 @@ game.import("character", function () {
 				subSkill: {
 					count: {
 						charlotte: true,
-						trigger: { player: "useCardAfter" },
+						trigger: { player: ["useCardAfter", "respondAfter"] },
 						filter(event, player) {
 							let suit = get.suit(event.card);
-							return lib.suits.includes(suit) && !player.getStorage("nao_diandeng").includes(suit);
+							return lib.suit.includes(suit) && !player.getStorage("nao_diandeng").includes(suit);
 						},
 						forced: true,
 						silent: true,
 						content() {
-							// 改为每回合记录
+							// 改为每回合记录（含回合外响应/打出的牌）
 							let suits = player
 								.getHistory("useCard", evt => {
-									return lib.suits.includes(get.suit(evt.card));
+									return lib.suit.includes(get.suit(evt.card));
 								})
+								.concat(
+									player.getHistory("respond", evt => {
+										return lib.suit.includes(get.suit(evt.card));
+									})
+								)
 								.reduce((list, evt) => {
 									return list.add(get.suit(evt.card));
 								}, [])
@@ -8712,8 +8723,13 @@ game.import("character", function () {
 				init(player) {
 					let suits = player
 						.getHistory("useCard", evt => {
-							return lib.suits.includes(get.suit(evt.card));
+							return lib.suit.includes(get.suit(evt.card));
 						})
+						.concat(
+							player.getHistory("respond", evt => {
+								return lib.suit.includes(get.suit(evt.card));
+							})
+						)
 						.reduce((list, evt) => {
 							return list.add(get.suit(evt.card));
 						}, [])
@@ -14619,7 +14635,7 @@ game.import("character", function () {
 			nao_shouqing3: "守情",
 			nao_shouqing_info: "其他角色的出牌阶段内可以对你使用非转化的【桃】。若如此做，其摸四张牌，且本局游戏内的手牌上限+4。",
 			nao_diandeng: "点灯",
-			nao_diandeng_info: "锁定技。当你每回合第一次使用一种花色的牌后：若此牌的目标数为1且目标未横置，你横置此牌目标。否则重置所有花色；若你有此花色的手牌，你重铸这些牌。然后你摸二张牌。",
+			nao_diandeng_info: "锁定技。当你每回合第一次使用或打出一种花色的牌后：若此牌的目标数为1且目标未横置，你横置此牌目标。否则重置所有花色；若你有此花色的手牌，你重铸这些牌。然后若执行了横置或重铸，你摸二张牌。",
 			key_yuuki: "冰室忧希",
 			yuuki_yicha: "异插",
 			yuuki_yicha_info:
