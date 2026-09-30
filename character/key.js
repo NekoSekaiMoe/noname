@@ -2439,9 +2439,24 @@ game.import("character", function () {
 			},
 			//樱庭星罗
 			seira_xinghui: {
+				locked: true,
+				zhuanhuanji: true,
+				mark: true,
+				marktext: "☯",
 				trigger: { player: "phaseZhunbeiBegin" },
-				check(event, player) {
-					return !player.getExpansions("seira_xinghui").length;
+				forced: true,
+				intro: {
+					content(storage, player) {
+						var str = "锁定技，转换技。准备阶段，你投掷一枚骰子（X为点数）。";
+						if (storage)
+							str +=
+								'阴：你造成的伤害额外+X直到你的下回合开始；<span class="bluetext">阳：你摸牌的时候额外摸X张牌直到你的下回合开始。</span>';
+						else
+							str +=
+								'<span class="bluetext">阴：你造成的伤害额外+X直到你的下回合开始；</span>阳：你摸牌的时候额外摸X张牌直到你的下回合开始。';
+						if (player && player.storage.seira_xinghui_num) str += "（本次投掷点数为" + player.storage.seira_xinghui_num + "）";
+						return str;
+					},
 				},
 				content() {
 					"step 0";
@@ -2452,119 +2467,57 @@ game.import("character", function () {
 						player.throwDice(6);
 					} else player.throwDice();
 					"step 2";
-					var cards = get.cards(num);
-					event.cards = cards;
-					player.draw(cards);
-					player.recover(cards);
-					game.cardsGotoOrdering(cards);
-					var next = player.chooseToMove();
-					next.set("prompt", "星辉：选择要作为“星屑”的牌（先选择的在上）");
-					next.set("list", [["置于武将牌上", cards], ["置入弃牌堆"]]);
-					next.processAI = function (list) {
-						var cards = list[0][1],
-							player = _status.event.player;
-						var top = [];
-						var judges = player.getCards("j");
-						var stopped = false;
-						if (!player.hasWuxie()) {
-							for (var i = 0; i < judges.length; i++) {
-								var judge = get.judge(judges[i]);
-								cards.sort(function (a, b) {
-									return judge(b) - judge(a);
-								});
-								if (judge(cards[0]) < 0) {
-									stopped = true;
-									break;
-								} else {
-									top.unshift(cards.shift());
-								}
-							}
-						}
-						var bottom;
-						if (!stopped) {
-							cards.sort(function (a, b) {
-								return get.value(b, player) - get.value(a, player);
-							});
-							while (cards.length) {
-								if (get.value(cards[0], player) <= 5) break;
-								top.unshift(cards.shift());
-							}
-						}
-						bottom = cards;
-						return [top, bottom];
-					};
-					"step 3";
-					if (result.bool && result.moved && result.moved[0].length) {
-						event.cards = result.moved[0];
-						player
-							.chooseTarget(
-								true,
-								"将以下牌置于一名角色的武将牌上",
-								get.translation(event.cards),
-								function (card, player, target) {
-									return !target.getExpansions("seira_xinghui").length;
-								}
-							)
-							.set("ai", function (target) {
-								return target == _status.event.player ? 1 : 0;
-							});
-						event.cards.reverse();
-					} else event.finish();
-					"step 4";
-					var target = result.targets[0];
-					player.draw(event.num);
-					player.recover(event.num);
-					player.line(target, { color: [253, 153, 182] });
-					target.addToExpansion(cards).gaintag.add("seira_xinghui");
-					game.log(player, "将" + get.cnNumber(cards.length) + "张牌置于", target, "的武将牌上");
-					target.addSkill("seira_xinghui_hoshikuzu");
-				},
-				intro: {
-					markcount: "expansion",
-					content(storage, player) {
-						return "共有" + get.cnNumber(player.getExpansions("seira_xinghui").length) + "张牌";
-					},
-					onunmark(storage, player) {
-						player.removeSkill("seira_xinghui_hoshikuzu");
-					},
+					player.storage.seira_xinghui_num = num;
+					player.changeZhuanhuanji("seira_xinghui");
+					if (player.storage.seira_xinghui) {
+						player.addTempSkill("seira_xinghui_yin", { player: "phaseBefore" });
+						game.log(player, "于下回合开始前造成的伤害额外+", "#y" + num + "点");
+					} else {
+						player.addTempSkill("seira_xinghui_yang", { player: "phaseBefore" });
+						game.log(player, "于下回合开始前摸牌时额外摸", "#y" + num + "张牌");
+					}
 				},
 				subSkill: {
-					hoshikuzu: {
+					yin: {
+						mark: true,
+						marktext: "辉",
+						intro: {
+							content(storage, player) {
+								return "于你的下回合开始前，你造成的伤害额外+" + (player.storage.seira_xinghui_num || 0) + "。";
+							},
+						},
 						trigger: { source: "damageBegin1" },
 						forced: true,
 						charlotte: true,
+						popup: false,
 						filter(event, player) {
-							return player.getExpansions("seira_xinghui").length > 0;
+							return (player.storage.seira_xinghui_num || 0) > 0;
 						},
 						content() {
-							trigger.num++;
-							trigger.num *= 2;
-							game.log(player, "造成了", "#y暴击伤害");
+							var num = player.storage.seira_xinghui_num;
+							trigger.num += num;
+							game.log(player, "造成的伤害额外+", "#y" + num + "点");
 						},
-						group: ["seira_xinghui_draw", "seira_xinghui_judge"],
 					},
-					draw: {
+					yang: {
+						mark: true,
+						marktext: "辉",
+						intro: {
+							content(storage, player) {
+								return "于你的下回合开始前，你摸牌的时候额外摸" + (player.storage.seira_xinghui_num || 0) + "张牌。";
+							},
+						},
 						trigger: { player: "drawBefore" },
 						forced: true,
+						charlotte: true,
+						popup: false,
 						filter(event, player) {
-							return player.getExpansions("seira_xinghui").length > 0;
+							return event.num > 0 && (player.storage.seira_xinghui_num || 0) > 0;
 						},
 						content() {
-							var cards = player.getExpansions("seira_xinghui");
-							var num = Math.min(cards.length, trigger.num);
-							trigger.num -= num;
-							player.gain(cards.slice(0, num), "draw");
-							if (trigger.num == 0) trigger.cancel();
-						},
-					},
-					judge: {
-						trigger: { player: "judgeBegin" },
-						forced: true,
-						filter(event, player) {
-							return player.getExpansions("seira_xinghui").length > 0;
-						},
-						content() {
-							trigger.directresult = player.getExpansions("seira_xinghui")[0];
+							var num = player.storage.seira_xinghui_num;
+							trigger.num += num;
+							game.log(player, "摸牌时额外摸", "#y" + num + "张牌");
 						},
 					},
 				},
@@ -14684,7 +14637,7 @@ game.import("character", function () {
 			key_seira: "樱庭星罗",
 			seira_xinghui: "星辉",
 			seira_xinghui_info:
-				"准备阶段，你可以投掷一枚骰子，观看牌堆顶的X张牌（X为投掷点数）并以任意顺序扣置于一名没有“星屑”的角色的武将牌上，称为“星屑”。有“星屑”的角色造成的伤害+1，且当其从牌堆顶摸牌或取得判定牌时，改为从“星屑”中获取。",
+				"锁定技，转换技。准备阶段，你投掷一枚骰子（X为点数）。阴：你造成的伤害额外+X直到你的下回合开始；阳：你摸牌的时候额外摸X张牌直到你的下回合开始。",
 			seira_yuanying: "缘映",
 			seira_yuanying_info:
 				"出牌阶段限一次，你可选择两名角色。这两名角色成为“姻缘者”且获得〖姻缘〗直到你下次发动〖缘映〗。",
